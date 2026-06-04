@@ -1,0 +1,8 @@
+{
+  "name": "Fútbol Rápido Tribol",
+  "description": "Sistema de gestión y reservas en línea para las canchas de Fútbol Rápido Tribol en Ixtapaluca, con roles de juego, estadísticas de escuadras, tabla de goleadores, y galería multimedia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

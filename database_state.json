@@ -1,0 +1,498 @@
+{
+  "users": [
+    {
+      "id": "admin-01",
+      "name": "Administrador Complejo",
+      "email": "admin@canchafutbol.com",
+      "phone": "+525512345678",
+      "role": "admin"
+    },
+    {
+      "id": "user-01",
+      "name": "Carlos Mendoza",
+      "email": "carlos@gmail.com",
+      "phone": "+525598765432",
+      "role": "user"
+    },
+    {
+      "id": "usr-a9gdg3jpp",
+      "name": "Angel Antonio ",
+      "email": "angelantonioflore837@gmail.com",
+      "phone": "5663812661",
+      "role": "user"
+    },
+    {
+      "id": "usr-bw9wswzdd",
+      "name": "Angel Fernando ",
+      "email": "salasyerany@gmail.com",
+      "phone": "2203306181",
+      "role": "user"
+    }
+  ],
+  "reservations": [
+    {
+      "id": "res-wzv2xy7ey",
+      "userId": "usr-a9gdg3jpp",
+      "userName": "Angel Antonio Flores ",
+      "userEmail": "angelantonioflore837@gmail.com",
+      "userPhone": "5663812661",
+      "date": "2026-06-17",
+      "timeSlot": "22:00 - 23:00",
+      "duration": 1.5,
+      "fieldId": "cancha-3",
+      "fieldName": "Cancha 3 (Fútbol 5 Indoor)",
+      "hasLights": true,
+      "extras": {
+        "balls": true,
+        "bibs": true,
+        "referee": true
+      },
+      "totalPrice": 900,
+      "status": "confirmed",
+      "paymentStatus": "paid",
+      "entryCode": "GA-574841",
+      "createdAt": "2026-06-04T06:45:53.952Z"
+    },
+    {
+      "id": "res-b1khl7k26",
+      "userId": "usr-bw9wswzdd",
+      "userName": "Angel Fernando ",
+      "userEmail": "salasyerany@gmail.com",
+      "userPhone": "2203306181",
+      "date": "2026-06-04",
+      "timeSlot": "22:00 - 23:00",
+      "duration": 1.5,
+      "fieldId": "cancha-2",
+      "fieldName": "Cancha 2 (No Techada)",
+      "hasLights": true,
+      "extras": {
+        "balls": false,
+        "bibs": false,
+        "referee": false
+      },
+      "totalPrice": 795,
+      "status": "confirmed",
+      "paymentStatus": "paid",
+      "entryCode": "GA-353513",
+      "createdAt": "2026-06-04T06:44:09.016Z"
+    },
+    {
+      "id": "res-47mgyrmo8",
+      "userId": "usr-a9gdg3jpp",
+      "userName": "Angel Antonio ",
+      "userEmail": "angelantonioflore837@gmail.com",
+      "userPhone": "5663812661",
+      "date": "2026-06-01",
+      "timeSlot": "21:00 - 22:00",
+      "duration": 1.5,
+      "fieldId": "cancha-1",
+      "fieldName": "Cancha 1 (Techada Premium)",
+      "hasLights": true,
+      "extras": {
+        "balls": true,
+        "bibs": true,
+        "referee": true
+      },
+      "totalPrice": 1350,
+      "status": "confirmed",
+      "paymentStatus": "paid",
+      "createdAt": "2026-06-01T09:07:55.146Z"
+    },
+    {
+      "id": "res-w3pxhfbhm",
+      "userId": "admin-01",
+      "userName": "Administrador Complejo",
+      "userEmail": "admin@canchafutbol.com",
+      "userPhone": "+525512345678",
+      "date": "2026-06-01",
+      "timeSlot": "22:00 - 23:00",
+      "duration": 1.5,
+      "fieldId": "cancha-1",
+      "fieldName": "Cancha 1 (Techada Premium)",
+      "hasLights": true,
+      "extras": {
+        "balls": false,
+        "bibs": false,
+        "referee": true
+      },
+      "totalPrice": 1250,
+      "status": "confirmed",
+      "paymentStatus": "paid",
+      "createdAt": "2026-06-01T09:07:03.174Z"
+    },
+    {
+      "id": "res-9aqe4dzpe",
+      "userId": "admin-01",
+      "userName": "Administrador Complejo",
+      "userEmail": "admin@canchafutbol.com",
+      "userPhone": "+525512345678",
+      "date": "2026-06-01",
+      "timeSlot": "20:00 - 21:00",
+      "duration": 1.5,
+      "fieldId": "cancha-1",
+      "fieldName": "Cancha 1 (Techada Premium)",
+      "hasLights": true,
+      "extras": {
+        "balls": false,
+        "bibs": false,
+        "referee": true
+      },
+      "totalPrice": 1250,
+      "status": "confirmed",
+      "paymentStatus": "paid",
+      "createdAt": "2026-06-01T09:00:56.750Z"
+    },
+    {
+      "id": "res-01",
+      "userId": "user-01",
+      "userName": "Carlos Mendoza",
+      "userEmail": "carlos@gmail.com",
+      "userPhone": "+525598765432",
+      "date": "2026-06-01",
+      "timeSlot": "19:00 - 20:00",
+      "duration": 1,
+      "fieldId": "cancha-1",
+      "fieldName": "Cancha 1 (Techada Premium)",
+      "hasLights": true,
+      "extras": {
+        "balls": true,
+        "bibs": true,
+        "referee": false
+      },
+      "totalPrice": 700,
+      "status": "confirmed",
+      "paymentStatus": "paid",
+      "createdAt": "2026-06-01T08:20:39.153Z"
+    },
+    {
+      "id": "res-02",
+      "userId": "user-01",
+      "userName": "Carlos Mendoza",
+      "userEmail": "carlos@gmail.com",
+      "userPhone": "+525598765432",
+      "date": "2026-06-02",
+      "timeSlot": "18:00 - 19:30",
+      "duration": 1.5,
+      "fieldId": "cancha-2",
+      "fieldName": "Cancha 2 (No Techada)",
+      "hasLights": true,
+      "extras": {
+        "balls": false,
+        "bibs": true,
+        "referee": true
+      },
+      "totalPrice": 975,
+      "status": "pending",
+      "paymentStatus": "pending",
+      "createdAt": "2026-06-01T08:20:39.153Z"
+    }
+  ],
+  "payments": [
+    {
+      "id": "pay-01",
+      "reservationId": "res-01",
+      "amount": 700,
+      "paymentMethod": "stripe",
+      "transactionId": "ch_stripe_mock_8172635",
+      "status": "completed",
+      "createdAt": "2026-06-01T08:20:39.153Z"
+    },
+    {
+      "id": "pay-d52pd2pvf",
+      "reservationId": "res-9aqe4dzpe",
+      "amount": 1250,
+      "paymentMethod": "cash",
+      "transactionId": "tx_sim_hmoi09hbl",
+      "status": "completed",
+      "createdAt": "2026-06-01T09:00:56.832Z"
+    },
+    {
+      "id": "pay-bd7rptphk",
+      "reservationId": "res-w3pxhfbhm",
+      "amount": 1250,
+      "paymentMethod": "paypal",
+      "transactionId": "pay_paypal_order_opokyhvo1",
+      "status": "completed",
+      "createdAt": "2026-06-01T09:07:03.252Z"
+    },
+    {
+      "id": "pay-eo21x9au4",
+      "reservationId": "res-47mgyrmo8",
+      "amount": 1350,
+      "paymentMethod": "cash",
+      "transactionId": "tx_sim_4z49miu9v",
+      "status": "completed",
+      "createdAt": "2026-06-01T09:07:55.222Z"
+    },
+    {
+      "id": "pay-2e34uh1hr",
+      "reservationId": "res-b1khl7k26",
+      "amount": 795,
+      "paymentMethod": "cash",
+      "transactionId": "tx_sim_ytz5pjskj",
+      "status": "completed",
+      "createdAt": "2026-06-04T06:44:09.117Z"
+    },
+    {
+      "id": "pay-n8aedtgnp",
+      "reservationId": "res-wzv2xy7ey",
+      "amount": 900,
+      "paymentMethod": "cash",
+      "transactionId": "tx_sim_rqfnf5jzk",
+      "status": "completed",
+      "createdAt": "2026-06-04T06:45:54.037Z"
+    }
+  ],
+  "promotions": [
+    {
+      "id": "promo-01",
+      "title": "Lunes Futbolero",
+      "description": "20% de descuento en alquiler de canchas de lunes a miércoles antes de las 17:00 Hrs.",
+      "discountPercentage": 20,
+      "promoCode": "LUNESFUT",
+      "validUntil": "2026-12-31",
+      "isActive": true,
+      "type": "discount"
+    },
+    {
+      "id": "promo-02",
+      "title": "Torneo de Verano Nocturno 2026",
+      "description": "¡Inscríbete ya con tu escuadra! Copa Nocturna de Fútbol Rápido con grandes premios en efectivo. Inicio en Junio.",
+      "discountPercentage": 0,
+      "promoCode": "COPANOCTURNA",
+      "validUntil": "2026-06-30",
+      "isActive": true,
+      "type": "tournament"
+    },
+    {
+      "id": "promo-03",
+      "title": "Descuento Estudiantes",
+      "description": "Muestra tu credencial escolar vigente y obtén un 15% de descuento directo en tus horas agendadas.",
+      "discountPercentage": 15,
+      "promoCode": "ALUMNOS",
+      "validUntil": "2026-12-31",
+      "isActive": true,
+      "type": "discount"
+    }
+  ],
+  "photos": [
+    {
+      "id": "photo-iylj4qkuv",
+      "url": "https://www.facebook.com/share/v/1KboeQgHzn/",
+      "caption": "Video",
+      "category": "matches font-medium",
+      "uploadedAt": "2026-06-01T09:58:56.150Z"
+    },
+    {
+      "id": "photo-tribol-logo",
+      "url": "/src/assets/images/tribol_logo_1780556302100.png",
+      "caption": "Escudo e Identidad Visual Oficial de Fútbol Rápido Tribol",
+      "category": "facilities",
+      "uploadedAt": "2026-06-01T08:20:39.153Z"
+    },
+    {
+      "id": "photo-mvp-boy",
+      "url": "/src/assets/images/mvp_boy_trophy_1780307479148.png",
+      "caption": "Goleador Estrella Juvenil recibiendo trofeo MVP de la semana en la cancha techada",
+      "category": "events",
+      "uploadedAt": "2026-06-01T08:20:39.153Z"
+    },
+    {
+      "id": "photo-copa-campeones",
+      "url": "/src/assets/images/copa_campeones_celebration_1780307492915.png",
+      "caption": "Ceremonia de campeón de liga con trofeo de oro y lluvia de confeti",
+      "category": "events",
+      "uploadedAt": "2026-06-01T08:20:39.153Z"
+    },
+    {
+      "id": "photo-pina-card",
+      "url": "/src/assets/images/pina_goal_card_1780307507932.png",
+      "caption": "Tarjeta coleccionable MVP ¡GOOOOOL! de E. \"Piña\" López del club Barcelona",
+      "category": "matches",
+      "uploadedAt": "2026-06-01T08:20:39.153Z"
+    },
+    {
+      "id": "photo-1",
+      "url": "https://images.unsplash.com/photo-1544698310-74ea9d1c8258?q=80&w=1000",
+      "caption": "Encuentros intensos bajo iluminación LED profesional",
+      "category": "matches",
+      "uploadedAt": "2026-06-01T08:20:39.153Z"
+    },
+    {
+      "id": "photo-2",
+      "url": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1000",
+      "caption": "Cancha Principal Techada con Pasto Sintético Premium",
+      "category": "facilities",
+      "uploadedAt": "2026-06-01T08:20:39.153Z"
+    }
+  ],
+  "videos": [
+    {
+      "id": "vid-live-1",
+      "title": "🔴 TRANSMISIÓN EN VIVO: Final de Copa Femenil - Real Madrid vs España",
+      "url": "https://assets.mixkit.co/videos/preview/mixkit-playing-soccer-in-the-rain-40348-large.mp4",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=400",
+      "category": "live",
+      "isLive": true,
+      "views": 184,
+      "uploadedAt": "2026-06-01T09:59:51.000Z"
+    },
+    {
+      "id": "vid-highlight-1",
+      "title": "Resumen Semanal: Goles de Antología - Jornada 10 (Sabatina)",
+      "url": "https://assets.mixkit.co/videos/preview/mixkit-soccer-player-kicking-the-ball-in-stadium-40356-large.mp4",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1544698310-74ea9d1c8258?q=80&w=400",
+      "category": "highlight",
+      "isLive": false,
+      "views": 742,
+      "uploadedAt": "2026-05-29T12:00:00.000Z"
+    },
+    {
+      "id": "vid-match-2",
+      "title": "Partido Completo: Barcelona vs FC San Pancho - Final Nuevos Valores",
+      "url": "https://assets.mixkit.co/videos/preview/mixkit-soccer-ball-hitting-the-net-40347-large.mp4",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1510566337590-2fc1f21d0faa?q=80&w=400",
+      "category": "full_match",
+      "isLive": false,
+      "views": 1250,
+      "uploadedAt": "2026-05-27T18:30:00.000Z"
+    }
+  ],
+  "teams": [
+    {
+      "id": "team-01",
+      "name": "Galeones F.C.",
+      "color": "Azul y Negro",
+      "captainContact": "Adrián Perea (+5255392817)",
+      "goalsFor": 23,
+      "createdAt": "2026-06-01T08:20:39.154Z"
+    },
+    {
+      "id": "team-02",
+      "name": "Deportivo Cuervos",
+      "color": "Negro Mate",
+      "captainContact": "Hugo Sánchez (+5255483921)",
+      "goalsFor": 19,
+      "createdAt": "2026-06-01T08:20:39.154Z"
+    },
+    {
+      "id": "team-03",
+      "name": "Titanes del Rápido",
+      "color": "Verde Eléctrico",
+      "captainContact": "Mateo Reyes (+5255741829)",
+      "goalsFor": 31,
+      "createdAt": "2026-06-01T08:20:39.154Z"
+    }
+  ],
+  "players": [
+    {
+      "id": "player-01",
+      "teamId": "team-01",
+      "name": "Adrián Perea",
+      "age": 27,
+      "position": "Defensa (C)",
+      "contact": "+5255392817",
+      "createdAt": "2026-06-01T08:20:39.154Z",
+      "goals": 5
+    },
+    {
+      "id": "player-02",
+      "teamId": "team-01",
+      "name": "Santiago López",
+      "age": 24,
+      "position": "Medio",
+      "contact": "+5255849301",
+      "createdAt": "2026-06-01T08:20:39.154Z",
+      "goals": 3
+    },
+    {
+      "id": "player-03",
+      "teamId": "team-01",
+      "name": "Daniel Ortiz",
+      "age": 26,
+      "position": "Delantero",
+      "contact": "+5255319203",
+      "createdAt": "2026-06-01T08:20:39.154Z",
+      "goals": 12
+    },
+    {
+      "id": "player-04",
+      "teamId": "team-02",
+      "name": "Hugo Sánchez Jr",
+      "age": 23,
+      "position": "Delantero (C)",
+      "contact": "+5255483921",
+      "createdAt": "2026-06-01T08:20:39.154Z",
+      "goals": 15
+    },
+    {
+      "id": "player-05",
+      "teamId": "team-02",
+      "name": "Gerardo Torrado",
+      "age": 29,
+      "position": "Defensa",
+      "contact": "+5255938472",
+      "createdAt": "2026-06-01T08:20:39.154Z",
+      "goals": 2
+    },
+    {
+      "id": "player-06",
+      "teamId": "team-03",
+      "name": "Mateo Reyes",
+      "age": 25,
+      "position": "Medio (C)",
+      "contact": "+5255741829",
+      "createdAt": "2026-06-01T08:20:39.154Z",
+      "goals": 8
+    },
+    {
+      "id": "player-07",
+      "teamId": "team-03",
+      "name": "Esteban Paredes",
+      "age": 28,
+      "position": "Delantero",
+      "contact": "+5255019283",
+      "createdAt": "2026-06-01T08:20:39.154Z",
+      "goals": 18
+    },
+    {
+      "id": "player-08",
+      "teamId": "team-03",
+      "name": "Chuy Corona",
+      "age": 31,
+      "position": "Portero",
+      "contact": "+5255374829",
+      "createdAt": "2026-06-01T08:20:39.154Z",
+      "goals": 0
+    }
+  ],
+  "reviews": [
+    {
+      "id": "rev-01",
+      "fieldId": "cancha-1",
+      "fieldName": "Cancha 1 (Techada Premium)",
+      "userId": "user-01",
+      "userName": "Carlos Mendoza",
+      "userEmail": "carlos@gmail.com",
+      "rating": 5,
+      "comment": "¡Excelente pasto sintético! La iluminación LED es de primer nivel para jugar de noche.",
+      "reply": "Muchas gracias Carlos, nos alegra saber que disfrutaste la experiencia nocturna en Fútbol Rápido Tribol.",
+      "status": "rejected",
+      "reservationId": "res-01",
+      "createdAt": "2026-05-30T08:37:29.242Z"
+    },
+    {
+      "id": "rev-02",
+      "fieldId": "cancha-2",
+      "fieldName": "Cancha 2 (No Techada)",
+      "userId": "user-01",
+      "userName": "Carlos Mendoza",
+      "userEmail": "carlos@gmail.com",
+      "rating": 4,
+      "comment": "Una cancha fantástica para jugar por la tarde. Solo faltan reparar unas redes de la portería.",
+      "status": "approved",
+      "reservationId": "res-02",
+      "createdAt": "2026-05-31T08:37:29.242Z"
+    }
+  ]
+}

@@ -1,0 +1,788 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Camera, Eye, Tv, MessageSquare, Send, Users, Play, Pause, Volume2, VolumeX, Sparkles, Heart, Share2, Film } from 'lucide-react';
+import { Photo, Video } from '../types';
+
+const SIMULATED_CHAT_POOL = [
+  { sender: 'Luis_Tribol', text: '¡Venga Tribol! Se ve increíble hoy el partido.' },
+  { sender: 'Santi_99', text: '¿Cuánto van? Me perdí el primer bloque.' },
+  { sender: 'GoleadorX', text: '¡Ese penal no era árbitro! Jajaja.' },
+  { sender: 'Familia_Silva', text: '¡Vamos Barça! Excelente jugada.' },
+  { sender: 'Dany_B', text: 'Qué buena calidad de transmisión, un abrazo.' },
+  { sender: 'Barca_Fan_Sabatina', text: '¡Golazo de Piña! Qué definición el fin de semana.' },
+  { sender: 'Arbitro_Oficial', text: 'Juego limpio por favor en los comentarios.' },
+  { sender: 'Tabora_Fiel', text: '¡Excelente partido de las chicas!' },
+  { sender: 'Yael_Tribol', text: 'La cancha techada se ve nítida de noche.' },
+  { sender: 'Ixtapaluca_Pro', text: 'Se viene penal... ¡golazo!' },
+  { sender: 'Neto_Galan', text: 'Qué partidazo, metan a García Mágico.' }
+];
+
+export default function GaleriaPage() {
+  const [activeTab, setActiveTab] = useState<'photos' | 'videos'>('photos');
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [photosFilter, setPhotosFilter] = useState<'all' | 'facilities' | 'matches' | 'events'>('all');
+  const [videosFilter, setVideosFilter] = useState<'all' | 'live' | 'highlight' | 'full_match'>('all');
+  const [isLoading, setIsLoading] = useState(false);
+  const [previewPhoto, setPreviewPhoto] = useState<Photo | null>(null);
+
+  // Video Player States
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [chatMessages, setChatMessages] = useState<{ sender: string; text: string; time: string; isUser?: boolean }[]>([
+    { sender: 'Sistema', text: 'Conectando a la señal de Cancha 1 Techada...', time: '12:00' },
+    { sender: 'Moderador', text: 'Bienvenidos a la transmisión oficial de Fútbol Rápido Tribol.', time: '12:01' },
+    { sender: 'Carlos_M', text: '¡Saludos desde Ixtapaluca! Con todo Tribol.', time: '12:02' }
+  ]);
+  const [newMessage, setNewMessage] = useState('');
+  const [likesCount, setLikesCount] = useState(42);
+  const [hasLiked, setHasLiked] = useState(false);
+  const [viewerCount, setViewerCount] = useState(184);
+
+  const videoElementRef = useRef<HTMLVideoElement>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  const prevIsLiveRef = useRef<boolean | undefined>(undefined);
+
+  const [videoError, setVideoError] = useState<string | null>(null);
+
+  const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+    console.error("HTML Video loading error:", e);
+    setVideoError("No ha sido posible establecer conexión con el canal de video. Por favor verifica que el enlace sea correcto, no contenga bloqueos, o intenta de nuevo.");
+  };
+
+  const handleRetryConnection = () => {
+    setVideoError(null);
+    setIsPlaying(true);
+    if (selectedVideo) {
+      setSelectedVideo({ ...selectedVideo });
+    }
+  };
+
+  // Reset error when selected video changes or validate URL formats
+  useEffect(() => {
+    setVideoError(null);
+    if (selectedVideo) {
+      if (!selectedVideo.url) {
+        setVideoError("La transmisión no tiene un enlace configurado en el panel administrativo.");
+      } else if (!selectedVideo.url.startsWith('http://') && !selectedVideo.url.startsWith('https://')) {
+        setVideoError("El enlace del video no tiene un formato web válido (debe iniciar con http:// o https://).");
+      }
+    }
+  }, [selectedVideo?.id, selectedVideo?.url]);
+
+  // Track starts/stops of live transmission in the player chat messages
+  useEffect(() => {
+    if (selectedVideo) {
+      if (prevIsLiveRef.current !== undefined && prevIsLiveRef.current !== selectedVideo.isLive) {
+        const now = new Date();
+        const timeString = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        
+        if (selectedVideo.isLive) {
+          setChatMessages(prev => [
+            ...prev,
+            { sender: 'Sistema', text: '🔴 ¡Estación En Vivo! Los administradores acaban de iniciar la transmisión en tiempo real.', time: timeString }
+          ]);
+          setViewerCount(184);
+        } else {
+          setChatMessages(prev => [
+            ...prev,
+            { sender: 'Sistema', text: '⚪ Transmisión finalizada. El video ahora se reproduce como archivo histórico DVR.', time: timeString }
+          ]);
+          setViewerCount(0);
+        }
+      }
+      prevIsLiveRef.current = selectedVideo.isLive;
+    } else {
+      prevIsLiveRef.current = undefined;
+    }
+  }, [selectedVideo?.isLive, selectedVideo?.id]);
+
+  // Helper to extract YouTube video ID and construct an embed URL
+  const getYouTubeEmbedUrl = (url: string) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length === 11) {
+      const videoId = match[2];
+      // Note: enablejsapi=1 is standard for interaction, loop is enabled by playlist=VIDEO_ID and loop=1
+      return `https://www.youtube.com/embed/${videoId}?autoplay=${isPlaying ? 1 : 0}&mute=${isMuted ? 1 : 0}&loop=1&playlist=${videoId}&enablejsapi=1`;
+    }
+    return null;
+  };
+
+  const fetchGalleryData = async () => {
+    setIsLoading(true);
+    try {
+      const photosRes = await fetch('/api/gallery');
+      if (photosRes.ok) {
+        const photosData = await photosRes.json();
+        setPhotos(photosData);
+      }
+      
+      const videosRes = await fetch('/api/videos');
+      if (videosRes.ok) {
+        const videosData = await videosRes.json();
+        setVideos(videosData);
+        if (videosData.length > 0) {
+          // Set the live stream as the default selected video if available
+          const liveStream = videosData.find((v: Video) => v.isLive) || videosData[0];
+          setSelectedVideo(prev => prev ? (videosData.find((v: Video) => v.id === prev.id) || liveStream) : liveStream);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGalleryData();
+  }, []);
+
+  // Periodic background sync polling to keep videos (live, title, views) updated automatically list with admin changes
+  useEffect(() => {
+    const syncInterval = setInterval(async () => {
+      try {
+        const videosRes = await fetch('/api/videos');
+        if (videosRes.ok) {
+          const videosData: Video[] = await videosRes.json();
+          setVideos(prevVideos => {
+            const changed = prevVideos.length !== videosData.length || 
+              JSON.stringify(prevVideos.map(v => ({ id: v.id, isLive: v.isLive, views: v.views, title: v.title, url: v.url }))) !==
+              JSON.stringify(videosData.map(v => ({ id: v.id, isLive: v.isLive, views: v.views, title: v.title, url: v.url })));
+            
+            return changed ? videosData : prevVideos;
+          });
+
+          if (selectedVideo) {
+            const updatedSelected = videosData.find(v => v.id === selectedVideo.id);
+            if (updatedSelected) {
+              if (updatedSelected.isLive !== selectedVideo.isLive || 
+                  updatedSelected.url !== selectedVideo.url || 
+                  updatedSelected.title !== selectedVideo.title) {
+                setSelectedVideo(updatedSelected);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error keeping videos state in sync:", err);
+      }
+    }, 7000);
+
+    return () => clearInterval(syncInterval);
+  }, [selectedVideo]);
+
+  // Live chat automatic commentary simulator loop
+  useEffect(() => {
+    if (activeTab !== 'videos' || !selectedVideo || !selectedVideo.isLive) return;
+
+    const interval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * SIMULATED_CHAT_POOL.length);
+      const chosen = SIMULATED_CHAT_POOL[randomIndex];
+      const now = new Date();
+      const timeString = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      
+      setChatMessages(prev => [
+        ...prev,
+        { sender: chosen.sender, text: chosen.text, time: timeString }
+      ].slice(-30)); // Keep last 30 messages for performance
+
+      // Randomly change viewer count slightly
+      setViewerCount(prev => Math.max(120, prev + Math.floor(Math.random() * 11) - 5));
+    }, 4500);
+
+    return () => clearInterval(interval);
+  }, [activeTab, selectedVideo]);
+
+  // Keep chat scrolled down as new messages arrive
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages, activeTab]);
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !selectedVideo) return;
+
+    const now = new Date();
+    const timeString = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    
+    setChatMessages(prev => [
+      ...prev,
+      { sender: 'Tú', text: newMessage.trim(), time: timeString, isUser: true }
+    ]);
+    setNewMessage('');
+  };
+
+  const handlePlayPause = () => {
+    if (videoElementRef.current) {
+      if (isPlaying) {
+        videoElementRef.current.pause();
+      } else {
+        videoElementRef.current.play().catch(err => console.log('Auto-play blocked or failed:', err));
+      }
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleMuteUnmute = () => {
+    if (videoElementRef.current) {
+      videoElementRef.current.muted = !isMuted;
+    }
+    setIsMuted(!isMuted);
+  };
+
+  // When clicking on an archived video, switch the main active video player
+  const selectActiveVideoPlayer = (video: Video) => {
+    setVideoError(null);
+    setSelectedVideo(video);
+    setIsPlaying(true);
+    setChatMessages([
+      { sender: 'Sistema', text: `Cargando canal DVR: ${video.title}`, time: 'Ahora' },
+      { sender: 'Moderador', text: 'Chat diferido o repetición del partido.', time: 'Hace un momento' }
+    ]);
+    if (video.isLive) {
+      setViewerCount(184);
+    } else {
+      setViewerCount(0); // 0 active viewer list if it's fully recording
+    }
+    
+    // Increment view count via visual feedback locally
+    video.views += 1;
+    
+    // Auto Scroll to Player
+    document.getElementById('video-center-anchor')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const filteredPhotos = photosFilter === 'all' 
+    ? photos 
+    : photos.filter(p => p.category === photosFilter);
+
+  const filteredVideos = videosFilter === 'all'
+    ? videos
+    : videos.filter(v => v.category === videosFilter);
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+      
+      {/* Visual Header Grid Banner */}
+      <div className="space-y-4 text-center lg:text-left">
+        <div className="inline-flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 rounded-full select-none">
+          <Camera className="w-4 h-4 text-emerald-400" />
+          <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest">Multimedia Oficial Fútbol Rápido Tribol</span>
+        </div>
+        <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white tracking-tight">
+          Galería, Transmisiones & Videos
+        </h2>
+        <p className="text-gray-400 text-sm sm:text-base max-w-2xl leading-relaxed">
+          Explora la galería oficial de retratos del complejo de fútbol rápido o sintoniza transmisiones en vivo y videos destacados de las finales en Ixtapaluca.
+        </p>
+      </div>
+
+      {/* Main Mode Tabs Switch */}
+      <div className="flex border-b border-emerald-950/30 gap-1 sm:gap-2 pb-0.5 overflow-x-auto select-none no-scrollbar">
+        <button
+          onClick={() => setActiveTab('photos')}
+          id="tab-btn-photos"
+          className={`px-5 py-3.5 text-xs sm:text-sm font-bold border-b-2 transition-all whitespace-nowrap flex items-center space-x-2.5 cursor-pointer leading-none ${
+            activeTab === 'photos'
+              ? 'border-emerald-500 text-emerald-400 font-extrabold bg-emerald-500/5'
+              : 'border-transparent text-gray-400 hover:text-white'
+          }`}
+        >
+          <Camera className="w-4.5 h-4.5" />
+          <span>Álbum de Fotos</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('videos')}
+          id="tab-btn-videos"
+          className={`px-5 py-3.5 text-xs sm:text-sm font-bold border-b-2 transition-all whitespace-nowrap flex items-center space-x-2.5 cursor-pointer leading-none ${
+            activeTab === 'videos'
+              ? 'border-emerald-500 text-emerald-400 font-extrabold bg-emerald-500/5'
+              : 'border-transparent text-gray-400 hover:text-white'
+          }`}
+        >
+          <Tv className="w-4.5 h-4.5" />
+          <span>Cámaras En Vivo & Goles</span>
+          <span className="bg-red-500 text-[8px] text-white font-extrabold font-mono px-1.5 py-0.5 rounded-full uppercase scale-90 animate-pulse">
+            En Vivo
+          </span>
+        </button>
+      </div>
+
+      {/* MODE 1: PHOTOS PORTFOLIO */}
+      {activeTab === 'photos' && (
+        <div className="space-y-8 animate-fadeIn">
+          {/* Category Filter Pills */}
+          <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+            <button
+              onClick={() => setPhotosFilter('all')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                photosFilter === 'all' ? 'bg-emerald-500 text-black font-extrabold shadow-[0_0_12px_rgba(16,185,129,0.3)]' : 'text-gray-400 hover:text-white bg-emerald-950/15 border border-zinc-900'
+              }`}
+            >
+              Ver Todo
+            </button>
+            <button
+              onClick={() => setPhotosFilter('facilities')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                photosFilter === 'facilities' ? 'bg-emerald-500 text-black font-extrabold shadow-[0_0_12px_rgba(16,185,129,0.3)]' : 'text-gray-400 hover:text-white bg-emerald-950/15 border border-zinc-900'
+              }`}
+            >
+              Canchas e Instalaciones
+            </button>
+            <button
+              onClick={() => setPhotosFilter('matches')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                photosFilter === 'matches' ? 'bg-emerald-500 text-black font-extrabold shadow-[0_0_12px_rgba(16,185,129,0.3)]' : 'text-gray-400 hover:text-white bg-emerald-950/15 border border-zinc-900'
+              }`}
+            >
+              Partidos en Curso
+            </button>
+            <button
+              onClick={() => setPhotosFilter('events')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                photosFilter === 'events' ? 'bg-emerald-500 text-black font-extrabold shadow-[0_0_12px_rgba(16,185,129,0.3)]' : 'text-gray-400 hover:text-white bg-emerald-950/15 border border-zinc-900'
+              }`}
+            >
+              Torneos y Copa Premiaciones
+            </button>
+          </div>
+
+          {/* Photo Grid */}
+          {isLoading ? (
+            <div className="text-center py-20 text-xs font-mono text-emerald-400 animate-pulse">Cargando catálogo visual...</div>
+          ) : filteredPhotos.length === 0 ? (
+            <div className="text-center py-16 glass-panel rounded-2xl text-gray-400 border border-zinc-900 font-mono text-xs">
+              No hay fotografías registradas en esta sección actualmente.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {filteredPhotos.map((photo) => (
+                <div
+                  key={photo.id}
+                  onClick={() => setPreviewPhoto(photo)}
+                  className="glass-panel overflow-hidden rounded-2xl border border-emerald-950/30 hover:border-emerald-500/25 transition-all duration-300 group cursor-pointer relative shadow-md hover:shadow-lg"
+                  title="Click para ampliar"
+                >
+                  <div className="h-60 overflow-hidden relative">
+                    <img 
+                      src={photo.url} 
+                      alt={photo.caption} 
+                      className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
+                      referrerPolicy="no-referrer"
+                    />
+                    
+                    {/* On hover view badge */}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <div className="bg-emerald-500 text-black rounded-full p-3 font-bold flex items-center justify-center transform scale-90 group-hover:scale-100 transition-transform duration-300 shadow-lg">
+                        <Eye className="w-5 h-5 stroke-[2.5]" />
+                      </div>
+                    </div>
+
+                    <span className="absolute top-3 left-3 bg-black/85 backdrop-blur rounded uppercase font-mono font-bold text-[8px] px-2 py-0.5 text-emerald-400 tracking-wide border border-emerald-500/10">
+                      {photo.category}
+                    </span>
+                  </div>
+
+                  {/* Caption */}
+                  <div className="p-4 bg-zinc-950/40 text-left border-t border-zinc-900">
+                    <p className="text-xs text-gray-300 line-clamp-2 leading-relaxed font-sans font-medium">
+                      {photo.caption}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* MODE 2: VIDEOS Y TRANSMISIONES EN VIVO */}
+      {activeTab === 'videos' && (
+        <div className="space-y-10 animate-fadeIn" id="video-center-anchor">
+          
+          {/* Main Video Streaming Viewport Box */}
+          {selectedVideo ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              {/* VIDEO PLAYER CELL */}
+              <div className="lg:col-span-2 space-y-4">
+                <div className="relative aspect-video rounded-3xl overflow-hidden bg-black border border-emerald-500/15 shadow-2xl group flex flex-col justify-end">
+                  
+                  {/* Dynamic Video Player/Embed Loader */}
+                  {videoError ? (
+                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-zinc-950 p-6 text-center space-y-4 border border-rose-500/10">
+                      <div className="w-16 h-16 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center animate-pulse">
+                        <Tv className="w-8 h-8 text-rose-500" />
+                      </div>
+                      <div className="space-y-1.5 max-w-sm">
+                        <h4 className="font-display font-extrabold text-sm text-white uppercase tracking-wider">Señal No Disponible</h4>
+                        <p className="text-gray-400 text-xs leading-relaxed font-sans">
+                          {videoError}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={handleRetryConnection}
+                          className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-[10px] uppercase tracking-wider transition-all cursor-pointer shadow-lg shadow-emerald-500/10"
+                        >
+                          Reintentar Conexión
+                        </button>
+                        <a
+                          href={selectedVideo.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-white font-extrabold text-[10px] uppercase tracking-wider transition-all cursor-pointer"
+                        >
+                          Abrir Enlace Original
+                        </a>
+                      </div>
+                    </div>
+                  ) : getYouTubeEmbedUrl(selectedVideo.url) ? (
+                    <div className="w-full h-full absolute inset-0">
+                      <iframe
+                        key={selectedVideo.id}
+                        src={getYouTubeEmbedUrl(selectedVideo.url)!}
+                        className="w-full h-full border-0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                        title={selectedVideo.title}
+                      />
+                    </div>
+                  ) : (
+                    <video
+                      ref={videoElementRef}
+                      key={selectedVideo.id}
+                      src={selectedVideo.url}
+                      className="w-full h-full object-cover"
+                      autoPlay={isPlaying}
+                      muted={isMuted}
+                      loop
+                      playsInline
+                      referrerPolicy="no-referrer"
+                      onError={handleVideoError}
+                    />
+                  )}
+
+                  {/* Dark Vignette Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none" />
+
+                  {/* HUD: Left corner badges */}
+                  <div className="absolute top-4 left-4 flex items-center gap-2 select-none">
+                    {selectedVideo.isLive ? (
+                      <span className="bg-red-600 text-[10px] text-white font-extrabold font-mono px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 shadow-md border border-red-500/30">
+                        <span className="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                        En Vivo
+                      </span>
+                    ) : (
+                      <span className="bg-zinc-800 text-[10px] text-gray-200 font-extrabold font-mono px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 border border-zinc-700">
+                        DVR / Histórico
+                      </span>
+                    )}
+
+                    <span className="bg-black/75 backdrop-blur text-[10px] text-emerald-400 font-extrabold font-mono px-2.5 py-1 rounded-full border border-emerald-500/10">
+                      CANCHA 1 TECHADA
+                    </span>
+                  </div>
+
+                  {/* HUD: Right corner indicators */}
+                  <div className="absolute top-4 right-4 flex items-center gap-2 select-none bg-black/60 backdrop-blur px-3 py-1.5 rounded-full border border-zinc-800 text-[10px] text-gray-300 font-mono">
+                    <Users className="w-3.5 h-3.5 text-blue-400 mr-1" />
+                    <span>
+                      {selectedVideo.isLive ? (
+                        <><strong>{viewerCount}</strong> aficionados</>
+                      ) : (
+                        'Diferido'
+                      )}
+                    </span>
+                  </div>
+
+                  {/* CUSTOM PLAYER HUD FOOTER OVERLAY */}
+                  <div className="absolute bottom-0 inset-x-0 p-4 sm:p-6 space-y-3 z-10">
+                    <h3 className="font-display font-extrabold text-sm sm:text-lg text-white leading-tight drop-shadow">
+                      {selectedVideo.title}
+                    </h3>
+
+                    {/* Interactive Playback & Sound Widgets */}
+                    <div className="flex items-center justify-between pointer-events-auto">
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={handlePlayPause}
+                          className="bg-emerald-500 hover:bg-emerald-400 text-black p-3 rounded-full transition-transform hover:scale-105 shadow-md flex items-center justify-center cursor-pointer"
+                          title={isPlaying ? 'Pausar' : 'Reproducir'}
+                        >
+                          {isPlaying ? <Pause className="w-4 h-4 fill-black" /> : <Play className="w-4 h-4 fill-black" />}
+                        </button>
+
+                        <button
+                          onClick={handleMuteUnmute}
+                          className="text-white hover:text-emerald-400 p-2 transition-colors cursor-pointer"
+                          title={isMuted ? 'Activar sonido' : 'Silenciar'}
+                        >
+                          {isMuted ? <VolumeX className="w-5 h-5 text-gray-400" /> : <Volume2 className="w-5 h-5 text-emerald-400 animate-pulse" />}
+                        </button>
+                      </div>
+
+                      <div className="flex items-center space-x-3 text-xs text-gray-400 font-mono">
+                        <button 
+                          onClick={() => {
+                            setLikesCount(prev => hasLiked ? prev - 1 : prev + 1);
+                            setHasLiked(!hasLiked);
+                          }}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full backdrop-blur border text-[10px] sm:text-xs transition-all cursor-pointer ${
+                            hasLiked ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' : 'bg-black/60 text-gray-300 border-zinc-800 hover:text-white'
+                          }`}
+                        >
+                          <Heart className={`w-3.5 h-3.5 ${hasLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+                          <span>{likesCount} Likes</span>
+                        </button>
+
+                        <span className="hidden sm:inline bg-black/60 border border-zinc-850 px-3 py-1.5 rounded-full">
+                          Vistas: {selectedVideo.views}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Banner info text below player */}
+                <div className="glass-panel p-4.5 rounded-2xl border border-zinc-800/80 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between text-left">
+                  <div className="space-y-1">
+                    <span className="bg-emerald-950/40 text-emerald-400 border border-emerald-500/10 px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider">
+                      Señal HD de Altas Prestaciones
+                    </span>
+                    <p className="text-xs text-gray-300 font-medium">Transmitiendo en vivo cortes de partidos, mejores goles sabatinos y partidos de eliminación dominical.</p>
+                  </div>
+                  <div className="bg-zinc-950 border border-zinc-850 px-3.5 py-1.5 rounded-xl font-mono text-[10px] text-gray-400">
+                    Fecha de inicio: <span className="text-white">Junio 1, 2026</span>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* INTERACTIVE COMMUNITY LIVE CHAT COLUMN */}
+              <div className="glass-panel rounded-3xl border border-zinc-800/80 bg-zinc-950/40 overflow-hidden flex flex-col h-[400px] lg:h-auto text-left">
+                
+                {/* Chat Header Widget */}
+                <div className="bg-zinc-950 px-4 py-3 border-b border-zinc-800 flex items-center justify-between shrink-0">
+                  <div className="flex items-center space-x-2">
+                    <MessageSquare className="w-4 h-4 text-emerald-400" />
+                    <span className="text-xs font-display font-bold text-white uppercase tracking-wider">Chat en Vivo Gratuito</span>
+                  </div>
+                  {selectedVideo.isLive ? (
+                    <div className="flex items-center space-x-1.5 text-[9px] bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded border border-emerald-500/20 font-mono">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                      <span>EN VIVO</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-1.5 text-[9px] bg-zinc-850 text-gray-400 px-2.5 py-0.5 rounded border border-zinc-800 font-mono">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                      <span>GRABADO</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Scroller Chat Body */}
+                <div className="flex-grow overflow-y-auto p-4 space-y-3 font-mono text-[11px] h-48 scroll-smooth no-scrollbar">
+                  {chatMessages.map((msg, index) => (
+                    <div 
+                      key={index}
+                      className={`p-2 rounded-xl border max-w-[85%] transition-all animate-fadeIn ${
+                        msg.isUser 
+                          ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-200 ml-auto' 
+                          : 'bg-zinc-900/60 border-zinc-850/60 text-gray-300 mr-auto'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 mb-1 justify-between">
+                        <span className={`font-black tracking-wide ${msg.isUser ? 'text-emerald-400' : 'text-amber-400'}`}>
+                          @{msg.sender}
+                        </span>
+                        <span className="text-[8px] text-gray-500">{msg.time}</span>
+                      </div>
+                      <p className="font-medium font-sans leading-relaxed text-xs break-words">{msg.text}</p>
+                    </div>
+                  ))}
+                  <div ref={chatEndRef} />
+                </div>
+
+                {/* Sub-inputs form */}
+                <form 
+                  onSubmit={handleSendMessage}
+                  className="p-3 bg-zinc-950 border-t border-zinc-800 flex gap-2 shrink-0"
+                >
+                  <input
+                    type="text"
+                    value={newMessage}
+                    onChange={e => setNewMessage(e.target.value)}
+                    placeholder="Escribe tu mensaje en el chat..."
+                    className="flex-grow bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500/50 font-sans"
+                    maxLength={100}
+                  />
+                  <button
+                    type="submit"
+                    className="bg-emerald-500 hover:bg-emerald-400 text-black p-2 rounded-xl transition-all flex items-center justify-center shrink-0 cursor-pointer shadow-md"
+                  >
+                    <Send className="w-3.5 h-3.5 text-black" />
+                  </button>
+                </form>
+
+              </div>
+
+            </div>
+          ) : null}
+
+          {/* Archived Video Grid & Navigation Filters */}
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-4 border-t border-emerald-950/20 pt-8 text-left">
+              <div className="space-y-1 self-start">
+                <h4 className="font-display font-extrabold text-xl text-white flex items-center gap-2">
+                  <Film className="w-5 h-5 text-emerald-400" />
+                  Videoteca de Goles & Resúmenes
+                </h4>
+                <p className="text-xs text-gray-400 font-sans">Busca y reproduce videos históricos, clips de mejores de la fecha o repeticiones completas.</p>
+              </div>
+
+              {/* Video Filters */}
+              <div className="flex gap-1.5 overflow-x-auto self-start sm:self-center w-full sm:w-auto no-scrollbar">
+                <button
+                  onClick={() => setVideosFilter('all')}
+                  className={`px-3 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
+                    videosFilter === 'all'
+                      ? 'bg-emerald-500 text-black font-black'
+                      : 'bg-zinc-900 border border-zinc-800 text-gray-400 hover:text-white'
+                  }`}
+                >
+                  Todos
+                </button>
+                <button
+                  onClick={() => setVideosFilter('live')}
+                  className={`px-3 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
+                    videosFilter === 'live'
+                      ? 'bg-emerald-500 text-black font-black'
+                      : 'bg-zinc-900 border border-zinc-800 text-gray-400 hover:text-white'
+                  }`}
+                >
+                  Canales En Vivo
+                </button>
+                <button
+                  onClick={() => setVideosFilter('highlight')}
+                  className={`px-3 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
+                    videosFilter === 'highlight'
+                      ? 'bg-emerald-500 text-black font-black'
+                      : 'bg-zinc-900 border border-zinc-800 text-gray-400 hover:text-white'
+                  }`}
+                >
+                  Resúmenes Goles
+                </button>
+                <button
+                  onClick={() => setVideosFilter('full_match')}
+                  className={`px-3 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
+                    videosFilter === 'full_match'
+                      ? 'bg-emerald-500 text-black font-black'
+                      : 'bg-zinc-900 border border-zinc-800 text-gray-400 hover:text-white'
+                  }`}
+                >
+                  Partido Completo
+                </button>
+              </div>
+            </div>
+
+            {/* Video List */}
+            {filteredVideos.length === 0 ? (
+              <div className="py-12 text-center text-gray-400 border border-zinc-900 rounded-2xl glass-panel font-mono text-xs">
+                No hay videos en esta categoría.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {filteredVideos.map((video) => {
+                  const isActive = selectedVideo?.id === video.id;
+                  return (
+                    <div
+                      key={video.id}
+                      onClick={() => selectActiveVideoPlayer(video)}
+                      className={`glass-panel overflow-hidden rounded-2xl border transition-all duration-300 cursor-pointer group text-left ${
+                        isActive
+                          ? 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-emerald-500/5'
+                          : 'border-zinc-800/80 hover:border-emerald-500/25 bg-zinc-950/40'
+                      }`}
+                    >
+                      <div className="relative h-44 bg-zinc-900 overflow-hidden">
+                        <img 
+                          src={video.thumbnailUrl} 
+                          alt={video.title}
+                          className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-black/45 flex items-center justify-center">
+                          <div className={`p-3 rounded-full transition-all flex items-center justify-center ${
+                            isActive ? 'bg-emerald-500 text-black' : 'bg-black/60 text-white group-hover:bg-emerald-500 group-hover:text-black'
+                          }`}>
+                            <Play className="w-5 h-5 fill-current ml-0.5" />
+                          </div>
+                        </div>
+
+                        {/* Top banner tag */}
+                        <div className="absolute top-2.5 left-2.5">
+                          {video.isLive ? (
+                            <span className="bg-red-500 text-white text-[8px] font-black uppercase font-mono px-2 py-0.5 rounded tracking-wide border border-red-500/10 animate-pulse">
+                              Transmisión Activa
+                            </span>
+                          ) : (
+                            <span className="bg-black/80 text-gray-400 text-[8px] font-black uppercase font-mono px-2 py-0.5 rounded tracking-wide border border-zinc-800">
+                              {video.category === 'highlight' ? 'Mejores Goles' : 'Replay de 90m'}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Bottom timestamp wrapper */}
+                        <div className="absolute bottom-2 right-2 bg-black/80 text-gray-300 text-[9px] font-mono px-1.5 py-0.5 rounded">
+                          {video.isLive ? 'Varios Ángulos' : 'Repetición'}
+                        </div>
+                      </div>
+
+                      <div className="p-4 space-y-2">
+                        <h5 className="font-sans font-bold text-sm text-white line-clamp-2 leading-snug tracking-tight">
+                          {video.title}
+                        </h5>
+                        <div className="flex justify-between items-center text-[10px] font-mono text-gray-500 pt-1.5 border-t border-zinc-900/45">
+                          <span>{video.views} reproducciones</span>
+                          <span>{new Date(video.uploadedAt).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+        </div>
+      )}
+
+      {/* Lightbox Preview Modal Popup for Photos */}
+      {previewPhoto && (
+        <div
+          onClick={() => setPreviewPhoto(null)}
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur flex items-center justify-center p-4 animate-fadeIn cursor-pointer"
+        >
+          <div className="relative max-w-4xl max-h-[85vh] overflow-hidden text-center space-y-4">
+            <img 
+              src={previewPhoto.url} 
+              alt={previewPhoto.caption} 
+              className="max-w-full max-h-[70vh] rounded-2xl border border-emerald-500/15 object-contain shadow-2xl mx-auto"
+            />
+            <div className="max-w-2xl mx-auto text-center px-4">
+              <span className="text-[10px] text-emerald-400 font-mono font-bold uppercase tracking-widest">{previewPhoto.category}</span>
+              <p className="text-white text-sm sm:text-base mt-1.5 leading-relaxed font-semibold">{previewPhoto.caption}</p>
+              <span className="text-[11px] text-gray-500 font-mono block mt-2">Haz clic en cualquier parte para cerrar</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
