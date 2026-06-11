@@ -82,6 +82,13 @@ export interface Team {
   captainContact: string; // teléfono o contacto del capitán
   goalsFor: number; // goles a favor o puntos en el torneo
   createdAt: string;
+  gamesPlayed?: number;
+  gamesWon?: number;
+  gamesDrawn?: number;
+  gamesLost?: number;
+  goalsAgainst?: number;
+  points?: number;
+  form?: string[]; // e.g., ["G", "E", "P", "G", "G"]
 }
 
 export interface Player {

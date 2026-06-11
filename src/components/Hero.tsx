@@ -77,8 +77,8 @@ export default function Hero({ onRentClick, onExplorePromos }: HeroProps) {
             
             <div className="relative rounded-3xl overflow-hidden border border-emerald-500/20 shadow-[0_0_50px_rgba(16,185,129,0.15)] bg-emerald-950/10">
               <img 
-                src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600" 
-                alt="Complejo Fútbol Rápido" 
+                src="/src/assets/images/FB_IMG_1780559862787.jpg" 
+                alt="Complejo Fútbol Rápido Tribol" 
                 className="w-full h-80 object-cover scale-102 hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/80 to-transparent p-6 space-y-3">

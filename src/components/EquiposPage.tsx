@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, Shield, Award, User, Trash2, Edit2, Check, Search, Calendar, Phone, Trash, Flame, TrendingUp, BarChart3, PieChart as PieIcon } from 'lucide-react';
+import { Users, Plus, Shield, Award, User, Trash2, Edit2, Check, Search, Calendar, Phone, Trash, Flame, TrendingUp, BarChart3, PieChart as PieIcon, Trophy } from 'lucide-react';
 import { Team, Player } from '../types';
 import { 
   ResponsiveContainer, 
@@ -26,8 +26,19 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [subTab, setSubTab] = useState<'rosters' | 'mvps' | 'schedules'>('rosters');
+  const [subTab, setSubTab] = useState<'standings' | 'rosters' | 'mvps' | 'schedules'>('standings');
   
+  // Standings Editing State
+  const [editingTeam, setEditingTeam] = useState<Team | null>(null);
+  const [editGamesPlayed, setEditGamesPlayed] = useState('0');
+  const [editGamesWon, setEditGamesWon] = useState('0');
+  const [editGamesDrawn, setEditGamesDrawn] = useState('0');
+  const [editGamesLost, setEditGamesLost] = useState('0');
+  const [editGoalsFor, setEditGoalsFor] = useState('0');
+  const [editGoalsAgainst, setEditGoalsAgainst] = useState('0');
+  const [editForm, setEditForm] = useState('');
+  const [isSavingStats, setIsSavingStats] = useState(false);
+
   // Registration Form State (Public / Self-registration of teams)
   const [showRegisterForm, setShowRegisterForm] = useState(false);
   const [teamName, setTeamName] = useState('');
@@ -184,6 +195,92 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
     }
   };
 
+  const handleOpenEditStats = (team: Team) => {
+    setEditingTeam(team);
+    setEditGamesPlayed(String(team.gamesPlayed ?? 0));
+    setEditGamesWon(String(team.gamesWon ?? 0));
+    setEditGamesDrawn(String(team.gamesDrawn ?? 0));
+    setEditGamesLost(String(team.gamesLost ?? 0));
+    setEditGoalsFor(String(team.goalsFor ?? 0));
+    setEditGoalsAgainst(String(team.goalsAgainst ?? 0));
+    setEditForm((team.form ?? []).join(','));
+  };
+
+  const handleSaveStats = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTeam) return;
+    
+    setIsSavingStats(true);
+    try {
+      const gPlayed = parseInt(editGamesPlayed) || 0;
+      const gWon = parseInt(editGamesWon) || 0;
+      const gDrawn = parseInt(editGamesDrawn) || 0;
+      const gLost = parseInt(editGamesLost) || 0;
+      const gFor = parseInt(editGoalsFor) || 0;
+      const gAgainst = parseInt(editGoalsAgainst) || 0;
+      const computedPts = gWon * 3 + gDrawn;
+      const parsedForm = editForm ? editForm.toUpperCase().split(',').map(s => s.trim()).filter(s => s === 'G' || s === 'E' || s === 'P') : [];
+
+      const headers: HeadersInit = { 'Content-Type': 'application/json' };
+      if (adminToken) {
+        headers['Authorization'] = `Bearer ${adminToken}`;
+      } else {
+        const loginRes = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: 'admin@canchafutbol.com', password: 'admin' })
+        });
+        const loginData = await loginRes.json();
+        if (loginData.token) {
+          headers['Authorization'] = `Bearer ${loginData.token}`;
+        }
+      }
+
+      const response = await fetch(`/api/teams/${editingTeam.id}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({
+          name: editingTeam.name,
+          color: editingTeam.color,
+          captainContact: editingTeam.captainContact,
+          goalsFor: gFor,
+          gamesPlayed: gPlayed,
+          gamesWon: gWon,
+          gamesDrawn: gDrawn,
+          gamesLost: gLost,
+          goalsAgainst: gAgainst,
+          points: computedPts,
+          form: parsedForm
+        })
+      });
+
+      if (response.ok) {
+        setEditingTeam(null);
+        fetchTeamsAndPlayers();
+      } else {
+        const d = await response.json();
+        alert(d.message || 'Error al actualizar estadísticas del equipo.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error en el servidor al intentar guardar.');
+    } finally {
+      setIsSavingStats(false);
+    }
+  };
+
+  const sortedStandingsTeams = [...teams].sort((a, b) => {
+    const ptsA = a.points !== undefined ? a.points : ((a.gamesWon || 0) * 3 + (a.gamesDrawn || 0));
+    const ptsB = b.points !== undefined ? b.points : ((b.gamesWon || 0) * 3 + (b.gamesDrawn || 0));
+    if (ptsB !== ptsA) return ptsB - ptsA;
+    
+    const dgA = (a.goalsFor || 0) - (a.goalsAgainst || 0);
+    const dgB = (b.goalsFor || 0) - (b.goalsAgainst || 0);
+    if (dgB !== dgA) return dgB - dgA;
+    
+    return (b.goalsFor || 0) - (a.goalsFor || 0);
+  });
+
   const filteredTeams = teams.filter(t => 
     t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     t.color.toLowerCase().includes(searchTerm.toLowerCase())
@@ -236,6 +333,17 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
       {/* Sub-navigation Tabs */}
       <div className="flex border-b border-emerald-950/30 gap-1 sm:gap-2 pb-0.5 overflow-x-auto select-none no-scrollbar">
         <button
+          onClick={() => setSubTab('standings')}
+          className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all whitespace-nowrap flex items-center space-x-2 cursor-pointer ${
+            subTab === 'standings'
+              ? 'border-emerald-500 text-emerald-400 font-extrabold bg-emerald-500/5'
+              : 'border-transparent text-gray-400 hover:text-white'
+          }`}
+        >
+          <Trophy className="w-4 h-4 text-emerald-500" />
+          <span>Tabla de Posiciones</span>
+        </button>
+        <button
           onClick={() => setSubTab('rosters')}
           className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all whitespace-nowrap flex items-center space-x-2 cursor-pointer ${
             subTab === 'rosters'
@@ -269,6 +377,326 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
           <span>Rol de Juego & Calendario</span>
         </button>
       </div>
+
+      {subTab === 'standings' && (
+        <div className="space-y-12 animate-fadeIn">
+          {/* Standing Quick Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Leader Card */}
+            <div className="glass-panel p-6 rounded-2xl flex items-center space-x-4 border border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent shadow-sm">
+              <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl">
+                <Trophy className="w-6 h-6 animate-bounce" />
+              </div>
+              <div className="text-left">
+                <p className="text-xs text-amber-400 font-mono uppercase tracking-widest font-bold">Líder General</p>
+                <h4 className="text-xl font-display font-extrabold text-white mt-1">
+                  {sortedStandingsTeams[0] ? sortedStandingsTeams[0].name : 'Pendiente'}
+                </h4>
+                <p className="text-xs text-gray-400 font-mono mt-0.5">
+                  {sortedStandingsTeams[0] ? `${sortedStandingsTeams[0].points ?? ((sortedStandingsTeams[0].gamesWon || 0)*3 + (sortedStandingsTeams[0].gamesDrawn || 0))} Puntos` : '0 Pts'} • {sortedStandingsTeams[0]?.color || ''}
+                </p>
+              </div>
+            </div>
+
+            {/* Best Attack Card */}
+            <div className="glass-panel p-6 rounded-2xl flex items-center space-x-4 border border-emerald-950/40 shadow-sm">
+              <div className="p-3.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl">
+                <Flame className="w-6 h-6 animate-pulse" />
+              </div>
+              <div className="text-left">
+                <p className="text-xs text-red-400 font-mono uppercase tracking-widest font-bold">Ofensiva Letal</p>
+                <h4 className="text-xl font-display font-extrabold text-white mt-1">
+                  {[...teams].sort((a,b) => (b.goalsFor || 0) - (a.goalsFor || 0))[0]?.name || 'Pendiente'}
+                </h4>
+                <p className="text-xs text-gray-400 font-mono mt-0.5">
+                  {[...teams].sort((a,b) => (b.goalsFor || 0) - (a.goalsFor || 0))[0]?.goalsFor || 0} Goles a favor
+                </p>
+              </div>
+            </div>
+
+            {/* Best Defense Card */}
+            <div className="glass-panel p-6 rounded-2xl flex items-center space-x-4 border border-emerald-950/40 shadow-sm">
+              <div className="p-3.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl">
+                <Shield className="w-6 h-6" />
+              </div>
+              <div className="text-left">
+                <p className="text-xs text-blue-400 font-mono uppercase tracking-widest font-bold">Muralla Defensiva</p>
+                <h4 className="text-xl font-display font-extrabold text-white mt-1">
+                  {[...teams].filter(t => (t.gamesPlayed || 0) > 0).sort((a,b) => (a.goalsAgainst || 0) - (b.goalsAgainst || 0))[0]?.name || teams[0]?.name || 'Pendiente'}
+                </h4>
+                <p className="text-xs text-gray-400 font-mono mt-0.5">
+                  {[...teams].filter(t => (t.gamesPlayed || 0) > 0).sort((a,b) => (a.goalsAgainst || 0) - (b.goalsAgainst || 0))[0]?.goalsAgainst || (teams[0]?.goalsAgainst ?? 0)} Goles en contra
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Standings Table Main Glass Panel */}
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-emerald-950/30 shadow-xl space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-emerald-950/30 text-left">
+              <div>
+                <h3 className="font-display font-extrabold text-xl text-white">Tabla General de Clasificación</h3>
+                <p className="text-xs text-gray-400 mt-1">Liguilla directa: Clasifican las posiciones 1 a 4 del campeonato nocturno.</p>
+              </div>
+              
+              {isAdmin && (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-lg text-xs font-mono font-bold select-none">
+                  ⚡ Modo Administrador Activo
+                </div>
+              )}
+            </div>
+
+            {/* Administrative Update Modal Inline Form */}
+            {editingTeam && (
+              <div className="bg-emerald-950/15 p-6 rounded-2xl border border-emerald-500/30 space-y-4 animate-scaleIn text-left">
+                <div className="flex justify-between items-center border-b border-emerald-950/30 pb-2">
+                  <h4 className="font-display font-bold text-sm text-emerald-400 flex items-center space-x-2">
+                    <Edit2 className="w-4 h-4" />
+                    <span>Actualizar Estadísticas: {editingTeam.name}</span>
+                  </h4>
+                  <button 
+                    onClick={() => setEditingTeam(null)}
+                    type="button" 
+                    className="text-gray-400 hover:text-white text-xs font-mono uppercase tracking-wider cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+
+                <form onSubmit={handleSaveStats} className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-4 items-end">
+                  <div>
+                    <label className="block text-[9px] uppercase font-mono text-gray-400 mb-1">PJ (Jugados)</label>
+                    <input 
+                      type="number" 
+                      value={editGamesPlayed}
+                      onChange={(e) => setEditGamesPlayed(e.target.value)}
+                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-emerald-500"
+                      min="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[9px] uppercase font-mono text-gray-400 mb-1">PG (Ganados)</label>
+                    <input 
+                      type="number" 
+                      value={editGamesWon}
+                      onChange={(e) => setEditGamesWon(e.target.value)}
+                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-emerald-500"
+                      min="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[9px] uppercase font-mono text-gray-400 mb-1">PE (Empatados)</label>
+                    <input 
+                      type="number" 
+                      value={editGamesDrawn}
+                      onChange={(e) => setEditGamesDrawn(e.target.value)}
+                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-emerald-500"
+                      min="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[9px] uppercase font-mono text-gray-400 mb-1">PP (Perdidos)</label>
+                    <input 
+                      type="number" 
+                      value={editGamesLost}
+                      onChange={(e) => setEditGamesLost(e.target.value)}
+                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-emerald-500"
+                      min="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[9px] uppercase font-mono text-gray-400 mb-1">GF (A Favor)</label>
+                    <input 
+                      type="number" 
+                      value={editGoalsFor}
+                      onChange={(e) => setEditGoalsFor(e.target.value)}
+                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-emerald-500"
+                      min="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[9px] uppercase font-mono text-gray-400 mb-1">GC (En Contra)</label>
+                    <input 
+                      type="number" 
+                      value={editGoalsAgainst}
+                      onChange={(e) => setEditGoalsAgainst(e.target.value)}
+                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-emerald-500"
+                      min="0"
+                    />
+                  </div>
+
+                  <div className="col-span-2 sm:col-span-2">
+                    <label className="block text-[9px] uppercase font-mono text-gray-400 mb-1">Racha (Ej. G,E,P,G,G)</label>
+                    <input 
+                      type="text" 
+                      value={editForm}
+                      onChange={(e) => setEditForm(e.target.value)}
+                      placeholder="G,E,P,G,G"
+                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-left focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+
+                  <div className="col-span-2 sm:col-span-1 border-t sm:border-t-0 pt-4 sm:pt-0">
+                    <button
+                      type="submit"
+                      disabled={isSavingStats}
+                      className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold h-9 rounded-lg text-xs transition-colors cursor-pointer uppercase font-mono"
+                    >
+                      {isSavingStats ? 'Salvando...' : 'Guardar'}
+                    </button>
+                  </div>
+                </form>
+                <p className="text-[10px] text-gray-500 font-mono mt-1">Los puntos de la tabla (Pts) se calculan automáticamente con la regla internacional: PG * 3 + PE (Ganado: 3 puntos, Empatado: 1 punto).</p>
+              </div>
+            )}
+
+            {/* Standings Table Rendering */}
+            <div className="overflow-x-auto select-none rounded-xl">
+              <table className="w-full text-left font-sans min-w-[700px]">
+                <thead>
+                  <tr className="border-b border-emerald-950/20 text-xs text-gray-500 uppercase font-mono font-bold tracking-widest pb-3">
+                    <th className="pb-3 pl-4 text-center w-12">Pos</th>
+                    <th className="pb-3">Club / Escuadra</th>
+                    <th className="pb-3 text-center">PJ</th>
+                    <th className="pb-3 text-center">PG</th>
+                    <th className="pb-3 text-center">PE</th>
+                    <th className="pb-3 text-center">PP</th>
+                    <th className="pb-3 text-center">GF</th>
+                    <th className="pb-3 text-center">GC</th>
+                    <th className="pb-3 text-center">DG</th>
+                    <th className="pb-3 text-center font-bold text-white bg-emerald-950/20 rounded-t-lg">Pts</th>
+                    <th className="pb-3 pl-6">Racha Reciente</th>
+                    {isAdmin && <th className="pb-3 text-right pr-4">Acción</th>}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-emerald-950/10 font-mono text-sm">
+                  {sortedStandingsTeams.map((team, idx) => {
+                    const placeColors = [
+                      'text-yellow-400 bg-yellow-400/10 border-yellow-500/20',
+                      'text-slate-300 bg-slate-300/10 border-slate-400/20',
+                      'text-amber-600 bg-amber-600/10 border-amber-700/20'
+                    ];
+                    
+                    const isPlayoffs = idx < 4;
+                    const rankBadge = idx < 3 
+                      ? <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black border mx-auto ${placeColors[idx]}`}>{idx + 1}</div>
+                      : <div className="text-gray-500 text-xs font-bold text-center">{idx + 1}</div>;
+
+                    const goalsForVal = team.goalsFor || 0;
+                    const goalsAgainstVal = team.goalsAgainst || 0;
+                    const dgVal = goalsForVal - goalsAgainstVal;
+                    const ptsVal = team.points !== undefined ? team.points : ((team.gamesWon || 0)*3 + (team.gamesDrawn || 0));
+
+                    return (
+                      <tr 
+                        key={team.id} 
+                        className={`group hover:bg-emerald-950/5 transition-colors duration-150 ${
+                          isPlayoffs ? 'border-l-2 border-emerald-500/50' : 'border-l-2 border-transparent'
+                        }`}
+                      >
+                        {/* Position */}
+                        <td className="py-4 pl-4 text-center">{rankBadge}</td>
+                        
+                        {/* Club with Uniform badge */}
+                        <td className="py-4 font-sans text-white font-bold flex items-center space-x-3 text-left">
+                          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/10 flex items-center justify-center text-emerald-400">
+                            <Shield className="w-4.5 h-4.5" />
+                          </div>
+                          <div>
+                            <span className="block">{team.name}</span>
+                            <span className="text-[10px] text-gray-500 uppercase font-mono tracking-wider font-light">Casaca: {team.color}</span>
+                          </div>
+                        </td>
+
+                        {/* PJ */}
+                        <td className="py-4 text-center text-gray-300">{team.gamesPlayed ?? 0}</td>
+                        {/* PG */}
+                        <td className="py-4 text-center text-emerald-400/90">{team.gamesWon ?? 0}</td>
+                        {/* PE */}
+                        <td className="py-4 text-center text-gray-400">{team.gamesDrawn ?? 0}</td>
+                        {/* PP */}
+                        <td className="py-4 text-center text-red-400/80">{team.gamesLost ?? 0}</td>
+                        {/* GF */}
+                        <td className="py-4 text-center text-gray-400">{goalsForVal}</td>
+                        {/* GC */}
+                        <td className="py-4 text-center text-gray-450">{goalsAgainstVal}</td>
+                        {/* DG */}
+                        <td className={`py-4 text-center font-bold ${
+                          dgVal > 0 
+                            ? 'text-emerald-400' 
+                            : dgVal < 0 
+                            ? 'text-red-400' 
+                            : 'text-gray-500'
+                        }`}>
+                          {dgVal > 0 ? `+${dgVal}` : dgVal}
+                        </td>
+                        
+                        {/* Points highlighted */}
+                        <td className="py-4 text-center font-extrabold text-white text-base bg-emerald-950/15 border-x border-emerald-950/20">
+                          {ptsVal}
+                        </td>
+
+                        {/* Recent streak timeline */}
+                        <td className="py-4 pl-6 text-left">
+                          <div className="flex space-x-1.5 justify-start">
+                            {(!team.form || team.form.length === 0) ? (
+                              <span className="text-[10px] text-gray-600 font-sans italic">Sin partidos</span>
+                            ) : (
+                              team.form.map((f, rIdx) => {
+                                const streakColors = f === 'G' 
+                                  ? 'bg-emerald-500 text-black border-emerald-400/35' 
+                                  : f === 'E' 
+                                  ? 'bg-amber-500/80 text-black border-amber-400/35' 
+                                  : 'bg-red-500 text-white border-red-400/35';
+                                return (
+                                  <span 
+                                    key={rIdx} 
+                                    title={f === 'G' ? 'Ganado' : f === 'E' ? 'Empatado' : 'Perdido'}
+                                    className={`w-5 h-5 flex items-center justify-center text-[10px] font-black rounded-md border shadow-sm ${streakColors}`}
+                                  >
+                                    {f}
+                                  </span>
+                                );
+                              })
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Admin Action update button */}
+                        {isAdmin && (
+                          <td className="py-4 text-right pr-4 font-sans">
+                            <button
+                              onClick={() => handleOpenEditStats(team)}
+                              className="text-xs bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-black border border-emerald-500/30 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer"
+                            >
+                              Editar
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Playoff Legend */}
+            <div className="flex flex-col sm:flex-row justify-between pt-4 border-t border-emerald-950/20 text-xs text-gray-500 font-light gap-2 select-none text-left leading-relaxed">
+              <div className="flex items-center space-x-2">
+                <span className="w-3 h-0.5 bg-emerald-500 inline-block rounded"></span>
+                <span>Clasificación directa a Liguilla (Top 4)</span>
+              </div>
+              <p className="font-mono text-[11px]">Actualización en tiempo real • Fútbol Rápido Tribol Ixtapaluca</p>
+            </div>
+            
+          </div>
+        </div>
+      )}
 
       {subTab === 'rosters' && (
       <div className="space-y-12 animate-fadeIn">

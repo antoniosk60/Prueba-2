@@ -14,7 +14,7 @@ export const FIELDS: FieldConfig[] = [
     basePricePerHour: 600, // MXN (Pesos)
     lightPriceSurcharge: 100, // +100 MXN / Hr with lighting
     nightHoursStart: 18, // 6:00 PM onwards requires light
-    imageUrl: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600'
+    imageUrl: '/src/assets/images/FB_IMG_1780559862787.jpg'
   },
   {
     id: 'cancha-2',
@@ -23,7 +23,7 @@ export const FIELDS: FieldConfig[] = [
     basePricePerHour: 450,
     lightPriceSurcharge: 80,
     nightHoursStart: 18,
-    imageUrl: 'https://images.unsplash.com/photo-1510566337590-2fc1f21d0faa?q=80&w=600'
+    imageUrl: '/src/assets/images/FB_IMG_1780559843055.jpg'
   },
   {
     id: 'cancha-3',
@@ -32,7 +32,7 @@ export const FIELDS: FieldConfig[] = [
     basePricePerHour: 350,
     lightPriceSurcharge: 50,
     nightHoursStart: 18,
-    imageUrl: 'https://images.unsplash.com/photo-1579952362864-a623513132a4?q=80&w=600'
+    imageUrl: '/src/assets/images/FB_IMG_1780559839899.jpg'
   }
 ];
 
@@ -46,6 +46,8 @@ export interface DatabaseSchema {
   teams: Team[];
   players: Player[];
   reviews: Review[];
+  fields?: FieldConfig[];
+  dynamicPrices?: any[];
 }
 
 const JWT_SECRET = 'cancha_futbol_secreto_super_seguro_2026';
@@ -210,16 +212,114 @@ const INITIAL_DATA: DatabaseSchema = {
     },
     {
       id: 'photo-1',
-      url: 'https://images.unsplash.com/photo-1544698310-74ea9d1c8258?q=80&w=1000',
+      url: '/src/assets/images/FB_IMG_1780559851100.jpg',
       caption: 'Encuentros intensos bajo iluminación LED profesional',
       category: 'matches',
       uploadedAt: new Date().toISOString()
     },
     {
       id: 'photo-2',
-      url: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1000',
+      url: '/src/assets/images/FB_IMG_1780559862787.jpg',
       caption: 'Cancha Principal Techada con Pasto Sintético Premium',
       category: 'facilities',
+      uploadedAt: new Date().toISOString()
+    },
+    {
+      id: 'photo-fb-1',
+      url: '/src/assets/images/FB_IMG_1780559831023.jpg',
+      caption: 'Acción de alta intensidad en los costados de la cancha',
+      category: 'matches',
+      uploadedAt: new Date().toISOString()
+    },
+    {
+      id: 'photo-fb-2',
+      url: '/src/assets/images/FB_IMG_1780559832822.jpg',
+      caption: 'El silbatazo inicial de nuestra liguilla estelar',
+      category: 'matches',
+      uploadedAt: new Date().toISOString()
+    },
+    {
+      id: 'photo-fb-3',
+      url: '/src/assets/images/FB_IMG_1780559839899.jpg',
+      caption: 'Jugadas de pared en las bandas del complejo Tribol',
+      category: 'matches',
+      uploadedAt: new Date().toISOString()
+    },
+    {
+      id: 'photo-fb-4',
+      url: '/src/assets/images/FB_IMG_1780559843055.jpg',
+      caption: 'Cierre defensivo espectacular bajo la luz de los reflectores',
+      category: 'matches',
+      uploadedAt: new Date().toISOString()
+    },
+    {
+      id: 'photo-fb-5',
+      url: '/src/assets/images/FB_IMG_1780559845797.jpg',
+      caption: 'Control de balón excelso en media cancha',
+      category: 'matches',
+      uploadedAt: new Date().toISOString()
+    },
+    {
+      id: 'photo-fb-6',
+      url: '/src/assets/images/FB_IMG_1780559849041.jpg',
+      caption: 'Disparo potente directo al ángulo',
+      category: 'matches',
+      uploadedAt: new Date().toISOString()
+    },
+    {
+      id: 'photo-fb-7',
+      url: '/src/assets/images/FB_IMG_1780559851100.jpg',
+      caption: 'La adrenalina del fútbol rápido al límite',
+      category: 'matches',
+      uploadedAt: new Date().toISOString()
+    },
+    {
+      id: 'photo-fb-8',
+      url: '/src/assets/images/FB_IMG_1780559854193.jpg',
+      caption: 'Escuadras listas para saltar a la cancha',
+      category: 'events',
+      uploadedAt: new Date().toISOString()
+    },
+    {
+      id: 'photo-fb-9',
+      url: '/src/assets/images/FB_IMG_1780559856795.jpg',
+      caption: 'Público apasionado alentando en la grada Tribol',
+      category: 'facilities',
+      uploadedAt: new Date().toISOString()
+    },
+    {
+      id: 'photo-fb-10',
+      url: '/src/assets/images/FB_IMG_1780559858433.jpg',
+      caption: 'Celebración eufórica tras el gol del campeonato',
+      category: 'events',
+      uploadedAt: new Date().toISOString()
+    },
+    {
+      id: 'photo-fb-11',
+      url: '/src/assets/images/FB_IMG_1780559860027.jpg',
+      caption: 'Entrega del trofeo de Goleador de la Temporada',
+      category: 'events',
+      uploadedAt: new Date().toISOString()
+    },
+    {
+      id: 'photo-fb-12',
+      url: '/src/assets/images/FB_IMG_1780559861640.jpg',
+      caption: 'Los capitanes compartiendo un saludo deportivo',
+      category: 'events',
+      uploadedAt: new Date().toISOString()
+    },
+    {
+      id: 'photo-fb-13',
+      url: '/src/assets/images/FB_IMG_1780559862787.jpg',
+      caption: 'Imponente vista de la cancha techada número 1',
+      category: 'facilities',
+      uploadedAt: new Date().toISOString()
+    },
+    {
+      id: 'photo-fb-14',
+      url: '/src/assets/images/FB_IMG_1780559864592.jpg',
+      caption: 'Noche de fútbol rápido con familias completas en Tribol',
+      category: 'events',
       uploadedAt: new Date().toISOString()
     }
   ],
@@ -230,6 +330,13 @@ const INITIAL_DATA: DatabaseSchema = {
       color: 'Azul y Negro',
       captainContact: 'Adrián Perea (+5255392817)',
       goalsFor: 23,
+      gamesPlayed: 8,
+      gamesWon: 5,
+      gamesDrawn: 1,
+      gamesLost: 2,
+      goalsAgainst: 15,
+      points: 16,
+      form: ['G', 'E', 'P', 'G', 'G'],
       createdAt: new Date().toISOString()
     },
     {
@@ -238,6 +345,13 @@ const INITIAL_DATA: DatabaseSchema = {
       color: 'Negro Mate',
       captainContact: 'Hugo Sánchez (+5255483921)',
       goalsFor: 19,
+      gamesPlayed: 8,
+      gamesWon: 4,
+      gamesDrawn: 0,
+      gamesLost: 4,
+      goalsAgainst: 18,
+      points: 12,
+      form: ['P', 'G', 'P', 'G', 'P'],
       createdAt: new Date().toISOString()
     },
     {
@@ -246,6 +360,13 @@ const INITIAL_DATA: DatabaseSchema = {
       color: 'Verde Eléctrico',
       captainContact: 'Mateo Reyes (+5255741829)',
       goalsFor: 31,
+      gamesPlayed: 8,
+      gamesWon: 6,
+      gamesDrawn: 1,
+      gamesLost: 1,
+      goalsAgainst: 14,
+      points: 19,
+      form: ['G', 'G', 'E', 'G', 'P'],
       createdAt: new Date().toISOString()
     }
   ],
@@ -365,7 +486,7 @@ const INITIAL_DATA: DatabaseSchema = {
       id: 'vid-live-1',
       title: '🔴 TRANSMISIÓN EN VIVO: Final de Copa Femenil - Real Madrid vs España',
       url: 'https://assets.mixkit.co/videos/preview/mixkit-playing-soccer-in-the-rain-40348-large.mp4',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=400',
+      thumbnailUrl: '/src/assets/images/FB_IMG_1780559832822.jpg',
       category: 'live',
       isLive: true,
       views: 184,
@@ -375,7 +496,7 @@ const INITIAL_DATA: DatabaseSchema = {
       id: 'vid-highlight-1',
       title: 'Resumen Semanal: Goles de Antología - Jornada 10 (Sabatina)',
       url: 'https://assets.mixkit.co/videos/preview/mixkit-soccer-player-kicking-the-ball-in-stadium-40356-large.mp4',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1544698310-74ea9d1c8258?q=80&w=400',
+      thumbnailUrl: '/src/assets/images/FB_IMG_1780559849041.jpg',
       category: 'highlight',
       isLive: false,
       views: 742,
@@ -385,13 +506,15 @@ const INITIAL_DATA: DatabaseSchema = {
       id: 'vid-match-2',
       title: 'Partido Completo: Barcelona vs FC San Pancho - Final Nuevos Valores',
       url: 'https://assets.mixkit.co/videos/preview/mixkit-soccer-ball-hitting-the-net-40347-large.mp4',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1510566337590-2fc1f21d0faa?q=80&w=400',
+      thumbnailUrl: '/src/assets/images/FB_IMG_1780559845797.jpg',
       category: 'full_match',
       isLive: false,
       views: 1250,
       uploadedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
     }
-  ]
+  ],
+  fields: FIELDS,
+  dynamicPrices: []
 };
 
 export class DbStore {
@@ -428,6 +551,19 @@ export class DbStore {
           return p;
         });
 
+         const loadedTeams = (parsed.teams || INITIAL_DATA.teams).map((t: any) => {
+           return {
+             ...t,
+             gamesPlayed: t.gamesPlayed !== undefined ? t.gamesPlayed : (t.id === 'team-01' ? 8 : t.id === 'team-02' ? 8 : t.id === 'team-03' ? 8 : 0),
+             gamesWon: t.gamesWon !== undefined ? t.gamesWon : (t.id === 'team-01' ? 5 : t.id === 'team-02' ? 4 : t.id === 'team-03' ? 6 : 0),
+             gamesDrawn: t.gamesDrawn !== undefined ? t.gamesDrawn : (t.id === 'team-01' ? 1 : t.id === 'team-02' ? 0 : t.id === 'team-03' ? 1 : 0),
+             gamesLost: t.gamesLost !== undefined ? t.gamesLost : (t.id === 'team-01' ? 2 : t.id === 'team-02' ? 4 : t.id === 'team-03' ? 1 : 0),
+             goalsAgainst: t.goalsAgainst !== undefined ? t.goalsAgainst : (t.id === 'team-01' ? 15 : t.id === 'team-02' ? 18 : t.id === 'team-03' ? 14 : 0),
+             points: t.points !== undefined ? t.points : (t.id === 'team-01' ? 16 : t.id === 'team-02' ? 12 : t.id === 'team-03' ? 19 : 0),
+             form: t.form !== undefined ? t.form : (t.id === 'team-01' ? ['G', 'E', 'P', 'G', 'G'] : t.id === 'team-02' ? ['P', 'G', 'P', 'G', 'P'] : t.id === 'team-03' ? ['G', 'G', 'E', 'G', 'P'] : [])
+           };
+         });
+
          this.data = {
           users: parsed.users || INITIAL_DATA.users,
           reservations: parsed.reservations || INITIAL_DATA.reservations,
@@ -435,9 +571,11 @@ export class DbStore {
           promotions: parsed.promotions || INITIAL_DATA.promotions,
           photos: parsed.photos || INITIAL_DATA.photos,
           videos: parsed.videos || INITIAL_DATA.videos || [],
-          teams: parsed.teams || INITIAL_DATA.teams,
+          teams: loadedTeams,
           players: loadedPlayers,
-          reviews: parsed.reviews || INITIAL_DATA.reviews
+          reviews: parsed.reviews || INITIAL_DATA.reviews,
+          fields: parsed.fields || INITIAL_DATA.fields,
+          dynamicPrices: parsed.dynamicPrices || INITIAL_DATA.dynamicPrices || []
         };
         this.save();
       } else {
@@ -740,6 +878,54 @@ export class DbStore {
       playersCount,
       recentBookings: this.data.reservations.slice(0, 5)
     };
+  }
+
+  // --- Fields Configurations Operations ---
+  getFields(): FieldConfig[] {
+    if (!this.data.fields) {
+      this.data.fields = [ ...FIELDS ];
+    }
+    return this.data.fields;
+  }
+
+  updateFieldRate(id: string, basePricePerHour: number): FieldConfig | null {
+    const fieldsList = this.getFields();
+    const field = fieldsList.find(f => f.id === id);
+    if (!field) return null;
+    field.basePricePerHour = basePricePerHour;
+    this.save();
+    return field;
+  }
+
+  // --- Dynamic Pricing Rules Operations ---
+  getDynamicPrices(): any[] {
+    if (!this.data.dynamicPrices) {
+      this.data.dynamicPrices = [];
+    }
+    return this.data.dynamicPrices;
+  }
+
+  addDynamicPrice(rule: any): any {
+    if (!this.data.dynamicPrices) {
+      this.data.dynamicPrices = [];
+    }
+    const newRule = {
+      id: rule.id || 'prc-' + Math.random().toString(36).substr(2, 9),
+      ...rule,
+      createdAt: new Date().toISOString()
+    };
+    this.data.dynamicPrices.unshift(newRule);
+    this.save();
+    return newRule;
+  }
+
+  deleteDynamicPrice(id: string): boolean {
+    if (!this.data.dynamicPrices) return false;
+    const index = this.data.dynamicPrices.findIndex(d => d.id === id);
+    if (index === -1) return false;
+    this.data.dynamicPrices.splice(index, 1);
+    this.save();
+    return true;
   }
 }
 

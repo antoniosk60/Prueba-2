@@ -124,7 +124,49 @@ async function startServer() {
 
   // 2. Fields API
   app.get('/api/fields', (req, res) => {
-    res.json(FIELDS);
+    res.json(dbStore.getFields());
+  });
+
+  // 2b. Fields update & Dynamic pricing management API
+  app.put('/api/fields/:id', requireAdmin, (req, res) => {
+    const { id } = req.params;
+    const { basePricePerHour } = req.body;
+    if (basePricePerHour === undefined) {
+      return res.status(400).json({ message: 'El precio base por hora es requerido.' });
+    }
+    const updated = dbStore.updateFieldRate(id, Number(basePricePerHour));
+    if (!updated) {
+      return res.status(404).json({ message: 'Cancha no encontrada.' });
+    }
+    res.json(updated);
+  });
+
+  app.get('/api/admin/prices', requireAdmin, (req, res) => {
+    res.json(dbStore.getDynamicPrices());
+  });
+
+  app.post('/api/admin/prices', requireAdmin, (req, res) => {
+    const { courtId, dayOfWeek, startHour, endHour, rate } = req.body;
+    if (courtId === undefined || rate === undefined) {
+      return res.status(400).json({ message: 'Datos de tarifa dinámica incompletos.' });
+    }
+    const newRule = dbStore.addDynamicPrice({
+      courtId,
+      dayOfWeek: Number(dayOfWeek),
+      startHour: startHour || '18:00',
+      endHour: endHour || '22:00',
+      rate: Number(rate)
+    });
+    res.status(201).json(newRule);
+  });
+
+  app.delete('/api/admin/prices/:id', requireAdmin, (req, res) => {
+    const { id } = req.params;
+    const deleted = dbStore.deleteDynamicPrice(id);
+    if (!deleted) {
+      return res.status(404).json({ message: 'Regla de tarifa dinámica no encontrada.' });
+    }
+    res.json({ success: true, message: 'Regla eliminada con éxito.' });
   });
 
   // 3. Reservations API
@@ -415,7 +457,19 @@ async function startServer() {
   });
 
   app.post('/api/teams', requireAdmin, (req, res) => {
-    const { name, color, captainContact, goalsFor } = req.body;
+    const { 
+      name, 
+      color, 
+      captainContact, 
+      goalsFor,
+      gamesPlayed,
+      gamesWon,
+      gamesDrawn,
+      gamesLost,
+      goalsAgainst,
+      points,
+      form
+    } = req.body;
 
     if (!name || !color || !captainContact) {
       return res.status(400).json({ message: 'Nombre, color y contacto del capitán son obligatorios.' });
@@ -433,6 +487,13 @@ async function startServer() {
       color,
       captainContact,
       goalsFor: Number(goalsFor) || 0,
+      gamesPlayed: Number(gamesPlayed) || 0,
+      gamesWon: Number(gamesWon) || 0,
+      gamesDrawn: Number(gamesDrawn) || 0,
+      gamesLost: Number(gamesLost) || 0,
+      goalsAgainst: Number(goalsAgainst) || 0,
+      points: Number(points) || 0,
+      form: Array.isArray(form) ? form : [],
       createdAt: new Date().toISOString()
     };
 
@@ -442,9 +503,33 @@ async function startServer() {
 
   app.put('/api/teams/:id', requireAdmin, (req, res) => {
     const { id } = req.params;
-    const { name, color, captainContact, goalsFor } = req.body;
+    const { 
+      name, 
+      color, 
+      captainContact, 
+      goalsFor,
+      gamesPlayed,
+      gamesWon,
+      gamesDrawn,
+      gamesLost,
+      goalsAgainst,
+      points,
+      form
+    } = req.body;
 
-    const updated = dbStore.updateTeam(id, { name, color, captainContact, goalsFor: Number(goalsFor) || 0 });
+    const updated = dbStore.updateTeam(id, { 
+      name, 
+      color, 
+      captainContact, 
+      goalsFor: Number(goalsFor) || 0,
+      gamesPlayed: gamesPlayed !== undefined ? Number(gamesPlayed) : undefined,
+      gamesWon: gamesWon !== undefined ? Number(gamesWon) : undefined,
+      gamesDrawn: gamesDrawn !== undefined ? Number(gamesDrawn) : undefined,
+      gamesLost: gamesLost !== undefined ? Number(gamesLost) : undefined,
+      goalsAgainst: goalsAgainst !== undefined ? Number(goalsAgainst) : undefined,
+      points: points !== undefined ? Number(points) : undefined,
+      form: Array.isArray(form) ? form : undefined
+    });
     if (!updated) {
       return res.status(404).json({ message: 'Equipo no encontrado.' });
     }

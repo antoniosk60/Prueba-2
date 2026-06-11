@@ -313,17 +313,115 @@
     },
     {
       "id": "photo-1",
-      "url": "https://images.unsplash.com/photo-1544698310-74ea9d1c8258?q=80&w=1000",
+      "url": "/src/assets/images/FB_IMG_1780559851100.jpg",
       "caption": "Encuentros intensos bajo iluminación LED profesional",
       "category": "matches",
       "uploadedAt": "2026-06-01T08:20:39.153Z"
     },
     {
       "id": "photo-2",
-      "url": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1000",
+      "url": "/src/assets/images/FB_IMG_1780559862787.jpg",
       "caption": "Cancha Principal Techada con Pasto Sintético Premium",
       "category": "facilities",
       "uploadedAt": "2026-06-01T08:20:39.153Z"
+    },
+    {
+      "id": "photo-fb-1",
+      "url": "/src/assets/images/FB_IMG_1780559831023.jpg",
+      "caption": "Acción de alta intensidad en los costados de la cancha",
+      "category": "matches",
+      "uploadedAt": "2026-06-04T08:00:00.000Z"
+    },
+    {
+      "id": "photo-fb-2",
+      "url": "/src/assets/images/FB_IMG_1780559832822.jpg",
+      "caption": "El silbatazo inicial de nuestra liguilla estelar",
+      "category": "matches",
+      "uploadedAt": "2026-06-04T08:00:00.000Z"
+    },
+    {
+      "id": "photo-fb-3",
+      "url": "/src/assets/images/FB_IMG_1780559839899.jpg",
+      "caption": "Jugadas de pared en las bandas del complejo Tribol",
+      "category": "matches",
+      "uploadedAt": "2026-06-04T08:00:00.000Z"
+    },
+    {
+      "id": "photo-fb-4",
+      "url": "/src/assets/images/FB_IMG_1780559843055.jpg",
+      "caption": "Cierre defensivo espectacular bajo la luz de los reflectores",
+      "category": "matches",
+      "uploadedAt": "2026-06-04T08:00:00.000Z"
+    },
+    {
+      "id": "photo-fb-5",
+      "url": "/src/assets/images/FB_IMG_1780559845797.jpg",
+      "caption": "Control de balón excelso en media cancha",
+      "category": "matches",
+      "uploadedAt": "2026-06-04T08:00:00.000Z"
+    },
+    {
+      "id": "photo-fb-6",
+      "url": "/src/assets/images/FB_IMG_1780559849041.jpg",
+      "caption": "Disparo potente directo al ángulo",
+      "category": "matches",
+      "uploadedAt": "2026-06-04T08:00:00.000Z"
+    },
+    {
+      "id": "photo-fb-7",
+      "url": "/src/assets/images/FB_IMG_1780559851100.jpg",
+      "caption": "La adrenalina del fútbol rápido al límite",
+      "category": "matches",
+      "uploadedAt": "2026-06-04T08:00:00.000Z"
+    },
+    {
+      "id": "photo-fb-8",
+      "url": "/src/assets/images/FB_IMG_1780559854193.jpg",
+      "caption": "Escuadras listas para saltar a la cancha",
+      "category": "events",
+      "uploadedAt": "2026-06-04T08:00:00.000Z"
+    },
+    {
+      "id": "photo-fb-9",
+      "url": "/src/assets/images/FB_IMG_1780559856795.jpg",
+      "caption": "Público apasionado alentando en la grada Tribol",
+      "category": "facilities",
+      "uploadedAt": "2026-06-04T08:00:00.000Z"
+    },
+    {
+      "id": "photo-fb-10",
+      "url": "/src/assets/images/FB_IMG_1780559858433.jpg",
+      "caption": "Celebración eufórica tras el gol del campeonato",
+      "category": "events",
+      "uploadedAt": "2026-06-04T08:00:00.000Z"
+    },
+    {
+      "id": "photo-fb-11",
+      "url": "/src/assets/images/FB_IMG_1780559860027.jpg",
+      "caption": "Entrega del trofeo de Goleador de la Temporada",
+      "category": "events",
+      "uploadedAt": "2026-06-04T08:00:00.000Z"
+    },
+    {
+      "id": "photo-fb-12",
+      "url": "/src/assets/images/FB_IMG_1780559861640.jpg",
+      "caption": "Los capitanes compartiendo un saludo deportivo",
+      "category": "events",
+      "uploadedAt": "2026-06-04T08:00:00.000Z"
+    },
+    {
+      "id": "photo-fb-13",
+      "url": "/src/assets/images/FB_IMG_1780559862787.jpg",
+      "caption": "Imponente vista de la cancha techada número 1",
+      "category": "facilities",
+      "uploadedAt": "2026-06-04T08:00:00.000Z"
+    },
+    {
+      "id": "photo-fb-14",
+      "url": "/src/assets/images/FB_IMG_1780559864592.jpg",
+      "caption": "Noche de fútbol rápido con familias completas en Tribol",
+      "category": "events",
+      "uploadedAt": "2026-06-04T08:00:00.000Z"
     }
   ],
   "videos": [
@@ -331,7 +429,7 @@
       "id": "vid-live-1",
       "title": "🔴 TRANSMISIÓN EN VIVO: Final de Copa Femenil - Real Madrid vs España",
       "url": "https://assets.mixkit.co/videos/preview/mixkit-playing-soccer-in-the-rain-40348-large.mp4",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=400",
+      "thumbnailUrl": "/src/assets/images/FB_IMG_1780559832822.jpg",
       "category": "live",
       "isLive": true,
       "views": 184,
@@ -341,7 +439,7 @@
       "id": "vid-highlight-1",
       "title": "Resumen Semanal: Goles de Antología - Jornada 10 (Sabatina)",
       "url": "https://assets.mixkit.co/videos/preview/mixkit-soccer-player-kicking-the-ball-in-stadium-40356-large.mp4",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1544698310-74ea9d1c8258?q=80&w=400",
+      "thumbnailUrl": "/src/assets/images/FB_IMG_1780559849041.jpg",
       "category": "highlight",
       "isLive": false,
       "views": 742,
@@ -351,7 +449,7 @@
       "id": "vid-match-2",
       "title": "Partido Completo: Barcelona vs FC San Pancho - Final Nuevos Valores",
       "url": "https://assets.mixkit.co/videos/preview/mixkit-soccer-ball-hitting-the-net-40347-large.mp4",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1510566337590-2fc1f21d0faa?q=80&w=400",
+      "thumbnailUrl": "/src/assets/images/FB_IMG_1780559845797.jpg",
       "category": "full_match",
       "isLive": false,
       "views": 1250,
