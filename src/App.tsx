@@ -8,6 +8,7 @@ import GaleriaPage from './components/GaleriaPage';
 import ContactoPage from './components/ContactoPage';
 import EquiposPage from './components/EquiposPage';
 import AdminPanel from './components/AdminPanel';
+import AliadosSection from './components/AliadosSection';
 import { FieldConfig, User } from './types';
 import { Shield, Sparkles, Phone, MessageSquare, Award } from 'lucide-react';
 
@@ -122,6 +123,9 @@ export default function App() {
           <AdminPanel token={adminToken} onLogout={handleLogout} />
         )}
       </main>
+
+      {/* Corporate Alliances & Sponsors list */}
+      <AliadosSection onContactClick={() => setCurrentPage('contacto')} />
 
       {/* Responsive Sports Theme Footer */}
       <footer className="bg-gradient-to-t from-black via-zinc-950 to-[#020403] border-t border-emerald-950/20 pt-16 pb-8 text-left text-xs text-gray-400">
