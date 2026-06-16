@@ -4,6 +4,7 @@ import { createServer as createViteServer } from 'vite';
 import { dbStore, signToken, verifyToken, FIELDS } from './server/dbStore';
 import { Reservation, Payment, Promotion, Photo, Video, User, Team, Player, Review } from './src/types';
 import { sendReservationWhatsApp, generateEntryCode } from './server/twilioService';
+import { sendReservationEmail } from './server/emailService';
 
 
 async function startServer() {
@@ -179,6 +180,9 @@ async function startServer() {
       name,
       email,
       phone,
+      userName,
+      userEmail,
+      userPhone,
       date,
       timeSlot,
       duration,
@@ -188,7 +192,11 @@ async function startServer() {
       totalPrice
     } = req.body;
 
-    if (!name || !email || !phone || !date || !timeSlot || !fieldId || !totalPrice) {
+    const finalName = name || userName;
+    const finalEmail = email || userEmail;
+    const finalPhone = phone || userPhone;
+
+    if (!finalName || !finalEmail || !finalPhone || !date || !timeSlot || !fieldId || !totalPrice) {
       return res.status(400).json({ message: 'Faltan campos obligatorios para completar la reserva.' });
     }
 
@@ -208,13 +216,13 @@ async function startServer() {
     const reservationId = 'res-' + Math.random().toString(36).substr(2, 9);
     
     // Find or create user representing the client
-    let clientUser = dbStore.getUserByEmail(email);
+    let clientUser = dbStore.getUserByEmail(finalEmail);
     if (!clientUser) {
       clientUser = dbStore.addUser({
         id: 'usr-' + Math.random().toString(36).substr(2, 9),
-        name,
-        email,
-        phone,
+        name: finalName,
+        email: finalEmail,
+        phone: finalPhone,
         role: 'user'
       });
     }
@@ -224,19 +232,19 @@ async function startServer() {
     const newReservation: Reservation = {
       id: reservationId,
       userId: clientUser.id,
-      userName: name,
-      userEmail: email,
-      userPhone: phone,
+      userName: finalName,
+      userEmail: finalEmail,
+      userPhone: finalPhone,
       date,
       timeSlot,
-      duration: Number(duration),
+      duration: Number(duration || 1),
       fieldId,
       fieldName: field.name,
       hasLights: !!hasLights,
       extras: extras || { balls: false, bibs: false, referee: false },
       totalPrice: Number(totalPrice),
-      status: 'pending',
-      paymentStatus: 'pending',
+      status: req.body.status || 'pending',
+      paymentStatus: req.body.paymentStatus || 'pending',
       entryCode: generateEntryCode(),
       createdAt: new Date().toISOString()
     };
@@ -248,18 +256,29 @@ async function startServer() {
       console.error('[TWILIO EXCEPTION]: Error sending automated transaction WhatsApp:', err);
     });
 
+    // Send automated email copy asynchronously in the background
+    sendReservationEmail(saved).catch(err => {
+      console.error('[EMAIL EXCEPTION]: Error sending confirmation email copy:', err);
+    });
+
     res.status(201).json(saved);
   });
 
   app.put('/api/reservations/:id', requireAdmin, (req, res) => {
     const { id } = req.params;
-    const { status, paymentStatus } = req.body;
+    const { status, paymentStatus, checkedIn, checkedInAt, advancePaid, historyLogs } = req.body;
 
-    if (!status) {
-      return res.status(400).json({ message: 'ID y estado son requeridos para actualizar.' });
-    }
+    const extraData: any = {};
+    if (checkedIn !== undefined) extraData.checkedIn = !!checkedIn;
+    if (checkedInAt !== undefined) extraData.checkedInAt = checkedInAt;
+    if (advancePaid !== undefined) extraData.advancePaid = Number(advancePaid);
+    if (historyLogs !== undefined) extraData.historyLogs = historyLogs;
 
-    const updated = dbStore.updateReservationStatus(id, status, paymentStatus);
+    // Default status if not provided remains the reservation's current status
+    const currentRes = dbStore.getReservations().find(r => r.id === id);
+    const resolvedStatus = status || (currentRes ? currentRes.status : 'pending');
+
+    const updated = dbStore.updateReservationStatus(id, resolvedStatus, paymentStatus, extraData);
     if (!updated) {
       return res.status(404).json({ message: 'No se encontró la reserva.' });
     }
@@ -267,6 +286,11 @@ async function startServer() {
     // Send WhatsApp notification of updated reservation status
     sendReservationWhatsApp(updated).catch(err => {
       console.error('[TWILIO EXCEPTION]: Error sending updated WhatsApp notification:', err);
+    });
+
+    // Send email notification of updated reservation status
+    sendReservationEmail(updated).catch(err => {
+      console.error('[EMAIL EXCEPTION]: Error sending updated email notification:', err);
     });
 
     res.json(updated);
@@ -303,11 +327,14 @@ async function startServer() {
     const savedPayment = dbStore.addPayment(newPayment);
 
     // After adding the payment, the reservation is confirmed/paid automatically.
-    // Fetch the updated reservation from the dbStore and send a WhatsApp confirmation.
+    // Fetch the updated reservation from the dbStore and send a WhatsApp and Email confirmation.
     const resObj = dbStore.getReservations().find(r => r.id === savedPayment.reservationId);
     if (resObj) {
       sendReservationWhatsApp(resObj).catch(err => {
         console.error('[TWILIO EXCEPTION]: Error sending payment confirmation WhatsApp:', err);
+      });
+      sendReservationEmail(resObj).catch(err => {
+        console.error('[EMAIL EXCEPTION]: Error sending payment confirmation Email:', err);
       });
     }
 
@@ -566,6 +593,9 @@ async function startServer() {
       position,
       contact: contact || '',
       goals: Number(goals) || 0,
+      yellowCards: 0,
+      redCards: 0,
+      bannedGames: 0,
       createdAt: new Date().toISOString()
     };
 
@@ -575,9 +605,19 @@ async function startServer() {
 
   app.put('/api/players/:id', requireAdmin, (req, res) => {
     const { id } = req.params;
-    const { teamId, name, age, position, contact, goals } = req.body;
+    const { teamId, name, age, position, contact, goals, yellowCards, redCards, bannedGames } = req.body;
 
-    const updated = dbStore.updatePlayer(id, { teamId, name, age: Number(age), position, contact, goals: Number(goals) || 0 });
+    const updated = dbStore.updatePlayer(id, { 
+      teamId, 
+      name, 
+      age: Number(age), 
+      position, 
+      contact, 
+      goals: Number(goals) || 0,
+      yellowCards: yellowCards !== undefined ? Number(yellowCards) : undefined,
+      redCards: redCards !== undefined ? Number(redCards) : undefined,
+      bannedGames: bannedGames !== undefined ? Number(bannedGames) : undefined
+    });
     if (!updated) {
       return res.status(404).json({ message: 'Jugador no encontrado.' });
     }

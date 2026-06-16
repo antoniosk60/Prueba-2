@@ -2,8 +2,37 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { User, Reservation, Payment, Promotion, Photo, Video, FieldConfig, Team, Player, AppStats, Review } from '../src/types';
+import { db, auth, authenticateServer } from './firebase';
+import { doc, setDoc, deleteDoc, getDocs, collection } from 'firebase/firestore';
 
 const DB_FILE = path.join(process.cwd(), 'database_state.json');
+
+export enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: null,
+      email: null,
+      emailVerified: null,
+      isAnonymous: null,
+      tenantId: null,
+      providerInfo: []
+    },
+    operationType,
+    path
+  };
+  console.error('[FIRESTORE EXCEPTION ERROR]:', JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
 
 // Pre-configured Field Prices and Configs
 export const FIELDS: FieldConfig[] = [
@@ -523,6 +552,118 @@ export class DbStore {
   constructor() {
     this.data = { ...INITIAL_DATA };
     this.load();
+    // Start server, authenticate with Firebase Auth, then synchronize with Firestore
+    this.initializeAndSync().catch(err => {
+      console.error('[FIRESTORE INITIALIZATION EXCEPTION]:', err);
+    });
+  }
+
+  async initializeAndSync() {
+    try {
+      await authenticateServer();
+    } catch (err) {
+      console.error('[FIRESTORE INITIAL AUTH WARNING]: Failed to authenticate server with Firebase Auth. Operating locally or with guest access:', err);
+    }
+    await this.syncWithFirestore();
+  }
+
+  async syncWithFirestore() {
+    console.log('[FIRESTORE] Synchronizing with cloud database...');
+    const collections = [
+      'users', 'reservations', 'payments', 'promotions', 'photos',
+      'videos', 'teams', 'players', 'reviews', 'fields', 'dynamicPrices'
+    ];
+
+    let hasCloudData = false;
+
+    for (const colName of collections) {
+      try {
+        const querySnapshot = await getDocs(collection(db, colName));
+        if (!querySnapshot.empty) {
+          hasCloudData = true;
+          const docsList: any[] = [];
+          querySnapshot.forEach(docSnap => {
+            docsList.push({ id: docSnap.id, ...docSnap.data() });
+          });
+          
+          console.log(`[FIRESTORE] Resolved ${docsList.length} documents for collection "${colName}"`);
+          
+          if (colName === 'users') this.data.users = docsList;
+          else if (colName === 'reservations') this.data.reservations = docsList;
+          else if (colName === 'payments') this.data.payments = docsList;
+          else if (colName === 'promotions') this.data.promotions = docsList;
+          else if (colName === 'photos') this.data.photos = docsList;
+          else if (colName === 'videos') this.data.videos = docsList;
+          else if (colName === 'teams') this.data.teams = docsList;
+          else if (colName === 'players') this.data.players = docsList;
+          else if (colName === 'reviews') this.data.reviews = docsList;
+          else if (colName === 'fields') this.data.fields = docsList;
+          else if (colName === 'dynamicPrices') this.data.dynamicPrices = docsList;
+        }
+      } catch (err) {
+        console.error(`[FIRESTORE SYNC ERROR] Failed to load "${colName}":`, err);
+      }
+    }
+
+    if (!hasCloudData) {
+      console.log('[FIRESTORE] Cloud database is empty. Seeding with INITIAL_DATA...');
+      await this.seedCloudDatabase();
+    } else {
+      this.save();
+      console.log('[FIRESTORE SUCCESS]: Cached cloud database locally on disk.');
+    }
+  }
+
+  async seedCloudDatabase() {
+    const seedPairs = [
+      { key: 'users', list: this.data.users },
+      { key: 'reservations', list: this.data.reservations },
+      { key: 'payments', list: this.data.payments },
+      { key: 'promotions', list: this.data.promotions },
+      { key: 'photos', list: this.data.photos },
+      { key: 'videos', list: this.data.videos || [] },
+      { key: 'teams', list: this.data.teams },
+      { key: 'players', list: this.data.players },
+      { key: 'reviews', list: this.data.reviews },
+      { key: 'fields', list: this.getFields() },
+      { key: 'dynamicPrices', list: this.getDynamicPrices() }
+    ];
+
+    for (const pair of seedPairs) {
+      for (const item of pair.list) {
+        try {
+          const docRef = doc(db, pair.key, item.id);
+          const { id, ...dataToSave } = item;
+          await setDoc(docRef, dataToSave);
+        } catch (err) {
+          console.error(`[FIRESTORE SEED EXCEPTION] Error seeding item ${item.id} to col "${pair.key}":`, err);
+        }
+      }
+      console.log(`[FIRESTORE SEEDED] Col "${pair.key}" seeded successfully.`);
+    }
+  }
+
+  async saveToCloud(collectionName: string, documentId: string, item: any) {
+    const path = `${collectionName}/${documentId}`;
+    try {
+      const docRef = doc(db, collectionName, documentId);
+      const dataToSave = { ...item };
+      await setDoc(docRef, dataToSave);
+      console.log(`[FIRESTORE WRITE SUCCESS]: Wrote document to ${path}`);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
+  }
+
+  async deleteFromCloud(collectionName: string, documentId: string) {
+    const path = `${collectionName}/${documentId}`;
+    try {
+      const docRef = doc(db, collectionName, documentId);
+      await deleteDoc(docRef);
+      console.log(`[FIRESTORE DELETE SUCCESS]: Deleted document from ${path}`);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, path);
+    }
   }
 
   private load() {
@@ -604,6 +745,7 @@ export class DbStore {
   addUser(user: User): User {
     this.data.users.push(user);
     this.save();
+    this.saveToCloud('users', user.id, user).catch(err => console.error(err));
     return user;
   }
 
@@ -623,17 +765,22 @@ export class DbStore {
   addReservation(res: Reservation): Reservation {
     this.data.reservations.unshift(res); // Add to beginning
     this.save();
+    this.saveToCloud('reservations', res.id, res).catch(err => console.error(err));
     return res;
   }
 
-  updateReservationStatus(id: string, status: 'confirmed' | 'cancelled', paymentStatus?: 'pending' | 'paid'): Reservation | null {
+  updateReservationStatus(id: string, status: 'confirmed' | 'cancelled', paymentStatus?: 'pending' | 'paid', extraData?: Partial<Reservation>): Reservation | null {
     const res = this.data.reservations.find(r => r.id === id);
     if (!res) return null;
-    res.status = status;
+    if (status) res.status = status;
     if (paymentStatus) {
       res.paymentStatus = paymentStatus;
     }
+    if (extraData) {
+      Object.assign(res, extraData);
+    }
     this.save();
+    this.saveToCloud('reservations', res.id, res).catch(err => console.error(err));
     return res;
   }
 
@@ -642,6 +789,7 @@ export class DbStore {
     if (index === -1) return false;
     this.data.reservations.splice(index, 1);
     this.save();
+    this.deleteFromCloud('reservations', id).catch(err => console.error(err));
     return true;
   }
 
@@ -658,9 +806,11 @@ export class DbStore {
     if (res) {
       res.paymentStatus = 'paid';
       res.status = 'confirmed';
+      this.saveToCloud('reservations', res.id, res).catch(err => console.error(err));
     }
 
     this.save();
+    this.saveToCloud('payments', pay.id, pay).catch(err => console.error(err));
     return pay;
   }
 
@@ -676,6 +826,7 @@ export class DbStore {
   addPromotion(promo: Promotion): Promotion {
     this.data.promotions.push(promo);
     this.save();
+    this.saveToCloud('promotions', promo.id, promo).catch(err => console.error(err));
     return promo;
   }
 
@@ -684,6 +835,7 @@ export class DbStore {
     if (!promo) return null;
     promo.isActive = !promo.isActive;
     this.save();
+    this.saveToCloud('promotions', promo.id, promo).catch(err => console.error(err));
     return promo;
   }
 
@@ -692,6 +844,7 @@ export class DbStore {
     if (index === -1) return false;
     this.data.promotions.splice(index, 1);
     this.save();
+    this.deleteFromCloud('promotions', id).catch(err => console.error(err));
     return true;
   }
 
@@ -703,6 +856,7 @@ export class DbStore {
   addPhoto(photo: Photo): Photo {
     this.data.photos.unshift(photo);
     this.save();
+    this.saveToCloud('photos', photo.id, photo).catch(err => console.error(err));
     return photo;
   }
 
@@ -711,6 +865,7 @@ export class DbStore {
     if (index === -1) return false;
     this.data.photos.splice(index, 1);
     this.save();
+    this.deleteFromCloud('photos', id).catch(err => console.error(err));
     return true;
   }
 
@@ -725,6 +880,7 @@ export class DbStore {
     }
     this.data.videos.unshift(video);
     this.save();
+    this.saveToCloud('videos', video.id, video).catch(err => console.error(err));
     return video;
   }
 
@@ -734,6 +890,7 @@ export class DbStore {
     if (index === -1) return false;
     this.data.videos.splice(index, 1);
     this.save();
+    this.deleteFromCloud('videos', id).catch(err => console.error(err));
     return true;
   }
 
@@ -743,6 +900,7 @@ export class DbStore {
     if (index === -1) return null;
     this.data.videos[index] = { ...this.data.videos[index], ...updated };
     this.save();
+    this.saveToCloud('videos', id, this.data.videos[index]).catch(err => console.error(err));
     return this.data.videos[index];
   }
 
@@ -754,6 +912,7 @@ export class DbStore {
   addTeam(team: Team): Team {
     this.data.teams.unshift(team);
     this.save();
+    this.saveToCloud('teams', team.id, team).catch(err => console.error(err));
     return team;
   }
 
@@ -762,6 +921,7 @@ export class DbStore {
     if (!team) return null;
     Object.assign(team, updatedFields);
     this.save();
+    this.saveToCloud('teams', id, team).catch(err => console.error(err));
     return team;
   }
 
@@ -769,9 +929,16 @@ export class DbStore {
     const index = this.data.teams.findIndex(t => t.id === id);
     if (index === -1) return false;
     this.data.teams.splice(index, 1);
+    this.deleteFromCloud('teams', id).catch(err => console.error(err));
+    
     // Cascade delete players in that team
+    const playersToDelete = this.data.players.filter(p => p.teamId === id);
     this.data.players = this.data.players.filter(p => p.teamId !== id);
     this.save();
+    
+    for (const p of playersToDelete) {
+      this.deleteFromCloud('players', p.id).catch(err => console.error(err));
+    }
     return true;
   }
 
@@ -793,6 +960,7 @@ export class DbStore {
   addPlayer(player: Player): Player {
     this.data.players.push(player);
     this.save();
+    this.saveToCloud('players', player.id, player).catch(err => console.error(err));
     return player;
   }
 
@@ -801,6 +969,7 @@ export class DbStore {
     if (!player) return null;
     Object.assign(player, updatedFields);
     this.save();
+    this.saveToCloud('players', id, player).catch(err => console.error(err));
     return player;
   }
 
@@ -809,6 +978,7 @@ export class DbStore {
     if (index === -1) return false;
     this.data.players.splice(index, 1);
     this.save();
+    this.deleteFromCloud('players', id).catch(err => console.error(err));
     return true;
   }
 
@@ -826,6 +996,7 @@ export class DbStore {
     }
     this.data.reviews.unshift(review);
     this.save();
+    this.saveToCloud('reviews', review.id, review).catch(err => console.error(err));
     return review;
   }
 
@@ -835,6 +1006,7 @@ export class DbStore {
     if (!review) return null;
     review.status = status;
     this.save();
+    this.saveToCloud('reviews', id, review).catch(err => console.error(err));
     return review;
   }
 
@@ -844,6 +1016,7 @@ export class DbStore {
     if (!review) return null;
     review.reply = reply;
     this.save();
+    this.saveToCloud('reviews', id, review).catch(err => console.error(err));
     return review;
   }
 
@@ -853,6 +1026,7 @@ export class DbStore {
     if (index === -1) return false;
     this.data.reviews.splice(index, 1);
     this.save();
+    this.deleteFromCloud('reviews', id).catch(err => console.error(err));
     return true;
   }
 
@@ -894,6 +1068,7 @@ export class DbStore {
     if (!field) return null;
     field.basePricePerHour = basePricePerHour;
     this.save();
+    this.saveToCloud('fields', id, field).catch(err => console.error(err));
     return field;
   }
 
@@ -916,6 +1091,7 @@ export class DbStore {
     };
     this.data.dynamicPrices.unshift(newRule);
     this.save();
+    this.saveToCloud('dynamicPrices', newRule.id, newRule).catch(err => console.error(err));
     return newRule;
   }
 
@@ -925,6 +1101,7 @@ export class DbStore {
     if (index === -1) return false;
     this.data.dynamicPrices.splice(index, 1);
     this.save();
+    this.deleteFromCloud('dynamicPrices', id).catch(err => console.error(err));
     return true;
   }
 }

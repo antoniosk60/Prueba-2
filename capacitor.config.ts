@@ -1,0 +1,13 @@
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.futbolrapidotribol.admin',
+  appName: 'Futbol Rapido Tribol Admin',
+  webDir: 'dist',
+  server: {
+    url: 'https://ais-dev-trmfkkvl4di76jnrnkwfg6-270141958746.us-west2.run.app',
+    cleartext: true
+  }
+};
+
+export default config;

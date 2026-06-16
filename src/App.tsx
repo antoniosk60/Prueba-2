@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import InicioPage from './components/InicioPage';
@@ -10,7 +10,8 @@ import EquiposPage from './components/EquiposPage';
 import AdminPanel from './components/AdminPanel';
 import AliadosSection from './components/AliadosSection';
 import { FieldConfig, User } from './types';
-import { Shield, Sparkles, Phone, MessageSquare, Award } from 'lucide-react';
+import { Shield, Sparkles, Phone, MessageSquare, Award, ArrowLeft, LogOut } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<string>('inicio');
@@ -18,6 +19,51 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminToken, setAdminToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+
+  // Android View controls for simulator and Capacitor native wrappers
+  const [forceAndroidView, setForceAndroidView] = useState(() => {
+    return localStorage.getItem('arena_force_android_view') === 'true';
+  });
+
+  const [androidEmail, setAndroidEmail] = useState('admin@canchafutbol.com');
+  const [androidPassword, setAndroidPassword] = useState('admin');
+  const [androidLoginError, setAndroidLoginError] = useState('');
+  const [androidLoginLoading, setAndroidLoginLoading] = useState(false);
+
+  const isCapacitorNative = Capacitor.isNativePlatform();
+  const isInAndroidView = forceAndroidView || isCapacitorNative;
+
+  const toggleAndroidView = () => {
+    const newValue = !forceAndroidView;
+    setForceAndroidView(newValue);
+    localStorage.setItem('arena_force_android_view', String(newValue));
+  };
+
+  const handleAndroidLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAndroidLoginError('');
+    setAndroidLoginLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: androidEmail, password: androidPassword }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al procesar la solicitud de acceso.');
+      }
+
+      handleLoginSuccess(data.token, data.user);
+    } catch (err: any) {
+      setAndroidLoginError(err.message || 'Ocurrió un error en el servidor al intentar validar accesos.');
+    } finally {
+      setAndroidLoginLoading(false);
+    }
+  };
 
   // Load field credentials on start
   const fetchFields = async () => {
@@ -55,7 +101,7 @@ export default function App() {
     if (isUserAdmin) {
       setCurrentPage('admin'); // Auto redirect to dashboard
     } else {
-      setCurrentPage('reservas'); // Redirect standard users tobooking
+      setCurrentPage('reservas'); // Redirect standard users to booking
     }
   };
 
@@ -68,9 +114,161 @@ export default function App() {
     setCurrentPage('inicio');
   };
 
+  // If in Android view, render the optimized Material-themed Administration frame
+  if (isInAndroidView) {
+    return (
+      <div className="min-h-screen bg-[#020403] text-gray-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-black">
+        
+        {/* Android Native Status Top Bar */}
+        <div className="sticky top-0 z-50 bg-zinc-950 border-b border-emerald-950/40 px-4 py-4 flex items-center justify-between shadow-md">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-9 h-9 rounded-lg overflow-hidden border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.25)] bg-emerald-950/20">
+              <img 
+                src="/src/assets/images/tribol_logo_1780556302100.png" 
+                alt="Fútbol Rápido Tribol Logo" 
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+            <div>
+              <h1 className="text-sm font-extrabold tracking-wider text-white">TRIBOL APP <span className="text-emerald-400 text-[10px] font-mono px-1 py-0.5 rounded bg-emerald-950/50 border border-emerald-500/20 ml-1">ADMIN</span></h1>
+              <div className="flex items-center space-x-1.5 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span className="text-[9px] text-emerald-400 font-mono font-medium tracking-wide uppercase">Realtime Cloud Sync</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            {!isCapacitorNative && (
+              <button
+                onClick={toggleAndroidView}
+                className="bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-[10px] py-1.5 px-3 rounded-lg text-gray-400 hover:text-white transition-all flex items-center space-x-1 cursor-pointer"
+                title="Volver a la vista del sitio web público"
+              >
+                <ArrowLeft className="w-3 h-3" />
+                <span>Sitio Web</span>
+              </button>
+            )}
+            {isAdmin && (
+              <button
+                onClick={handleLogout}
+                className="bg-red-950/30 border border-red-500/20 hover:bg-red-900/40 text-red-400 p-2 rounded-lg transition-all cursor-pointer"
+                title="Cerrar Sesión"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Primary View Area */}
+        <div className="flex-grow">
+          {!isAdmin ? (
+            /* Dedicated Android Lock Login Portal */
+            <div className="max-w-md mx-auto px-4 py-16 flex flex-col justify-center min-h-[80vh]">
+              <div className="text-center mb-8 space-y-3">
+                <div className="w-16 h-16 mx-auto bg-gradient-to-br from-emerald-500 to-teal-400 text-black rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-transform hover:rotate-6 duration-300">
+                  <Shield className="w-8 h-8 font-extrabold" />
+                </div>
+                <h2 className="text-2xl font-extrabold text-white tracking-tight">Acceso Administrativo</h2>
+                <p className="text-xs text-gray-400 max-w-xs mx-auto">
+                  Panel oficial de control de canchas, liguillas y transacciones para Fútbol Rápido Tribol en Ixtapaluca.
+                </p>
+              </div>
+
+              {androidLoginError && (
+                <div className="mb-4 bg-red-950/50 border border-red-500/20 text-red-200 text-xs py-3 px-4 rounded-xl flex items-start space-x-2">
+                  <span className="mt-0.5">⚠️</span>
+                  <span>{androidLoginError}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleAndroidLoginSubmit} className="space-y-4 bg-zinc-950/80 p-6 rounded-2xl border border-emerald-950/35 shadow-xl">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] text-gray-400 font-mono uppercase tracking-wider font-extrabold">Usuario de Control</label>
+                  <input
+                    type="email"
+                    required
+                    value={androidEmail}
+                    onChange={(e) => setAndroidEmail(e.target.value)}
+                    placeholder="ejemplo@canchafutbol.com"
+                    className="w-full bg-[#0a0c0b] border border-zinc-800 rounded-xl px-3.5 py-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all font-mono"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] text-gray-400 font-mono uppercase tracking-wider font-extrabold">Contraseña</label>
+                  <input
+                    type="password"
+                    required
+                    value={androidPassword}
+                    onChange={(e) => setAndroidPassword(e.target.value)}
+                    placeholder="Ingrese su clave"
+                    className="w-full bg-[#0a0c0b] border border-zinc-800 rounded-xl px-3.5 py-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all font-mono"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={androidLoginLoading}
+                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs py-3.5 px-4 rounded-xl transition-all shadow-[0_4px_15px_rgba(16,185,129,0.35)] flex items-center justify-center space-x-2 tracking-wider uppercase cursor-pointer"
+                >
+                  {androidLoginLoading ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                      <span>Verificando...</span>
+                    </>
+                  ) : (
+                    <span>Ingresar al Sistema</span>
+                  )}
+                </button>
+
+                <div className="pt-2 border-t border-zinc-900 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAndroidEmail('admin@canchafutbol.com');
+                      setAndroidPassword('admin');
+                    }}
+                    className="text-[10px] font-mono text-emerald-400 hover:text-emerald-300 font-bold tracking-wide transition-all uppercase cursor-pointer"
+                  >
+                    ⚡ Autocompletar Credenciales
+                  </button>
+                </div>
+              </form>
+
+              {/* Security info */}
+              <div className="mt-8 text-center text-[10px] text-gray-600 font-mono space-y-1">
+                <p>Módulo de Control Android • Versión 1.0.0</p>
+                <p>Firestore Database ID: <span className="text-zinc-500">ai-studio-22548b9b-b157-4d35-8a28-79744d6730b1</span></p>
+              </div>
+            </div>
+          ) : (
+            /* Open AdminPanel directly inside Android container full viewport width */
+            <div className="px-3 py-4 max-w-7xl mx-auto">
+              <AdminPanel token={adminToken} onLogout={handleLogout} />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Standalone multi-platform visitor layout
   return (
     <div className="min-h-screen bg-[#020403] text-gray-100 flex flex-col justify-between selection:bg-emerald-500 selection:text-black">
       
+      {/* Floating preview toggle for testing Android view in web mock */}
+      {!isCapacitorNative && (
+        <button
+          onClick={toggleAndroidView}
+          className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-black font-extrabold text-xs py-3.5 px-5 rounded-full shadow-[0_4px_22px_rgba(16,185,129,0.35)] flex items-center space-x-2 border border-emerald-300/30 transition-transform hover:scale-105 cursor-pointer"
+        >
+          <span>📱 Vista App Android Admin</span>
+        </button>
+      )}
+
       {/* Upper Navigation Header */}
       <Header
         currentPage={currentPage}
@@ -134,7 +332,7 @@ export default function App() {
           {/* Column 1: Identity */}
           <div className="space-y-4">
             <h4 className="font-display font-extrabold text-white text-base flex items-center space-x-2">
-              <span className="text-xl">🍀</span>
+              <span className="text-xl font-normal">🍀</span>
               <span>Fútbol Rápido Tribol</span>
             </h4>
             <p className="text-[11px] font-light leading-relaxed">
@@ -150,10 +348,10 @@ export default function App() {
           <div className="space-y-4">
             <strong className="text-white text-xs uppercase tracking-wider font-semibold font-mono">Contenidos de la Liga</strong>
             <ul className="space-y-2 text-[11px]">
-              <li><button onClick={() => setCurrentPage('inicio')} className="hover:text-amber-400 transition-colors cursor-pointer">Inicio & MVPs</button></li>
-              <li><button onClick={() => setCurrentPage('reservas')} className="hover:text-amber-400 transition-colors cursor-pointer">Renta de Canchas</button></li>
-              <li><button onClick={() => setCurrentPage('promociones')} className="hover:text-amber-400 transition-colors cursor-pointer">Copas y Torneos</button></li>
-              <li><button onClick={() => setCurrentPage('equipos')} className="hover:text-amber-400 transition-colors cursor-pointer">Registro de Escuadras</button></li>
+              <li><button onClick={() => setCurrentPage('inicio')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">Inicio & MVPs</button></li>
+              <li><button onClick={() => setCurrentPage('reservas')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">Renta de Canchas</button></li>
+              <li><button onClick={() => setCurrentPage('promociones')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">Copas y Torneos</button></li>
+              <li><button onClick={() => setCurrentPage('equipos')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">Registro de Escuadras</button></li>
             </ul>
           </div>
 
@@ -211,3 +409,4 @@ export default function App() {
     </div>
   );
 }
+

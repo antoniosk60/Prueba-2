@@ -1,0 +1,236 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Registered and guest users of the football complex platform.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier of the user (uid or custom ID)" },
+        "name": { "type": "string", "description": "Full name of the user" },
+        "email": { "type": "string", "format": "email", "description": "Primary email address" },
+        "phone": { "type": "string", "description": "WhatsApp or mobile contact phone number" },
+        "role": { "type": "string", "enum": ["user", "admin"], "description": "Role access credentials" },
+        "password": { "type": "string", "description": "Plain or hashed password for fallback login" }
+      },
+      "required": ["id", "name", "email", "phone", "role"]
+    },
+    "Field": {
+      "title": "Field",
+      "description": "Configuration and base rates for each quick football field.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier of the field (cancha-1, etc.)" },
+        "name": { "type": "string", "description": "Descriptive name of the field" },
+        "description": { "type": "string", "description": "Detailed features and layout info" },
+        "basePricePerHour": { "type": "number", "description": "Standard price per hour in MXN" },
+        "lightPriceSurcharge": { "type": "number", "description": "Extra cost helper for night light per hour in MXN" },
+        "nightHoursStart": { "type": "number", "description": "Hour when lighting surcharge becomes mandatory (e.g. 18)" },
+        "imageUrl": { "type": "string", "description": "Static image representing the field" }
+      },
+      "required": ["id", "name", "basePricePerHour", "lightPriceSurcharge", "nightHoursStart"]
+    },
+    "Reservation": {
+      "title": "Reservation",
+      "description": "Cancha booking records submitted by users.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique auto-generated reservation ID" },
+        "userId": { "type": "string", "description": "Linked registered user account ID" },
+        "userName": { "type": "string", "description": "Contact name for matches lookups" },
+        "userEmail": { "type": "string", "format": "email", "description": "Email address for notifications" },
+        "userPhone": { "type": "string", "description": "Phone number for automatic WhatsApp confirmations" },
+        "date": { "type": "string", "description": "String representation of target date (YYYY-MM-DD)" },
+        "timeSlot": { "type": "string", "description": "Hour range interval (e.g., 18:00 - 19:00)" },
+        "duration": { "type": "number", "description": "Total hours duration booked" },
+        "fieldId": { "type": "string", "description": "Referenced target quick football field ID" },
+        "fieldName": { "type": "string", "description": "Cached quick football field name label" },
+        "hasLights": { "type": "boolean", "description": "Flags if lighting is needed" },
+        "extras": { "type": "object", "description": "Extra amenities requested like balls, bibs, and referee" },
+        "totalPrice": { "type": "number", "description": "Final computed total price of this booking" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "cancelled"], "description": "General approval status" },
+        "paymentStatus": { "type": "string", "enum": ["pending", "paid"], "description": "Verification of paid transaction hook" },
+        "entryCode": { "type": "string", "description": "Gate access validation code generated on booking" },
+        "createdAt": { "type": "string", "description": "Timestamp ISO string of creation" }
+      },
+      "required": ["id", "userName", "userEmail", "userPhone", "date", "timeSlot", "duration", "fieldId", "fieldName", "totalPrice", "status", "paymentStatus"]
+    },
+    "Payment": {
+      "title": "Payment",
+      "description": "Financial billing transaction records representing paid invoices.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique transaction ID" },
+        "reservationId": { "type": "string", "description": "Associated reservation booking ID" },
+        "amount": { "type": "number", "description": "Total financial amount paid in MXN" },
+        "paymentMethod": { "type": "string", "enum": ["stripe", "paypal", "whatsapp_transfer", "cash"], "description": "Channel used for payment" },
+        "transactionId": { "type": "string", "description": "External payment gateway ledger reference ID" },
+        "status": { "type": "string", "enum": ["pending", "completed", "failed"], "description": "Transaction payment status" },
+        "createdAt": { "type": "string", "description": "Timestamp ISO string of payment" }
+      },
+      "required": ["id", "reservationId", "amount", "paymentMethod", "status", "createdAt"]
+    },
+    "Promotion": {
+      "title": "Promotion",
+      "description": "Promotional campaigns, discounts, and tournament events.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique promotion campaign ID" },
+        "title": { "type": "string", "description": "Campaign title" },
+        "description": { "type": "string", "description": "Extended campaign or event details" },
+        "discountPercentage": { "type": "number", "description": "Value percentage of discount direct application" },
+        "promoCode": { "type": "string", "description": "Uppercase coupon validation string" },
+        "validUntil": { "type": "string", "description": "Final date limit (YYYY-MM-DD)" },
+        "isActive": { "type": "boolean", "description": "Determines availability" },
+        "type": { "type": "string", "enum": ["discount", "tournament", "special"], "description": "Category segment" }
+      },
+      "required": ["id", "title", "description", "discountPercentage", "validUntil", "isActive", "type"]
+    },
+    "Photo": {
+      "title": "Photo",
+      "description": "Media center pictures displaying facilities, matches, and local tournaments.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Identifier of the picture" },
+        "url": { "type": "string", "description": "Complete host URL or relative path" },
+        "caption": { "type": "string", "description": "Display caption explaining the photo action" },
+        "category": { "type": "string", "enum": ["facilities", "matches", "events"], "description": "Category filter" },
+        "uploadedAt": { "type": "string", "description": "Timestamp ISO string" }
+      },
+      "required": ["id", "url", "caption", "category", "uploadedAt"]
+    },
+    "Video": {
+      "title": "Video",
+      "description": "Match stream recordings and active live broadcasts.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Video host reference ID" },
+        "title": { "type": "string", "description": "Playable video overlay heading" },
+        "url": { "type": "string", "description": "Direct source streaming link" },
+        "thumbnailUrl": { "type": "string", "description": "Complementary thumbnail poster image" },
+        "category": { "type": "string", "enum": ["live", "highlight", "full_match"] },
+        "isLive": { "type": "boolean", "description": "Displays red live overlay badge" },
+        "views": { "type": "number", "description": "Hits views counter metrics" },
+        "uploadedAt": { "type": "string", "description": "Timestamp ISO string of transmission" }
+      },
+      "required": ["id", "title", "url", "thumbnailUrl", "category", "isLive", "views", "uploadedAt"]
+    },
+    "Team": {
+      "title": "Team",
+      "description": "Amateur soccer escuadras registered in active leagues.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique team ID reference" },
+        "name": { "type": "string", "description": "Distinctive registration club name" },
+        "color": { "type": "string", "description": "Uniform kit colors (casaca)" },
+        "captainContact": { "type": "string", "description": "Captain user credentials and contact" },
+        "goalsFor": { "type": "number" },
+        "gamesPlayed": { "type": "number" },
+        "gamesWon": { "type": "number" },
+        "gamesDrawn": { "type": "number" },
+        "gamesLost": { "type": "number" },
+        "goalsAgainst": { "type": "number" },
+        "points": { "type": "number" },
+        "form": { "type": "array", "description": "Rrecent history of games (G, E, P)" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "color", "captainContact"]
+    },
+    "Player": {
+      "title": "Player",
+      "description": "Individual athletes enrolled in particular league teams.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique athlete ID" },
+        "teamId": { "type": "string", "description": "Associated team ID reference" },
+        "teamName": { "type": "string", "description": "Cache tag copy of company team name" },
+        "name": { "type": "string", "description": "Full name" },
+        "age": { "type": "number" },
+        "position": { "type": "string", "description": "Positions (Portero, Delantero, etc.)" },
+        "contact": { "type": "string", "description": "Contact info validation" },
+        "goals": { "type": "number", "description": "Individual goal metrics" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "teamId", "name", "age", "position"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Star ratings and written feedback left by users after reservations.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique rating review ID" },
+        "fieldId": { "type": "string", "description": "Targeted cancha ID" },
+        "fieldName": { "type": "string", "description": "Cancha name label copy" },
+        "userId": { "type": "string", "description": "Associated user reviewer ID" },
+        "userName": { "type": "string", "description": "Author name tag" },
+        "userEmail": { "type": "string" },
+        "rating": { "type": "number" },
+        "comment": { "type": "string" },
+        "reply": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "reservationId": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "fieldId", "fieldName", "userId", "userName", "rating", "comment", "status", "createdAt"]
+    },
+    "DynamicPriceRule": {
+      "title": "DynamicPriceRule",
+      "description": "Dynamic pricing rates applied to matches booking schedules based on peak events.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "fieldId": { "type": "string" },
+        "name": { "type": "string" },
+        "multiplier": { "type": "number" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "fieldId", "name", "multiplier", "isActive"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Store profiles of users registered in the system."
+    },
+    "/fields/{fieldId}": {
+      "schema": "Field",
+      "description": "Static specifications and base hourly wages of canchas."
+    },
+    "/reservations/{reservationId}": {
+      "schema": "Reservation",
+      "description": "Live and history field reservations."
+    },
+    "/payments/{paymentId}": {
+      "schema": "Payment",
+      "description": "Successful financial transaction receipts."
+    },
+    "/promotions/{promotionId}": {
+      "schema": "Promotion",
+      "description": "Active promo campaign codes and local tournaments announcements."
+    },
+    "/photos/{photoId}": {
+      "schema": "Photo",
+      "description": "Facilities, tournament and match action images catalog."
+    },
+    "/videos/{videoId}": {
+      "schema": "Video",
+      "description": "Highlights, matches or live stream feeds."
+    },
+    "/teams/{teamId}": {
+      "schema": "Team",
+      "description": "Registered tournament escuadras records."
+    },
+    "/players/{playerId}": {
+      "schema": "Player",
+      "description": "Individual soccer players associated with registered teams."
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Ratings and descriptive opinions posted by users."
+    },
+    "/dynamicPrices/{ruleId}": {
+      "schema": "DynamicPriceRule",
+      "description": "Special dynamic hourly multipliers for peak hours."
+    }
+  }
+}

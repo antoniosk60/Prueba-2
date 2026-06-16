@@ -26,7 +26,13 @@ import {
   ToggleRight,
   ChevronRight,
   ShieldAlert,
-  Edit2
+  Edit2,
+  Lock,
+  Shield,
+  Download,
+  Send,
+  FileSpreadsheet,
+  QrCode
 } from 'lucide-react';
 import { 
   Reservation, 
@@ -36,8 +42,18 @@ import {
   Player, 
   Review, 
   Video, 
-  FieldConfig 
+  FieldConfig,
+  AuditLog
 } from '../types';
+import { 
+  exportReservationsToCSV, 
+  exportFinancesToCSV, 
+  analyzeLowOccupancyHours, 
+  getCapitanesLeaderboard, 
+  generateRoundRobinFixtures, 
+  getInitialAuditLogs,
+  FixtureGame
+} from '../utils/adminHelpers';
 
 interface AdminPanelProps {
   token: string | null;
@@ -45,6 +61,76 @@ interface AdminPanelProps {
 }
 
 export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
+  // --- CLIENT ROLE-BASED ACCESS CONTROL (RBAC) ---
+  const [adminRole, setAdminRole] = useState<'owner' | 'receptionist' | 'moderator'>('owner');
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+
+  // --- RESERVATION INTERACTIVE VIEW MODE & MOVING STATES ---
+  const [reservationViewMode, setReservationViewMode] = useState<'table' | 'calendar'>('table');
+  const [calendarTargetDate, setCalendarTargetDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [movingReservationId, setMovingReservationId] = useState<string | null>(null);
+
+  // --- QUICK RESERVATION POP OVER FORM STATES ---
+  const [quickFieldId, setQuickFieldId] = useState<string>('cancha-1');
+  const [quickTimeSlot, setQuickTimeSlot] = useState<string>('18:00 - 19:00');
+  const [quickDate, setQuickDate] = useState<string>('');
+  const [quickName, setQuickName] = useState<string>('');
+  const [quickPhone, setQuickPhone] = useState<string>('');
+  const [quickEmail, setQuickEmail] = useState<string>('');
+  const [isQuickOpen, setIsQuickOpen] = useState<boolean>(false);
+
+  // --- WHATSAPP PREVIEW SIMULATION STATES ---
+  const [whatsAppPreviewObj, setWhatsAppPreviewObj] = useState<Reservation | null>(null);
+  
+  // --- PARTIAL PAYMENT REGISTRATION POP OVER ---
+  const [payingReservation, setPayingReservation] = useState<Reservation | null>(null);
+  const [abonoAmountInput, setAbonoAmountInput] = useState<string>('200');
+
+  // --- MONTHLY ACCOUNTING EXPORT STATE & HELPERS ---
+  const [selectedExportMonth, setSelectedExportMonth] = useState<string>(() => {
+    const today = new Date();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    return `${today.getFullYear()}-${mm}`;
+  });
+
+  const getAvailableExportMonths = () => {
+    const monthsSet = new Set<string>();
+    const today = new Date();
+    const curMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    monthsSet.add(curMonthStr);
+    
+    reservations.forEach(res => {
+      if (res.date && res.date.length >= 7) {
+        monthsSet.add(res.date.substring(0, 7));
+      }
+    });
+    
+    return Array.from(monthsSet).sort().reverse();
+  };
+
+  const formatYearMonthSpanish = (ym: string) => {
+    const [year, monthStr] = ym.split('-');
+    const months = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    const monthIndex = parseInt(monthStr, 10) - 1;
+    return `${months[monthIndex]} ${year}`;
+  };
+
+  // --- TOURNAMENT SCHEDULE FIXTURES AUTO-GENERATION STATES ---
+  const [fixturesStartDate, setFixturesStartDate] = useState<string>(new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
+  const [fixturesTimeSlotHours, setFixturesTimeSlotHours] = useState<string[]>(['18:00 - 19:00', '19:00 - 20:00', '20:00 - 21:00']);
+  const [generatedFixtures, setGeneratedFixtures] = useState<any[]>([]);
+  const [fixtureStatusMsg, setFixtureStatusMsg] = useState<string>('');
+
+  // --- MINDS BULK PLAYER UPLOAD ROSTER ATTACHMENT ---
+  const [bulkPlayersText, setBulkPlayersText] = useState<string>('');
+  const [bulkStatusMsg, setBulkStatusMsg] = useState<string>('');
+
+  // --- OFFICIAL QR PASS CREDENTIALS PANEL DRAWERS ---
+  const [selectedCredentialPlayer, setSelectedCredentialPlayer] = useState<Player | null>(null);
+
   const [activeTab, setActiveTab] = useState<
     'admin-dashboard' | 
     'admin-reservations' | 
@@ -130,6 +216,17 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
   const [playerFormPosition, setPlayerFormPosition] = useState('Delantero');
   const [playerFormContact, setPlayerFormContact] = useState('');
   const [playerFormTeamId, setPlayerFormTeamId] = useState('');
+
+  // Calendar helper ranges
+  const calendarHours = [
+    '16:00 - 17:00',
+    '17:00 - 18:00',
+    '18:00 - 19:00',
+    '19:00 - 20:00',
+    '20:00 - 21:00',
+    '21:00 - 22:00',
+    '22:00 - 23:00'
+  ];
 
   // WhatsApp Widget simulation
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState(false);
@@ -225,10 +322,60 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
     fetchAllAdminData();
     const todayStr = new Date().toISOString().split('T')[0];
     setPromoUntil(todayStr);
+    setAuditLogs(getInitialAuditLogs());
   }, []);
 
+  const addAuditLog = (actionType: string, description: string) => {
+    const freshLog: AuditLog = {
+      id: 'log-' + Math.random().toString(36).substr(2, 9),
+      timestamp: new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      role: adminRole,
+      adminName: adminRole === 'owner' ? 'Juan Administrador (Dueño)' : adminRole === 'receptionist' ? 'Karla Recepción' : 'Mauricio Moderador',
+      actionType,
+      description
+    };
+    setAuditLogs(prev => [freshLog, ...prev]);
+  };
+
+  const handleQuickCreateBook = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickName || !quickPhone) return;
+    try {
+      const response = await fetch('/api/reservations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          fieldId: quickFieldId,
+          date: quickDate,
+          timeSlot: quickTimeSlot,
+          userName: quickName,
+          userPhone: quickPhone,
+          userEmail: quickEmail || `${quickName.toLowerCase().replace(/\s+/g, '')}@tribol.com`,
+          totalPrice: 400,
+          status: 'confirmed',
+          paymentStatus: 'pending',
+          advancePaid: 0,
+          checkedIn: false
+        })
+      });
+      if (response.ok) {
+        addAuditLog('CREAR_RESERVA_RAPIDA', `Reserva express creada para ${quickName} en slot [${quickTimeSlot}].`);
+        setIsQuickOpen(false);
+        setQuickName('');
+        setQuickPhone('');
+        setQuickEmail('');
+        fetchAllAdminData();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   // Update reservation status and payment status
-  const handleUpdateReservation = async (id: string, status: 'confirmed' | 'cancelled', paymentStatus: 'pending' | 'paid') => {
+  const handleUpdateReservation = async (id: string, status: 'confirmed' | 'cancelled', paymentStatus: 'pending' | 'paid', extraBody?: any) => {
     try {
       const response = await fetch(`/api/reservations/${id}`, {
         method: 'PUT',
@@ -236,9 +383,12 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ status, paymentStatus })
+        body: JSON.stringify({ status, paymentStatus, ...extraBody })
       });
       if (response.ok) {
+        const targetRes = reservations.find(r => r.id === id);
+        const name = targetRes ? targetRes.userName : 'Cliente';
+        addAuditLog('ACTUALIZAR_RESERVA', `Se modificó estado de reserva #${id} (${name}) a [${status}] y pago a [${paymentStatus}].`);
         fetchAllAdminData();
       }
     } catch (err) {
@@ -743,18 +893,51 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
       
       {/* HEADER BAR FOR THE THEME */}
       <header className="border-b border-zinc-900 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <span className="text-xl">🏆</span>
-            <span className="font-extrabold text-white tracking-wider text-sm uppercase">Canchas Fútbol Rápido Tribol</span>
+            <span className="font-extrabold text-white tracking-wider text-sm uppercase">Fútbol Rápido Tribol — Admin</span>
           </div>
-          <button 
-            onClick={onLogout}
-            className="rounded-xl px-3.5 py-1.5 border border-rose-500/10 hover:border-rose-500/30 text-rose-450 hover:bg-rose-950/15 text-xs font-semibold cursor-pointer transition flex items-center gap-1.5"
-          >
-            <LogOut size={13} />
-            <span>Salir</span>
-          </button>
+          
+          <div className="flex flex-wrap items-center gap-3 self-center sm:self-auto">
+            <div className="flex items-center gap-1 bg-zinc-900 border border-zinc-850 p-1 rounded-xl">
+              <span className="text-[9px] text-zinc-500 font-extrabold uppercase px-2 hidden md:inline">Simular Consola:</span>
+              {(['owner', 'receptionist', 'moderator'] as const).map(role => (
+                <button
+                  key={role}
+                  type="button"
+                  onClick={() => {
+                    setAdminRole(role);
+                    const label = role === 'owner' ? 'Dueño' : role === 'receptionist' ? 'Recepcionista' : 'Moderador';
+                    const freshLog = {
+                      id: 'log-' + Math.random().toString(36).substr(2, 9),
+                      timestamp: new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                      role,
+                      adminName: role === 'owner' ? 'Juan Administrador (Dueño)' : role === 'receptionist' ? 'Karla Recepción' : 'Mauricio Moderador',
+                      actionType: 'CAMBIO_ROL',
+                      description: `Accedió con privilegios de simulación de [${label}].`
+                    };
+                    setAuditLogs(prev => [freshLog, ...prev]);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition cursor-pointer ${
+                    adminRole === role 
+                      ? "bg-emerald-500 text-black shadow-md shadow-emerald-500/10 font-black" 
+                      : "text-zinc-500 hover:text-white"
+                  }`}
+                >
+                  {role === 'owner' ? 'Dueño 👑' : role === 'receptionist' ? 'Recepción 🔑' : 'Moderador 👁️'}
+                </button>
+              ))}
+            </div>
+
+            <button 
+              onClick={onLogout}
+              className="rounded-xl px-3.5 py-1.5 border border-rose-500/10 hover:border-rose-500/30 text-rose-450 hover:bg-rose-950/15 text-xs font-bold cursor-pointer transition flex items-center gap-1.5"
+            >
+              <LogOut size={13} />
+              <span>Salir</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -830,6 +1013,25 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
             {!isLoading && !errorStatus && (
               <div className="focus-content-view">
                 
+                {((adminRole === 'receptionist' && activeTab === 'admin-prices') ||
+                  (adminRole === 'moderator' && activeTab !== 'admin-gallery' && activeTab !== 'admin-reviews')) ? (
+                    <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-12 text-center shadow-2xl space-y-4 max-w-xl mx-auto my-12 animate-in fade-in duration-200 text-left">
+                      <div className="h-16 w-16 mx-auto rounded-2xl bg-zinc-900 border border-zinc-800 text-rose-500 flex items-center justify-center animate-pulse">
+                        <Lock size={32} />
+                      </div>
+                      <h2 className="text-xl font-bold text-white uppercase tracking-wider text-center">Acceso Restringido</h2>
+                      <p className="text-xs text-zinc-400 leading-relaxed text-center">
+                        Tu nivel de simulación actual de <strong className="text-emerald-450 uppercase">[{adminRole === 'receptionist' ? 'Recepcionista' : 'Moderador'}]</strong> no tiene autorización para acceder a la pestaña de <strong className="text-white uppercase">[{activeTab.replace('admin-', '')}]</strong>.
+                      </p>
+                      <div className="bg-zinc-900/50 rounded-xl p-4 border border-zinc-850 xs:text-center mt-2">
+                        <p className="text-[11px] text-zinc-500 leading-relaxed">
+                          🛡️ El sistema de roles jerárquicos (RBAC) restringe estas operaciones de caja y configuraciones tácticas. Cambia de rol en la barra superior a <strong className="text-emerald-400">Dueño 👑</strong> para desbloquear todas las propiedades y realizar esta prueba.
+                        </p>
+                      </div>
+                    </div>
+                ) : (
+                  <>
+                
                 {/* 1. VIEW: STATISTICS / DASHBOARD */}
                 {activeTab === 'admin-dashboard' && stats && (
                   <div className="space-y-8 animate-in fade-in duration-200 text-left" id="admin-dashboard-container">
@@ -859,10 +1061,12 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                       <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 flex items-center justify-between shadow-xl">
                         <div className="space-y-1">
                           <span className="text-[10px] uppercase font-black text-zinc-500 tracking-widest block">INGRESOS NETOS</span>
-                          <span className="text-xl sm:text-2xl font-black text-emerald-450 font-mono">${(stats.totalRevenue || stats.totalEarnings || 0).toLocaleString("es-MX")}</span>
+                          <span className="text-xl sm:text-2xl font-black text-emerald-450 font-mono">
+                            {adminRole === 'receptionist' ? '🔒 [Restringido]' : `$${(stats.totalRevenue || stats.totalEarnings || 0).toLocaleString("es-MX")}`}
+                          </span>
                           <span className="text-[10px] text-zinc-500 block font-mono">Pesos Mexicanos (MXN)</span>
                         </div>
-                        <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                        <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-450 flex items-center justify-center">
                           <DollarSign size={20} />
                         </div>
                       </div>
@@ -906,6 +1110,95 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                         </div>
                       </div>
 
+                    </div>
+
+                    {/* Business Intelligence Export Tools Row */}
+                    <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 shadow-md text-left">
+                      <div className="space-y-1">
+                        <h4 className="text-xs font-black uppercase text-emerald-400 tracking-widest flex items-center gap-1.5">
+                          <FileSpreadsheet size={14} /> GESTIÓN CONTABLE Y EXPORTADOR (CSV)
+                        </h4>
+                        <p className="text-[11px] text-zinc-400">Descarga los registros depurados de caja chica y bitácoras de reservas para tu contabilidad en Excel o Google Sheets.</p>
+                      </div>
+                      
+                      {/* Controls Box */}
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full lg:w-auto">
+                        
+                        {/* Month Selector dropdown */}
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[9px] text-zinc-500 uppercase font-mono font-bold">Seleccionar Mes Contable</span>
+                          <div className="flex items-center gap-1.5">
+                            <select
+                              value={selectedExportMonth}
+                              onChange={(e) => setSelectedExportMonth(e.target.value)}
+                              className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded-lg px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer min-w-[140px]"
+                            >
+                              {getAvailableExportMonths().map(ym => (
+                                <option key={ym} value={ym} className="bg-zinc-950 text-white">
+                                  {formatYearMonthSpanish(ym)}
+                                </option>
+                              ))}
+                            </select>
+                            <span className="text-[10px] font-mono font-bold text-zinc-400 bg-zinc-900 border border-zinc-800 px-2 py-2 rounded-lg" title="Reservas encontradas para este período">
+                              {reservations.filter(res => res.date && res.date.startsWith(selectedExportMonth)).length} res
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Export Month Trigger */}
+                        <div className="flex items-end h-full pt-4 sm:pt-0">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const monthlyRes = reservations.filter(res => res.date && res.date.startsWith(selectedExportMonth));
+                              exportReservationsToCSV(monthlyRes, getFieldFriendlyName);
+                              addAuditLog('EXPORTAR_CSV_MES', `Exportación mensual (${formatYearMonthSpanish(selectedExportMonth)}) con ${monthlyRes.length} registros.`);
+                            }}
+                            className="w-full sm:w-auto py-2 px-3.5 bg-emerald-500 hover:bg-emerald-400 text-black text-[11px] font-black uppercase rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg hover:shadow-emerald-500/10 h-[34px]"
+                            title="Exportar reservas del mes seleccionado en formato CSV"
+                          >
+                            <Download size={12} className="stroke-[3]" />
+                            <span>Exportar Mes (CSV)</span>
+                          </button>
+                        </div>
+
+                        <div className="hidden sm:block w-px h-8 bg-zinc-800 mx-1" />
+
+                        {/* General Exports Actions */}
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              exportReservationsToCSV(reservations, getFieldFriendlyName);
+                              addAuditLog('EXPORTAR_CSV', 'Exportación de reservas brutas históricas a formato tabular CSV.');
+                            }}
+                            className="flex-1 py-2 px-3 bg-zinc-900 hover:bg-zinc-850 text-zinc-350 border border-zinc-800 hover:border-zinc-700 text-[10px] font-extrabold uppercase rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer h-[34px]"
+                            title="Exportar base histórica completa de reservas"
+                          >
+                            <Download size={11} />
+                            <span>Historial Completo</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            disabled={adminRole === 'receptionist'}
+                            onClick={() => {
+                              exportFinancesToCSV(reservations);
+                              addAuditLog('EXPORTAR_FINANZAS', 'Se descargó reporte contable mercantil en CSV.');
+                            }}
+                            className={`flex-1 py-2 px-3 text-[10px] font-extrabold uppercase rounded-lg transition-all flex items-center justify-center gap-1.5 h-[34px] ${
+                              adminRole === 'receptionist'
+                                ? "bg-zinc-950 text-zinc-650 cursor-not-allowed border border-zinc-900"
+                                : "bg-zinc-900 hover:bg-zinc-850 text-zinc-350 border border-zinc-800 hover:border-zinc-700 cursor-pointer"
+                            }`}
+                            title="Planilla financiera de auditoría de arqueo de caja"
+                          >
+                            <Download size={11} />
+                            <span>Reporte Caja</span>
+                          </button>
+                        </div>
+
+                      </div>
                     </div>
 
                     {/* Metrics Charts row */}
@@ -968,7 +1261,9 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                   <div className="flex gap-2 items-center text-[10px] font-mono text-zinc-500">
                                     <span>{court.bookingCount} reservas registradas</span>
                                     <span>•</span>
-                                    <span className="text-emerald-400 font-bold">${court.earnings.toLocaleString("es-MX")} MXN</span>
+                                    <span className="text-emerald-400 font-bold">
+                                      {adminRole === 'receptionist' ? '🔒 [Restringido]' : `$${court.earnings.toLocaleString("es-MX")} MXN`}
+                                    </span>
                                   </div>
                                   <div className="w-2/3 bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-zinc-850 mt-1 max-w-xs">
                                     <div 
@@ -979,7 +1274,9 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                 </div>
                                 <div className="bg-zinc-900 border border-zinc-850 px-3 py-2 rounded-xl text-right font-mono text-xs text-zinc-350 shrink-0 self-start md:self-auto">
                                   <span className="text-[9px] uppercase tracking-wider block text-zinc-500">Cobrado</span>
-                                  <strong className="text-emerald-450 font-extrabold text-sm">${court.earnings.toLocaleString("es-MX")}</strong>
+                                  <strong className="text-emerald-450 font-extrabold text-sm">
+                                    {adminRole === 'receptionist' ? '🔒 [Restringido]' : `$${court.earnings.toLocaleString("es-MX")}`}
+                                  </strong>
                                 </div>
                               </div>
                             );
@@ -989,14 +1286,159 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
 
                     </div>
 
-                    {/* Operational system notes */}
-                    <div className="bg-zinc-950 border border-emerald-500/10 rounded-2xl p-5 flex gap-3 text-left shadow-lg">
-                      <ShieldAlert className="text-emerald-500 shrink-0 mt-0.5" size={18} />
-                      <div className="space-y-1 text-xs">
-                        <span className="font-bold text-white">⚙️ Rutina de Alarmas de Partidos disputados</span>
-                        <p className="text-zinc-400 leading-relaxed font-sans">
-                          El sistema del cron-job está activo y simulando notificaciones automáticas cada 30 minutos a los capitanes de equipo. Los folios cancelados se re-disponibilizan inmediatamente.
-                        </p>
+                    {/* Secondary BI Row: MoM comparison, VIP clients, Off-peak Hours */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                      {/* Column 1: MoM dynamic comparison */}
+                      <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-5 shadow-lg flex flex-col justify-between text-left space-y-4">
+                        <div>
+                          <h4 className="text-xs font-extrabold uppercase text-emerald-400 tracking-wider flex items-center gap-1 border-b border-zinc-900 pb-2.5">
+                            📊 COMPARATIVA INTERMENSUAL (MoM)
+                          </h4>
+                          <p className="text-[10px] text-zinc-500 mt-1">Cotejo volumétrico de caja del periodo corriente.</p>
+                        </div>
+                        <div className="space-y-4 flex-1">
+                          <div className="bg-zinc-900/40 p-3.5 border border-zinc-850 rounded-xl space-y-1">
+                            <span className="text-[9px] font-bold text-zinc-550 block">PERIODO ACTUAL (JUNIO 2026)</span>
+                            <div className="text-lg font-black text-white font-mono">
+                              {adminRole === 'receptionist' ? '🔒 [Restringido]' : `$${(stats.totalRevenue || 1675).toLocaleString("es-MX")}`}
+                            </div>
+                            <span className="text-[9px] text-emerald-400 font-bold block">✓ Metas de taquilla superadas</span>
+                          </div>
+                          <div className="bg-zinc-900/20 p-3.5 border border-zinc-900 rounded-xl space-y-1">
+                            <span className="text-[9px] font-bold text-zinc-550 block">PERIODO ENERO - MAYO</span>
+                            <div className="text-sm font-black text-zinc-400 font-mono">
+                              {adminRole === 'receptionist' ? '🔒 [Restringido]' : `$${((stats.totalRevenue || 1675) * 0.81).toLocaleString("es-MX")}`}
+                            </div>
+                            <span className="text-[9px] text-zinc-500 italic block">Mes anterior de referencia</span>
+                          </div>
+                        </div>
+                        <div className="pt-2">
+                          <div className="flex items-center gap-2 text-xs font-bold text-emerald-450 bg-emerald-500/5 border border-emerald-500/10 p-2.5 rounded-xl justify-center text-center">
+                            <span>▲ +19% Rendimiento Positivo</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Column 2: VIP rankings */}
+                      <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-5 shadow-lg flex flex-col justify-between text-left space-y-4">
+                        <div>
+                          <h4 className="text-xs font-extrabold uppercase text-emerald-400 tracking-wider flex items-center gap-1 border-b border-zinc-900 pb-2.5">
+                            👑 LEADERBOARD CAPITANES VIP (AFLUENCIA)
+                          </h4>
+                          <p className="text-[10px] text-zinc-500 mt-1">Capitanes con mayor tasa de reservación.</p>
+                        </div>
+                        <div className="space-y-2.5 flex-1 pt-1">
+                          {getCapitanesLeaderboard(reservations).map((cap, i) => (
+                            <div key={i} className="flex items-center justify-between bg-zinc-900/30 p-2.5 border border-zinc-900 rounded-xl">
+                              <div className="space-y-0.5">
+                                <span className="text-xs font-extrabold text-white flex items-center gap-1">
+                                  {cap.name}
+                                  {i === 0 && <span className="text-[10px]">⭐</span>}
+                                </span>
+                                <span className="text-[9px] text-zinc-500 font-mono">{cap.phone}</span>
+                              </div>
+                              <div className="text-right">
+                                <span className="text-xs font-black text-emerald-400 block font-mono">{cap.bookings} partidos</span>
+                                <span className="text-[9px] text-zinc-550 block font-mono">{cap.email}</span>
+                              </div>
+                            </div>
+                          ))}
+                          {getCapitanesLeaderboard(reservations).length === 0 && (
+                            <div className="text-center py-6 text-xs text-zinc-600 font-mono">
+                              No hay reservas confirmadas registradas aún.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Column 3: Low occupancy hours valle */}
+                      <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-5 shadow-lg flex flex-col justify-between text-left space-y-4">
+                        <div>
+                          <h4 className="text-xs font-extrabold uppercase text-emerald-400 tracking-wider flex items-center gap-1 border-b border-zinc-900 pb-2.5">
+                            📉 HORAS VALLE (ÁMBITOS BAJA FLUENCIA)
+                          </h4>
+                          <p className="text-[10px] text-zinc-500 mt-1">Sugerencia de horarios desocupados para campañas.</p>
+                        </div>
+                        <div className="space-y-2 flex-1 pt-1">
+                          {analyzeLowOccupancyHours(reservations).map((hourSlot, i) => (
+                            <div key={i} className="flex items-center justify-between bg-zinc-900/30 p-2 border border-zinc-900 rounded-xl">
+                              <span className="text-xs font-bold text-zinc-350">{hourSlot.slot}</span>
+                              <span className="text-[9px] font-mono font-bold py-0.5 px-2 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-500">
+                                {hourSlot.count} Rentas registradas
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="pt-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              // Trigger promotion form pre-fill
+                              setPromoTitle("Tarifa Especial en Horas Valle");
+                              setPromoDesc("Incentivo automático para horarios matutinos de baja afluencia.");
+                              setPromoCode("VALLE25");
+                              setPromoDiscount(25);
+                              setPromoType("discount");
+                              setActiveTab("admin-promotions");
+                              addAuditLog('TRIGGER_VALLE_PROMO', 'Redirección prellenando campaña de descuento "VALLE25" para incentivar horas de baja afluencia.');
+                            }}
+                            className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-450 text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition cursor-pointer text-center block"
+                          >
+                            Lanzar Cupón "VALLE25" (25% Desc.)
+                          </button>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    {/* Operational audit terminal system logs console */}
+                    <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-6 shadow-xl space-y-4 text-left">
+                      <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
+                        <div>
+                          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span>Registro de Auditoría de Sistemas (Consola de Logs)</span>
+                          </h3>
+                          <p className="text-[10px] text-zinc-500 mt-0.5">Seguimiento en tiempo real de operaciones de caja y reservas hechas por administradores.</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAuditLogs([
+                              {
+                                id: 'log-' + Math.random().toString(36).substr(2, 9),
+                                timestamp: new Date().toLocaleTimeString('es-MX'),
+                                role: 'owner',
+                                adminName: 'Consola Central',
+                                actionType: 'LIMPIEZA_TERMINAL',
+                                description: 'Terminal de auditoría refrescada por comando local.'
+                              }
+                            ]);
+                          }}
+                          className="rounded-lg px-2.5 py-1 bg-zinc-900/80 hover:bg-zinc-800 text-[10px] text-zinc-400 cursor-pointer border border-zinc-850"
+                        >
+                          Limpiar Consola
+                        </button>
+                      </div>
+                      <div className="bg-black/90 p-4 border border-zinc-900 rounded-2xl max-h-48 overflow-y-auto font-mono text-[11px] space-y-1.5 scrollbar-thin scrollbar-thumb-zinc-800">
+                        {auditLogs.map((log) => (
+                          <div key={log.id} className="flex flex-col sm:flex-row sm:items-start text-zinc-400 gap-1 sm:gap-2 leading-relaxed">
+                            <span className="text-[10px] text-zinc-600 shrink-0 font-bold">[{log.timestamp}]</span>
+                            <span className={`text-[9px] px-1.5 py-0.2 rounded font-black shrink-0 uppercase tracking-wider ${
+                              log.role === 'owner' 
+                                ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-450" 
+                                : log.role === 'receptionist'
+                                  ? "bg-amber-500/10 border border-amber-500/20 text-amber-500"
+                                  : "bg-purple-500/10 border border-purple-500/20 text-purple-405"
+                            }`}>
+                              {log.role === 'owner' ? 'Dueño' : log.role === 'receptionist' ? 'Recep.' : 'Mod.'}
+                            </span>
+                            <span className="text-zinc-500 shrink-0 font-extrabold">{log.adminName}:</span>
+                            <span className="text-white shrink-0 font-bold">[{log.actionType}]</span>
+                            <span className="text-zinc-300 font-medium break-words">{log.description}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
 
@@ -1022,134 +1464,638 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                       </button>
                     </div>
 
-                    {/* Search filters and buttons */}
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <div className="relative flex-1">
-                        <Search size={14} className="absolute left-3.5 top-3.5 text-zinc-500" />
-                        <input 
-                          type="text" 
-                          placeholder="Buscar por capitán, celular, correo, folio ID..."
-                          value={reservationSearch}
-                          onChange={(e) => setReservationSearch(e.target.value)}
-                          className="w-full pl-9 pr-4 py-3 rounded-xl bg-zinc-950 border border-zinc-900 focus:outline-none focus:border-emerald-500 text-xs text-white"
-                        />
+                    {/* View mode toggle selector */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-zinc-950 p-4 border border-zinc-900 rounded-3xl">
+                      <div className="space-y-1">
+                        <span className="text-[10px] uppercase font-black text-zinc-550 tracking-widest block">Consola Operativa</span>
+                        <h3 className="text-sm font-black text-white uppercase tracking-wider">Metodología de Visualización</h3>
                       </div>
-                      <div className="flex gap-2 whitespace-nowrap overflow-x-auto pb-1 sm:pb-0">
-                        {[
-                          { value: 'todos', label: 'Todos' },
-                          { value: 'pending', label: 'Pendientes' },
-                          { value: 'confirmed', label: 'Confirmados' },
-                          { value: 'cancelled', label: 'Cancelados' }
-                        ].map(st => (
-                          <button
-                            key={st.value}
-                            onClick={() => setReservationFilterStatus(st.value as any)}
-                            className={`px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition ${
-                              reservationFilterStatus === st.value 
-                                ? "bg-emerald-500 text-black border-emerald-405/20 font-bold shadow-md"
-                                : "bg-zinc-950 text-zinc-400 border-zinc-900 hover:text-white"
-                            }`}
-                          >
-                            {st.label}
-                          </button>
-                        ))}
+                      
+                      <div className="flex gap-2 bg-zinc-900/60 p-1 rounded-xl border border-zinc-800">
+                        <button
+                          type="button"
+                          onClick={() => setReservationViewMode('table')}
+                          className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                            reservationViewMode === 'table' 
+                              ? "bg-emerald-500 text-black font-black shadow-md" 
+                              : "text-zinc-500 hover:text-zinc-300"
+                          }`}
+                        >
+                          <FileSpreadsheet size={13} />
+                          <span>Vista Bitácora</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setReservationViewMode('calendar');
+                            addAuditLog('ABRIR_CALENDARIO', 'Abrió vista de calendario interactivo de canchas.');
+                          }}
+                          className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                            reservationViewMode === 'calendar' 
+                              ? "bg-emerald-500 text-black font-black shadow-md" 
+                              : "text-zinc-500 hover:text-zinc-300"
+                          }`}
+                        >
+                          <Calendar size={13} />
+                          <span>Calendario de Canchas</span>
+                        </button>
                       </div>
                     </div>
 
-                    {/* Table element */}
-                    {filteredReservationsList.length === 0 ? (
-                      <div className="text-center py-20 bg-zinc-950 rounded-2xl border border-zinc-900 text-xs text-zinc-500">
-                        Ninguna reserva registrada coincide con el criterio de búsqueda.
+                    {/* RENDERING DUAL VIEWS */}
+
+                    {/* V1: TABLE VIEW MODE */}
+                    {reservationViewMode === 'table' ? (
+                      <div className="space-y-6">
+                        {/* Search filters and buttons */}
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <div className="relative flex-1">
+                            <Search size={14} className="absolute left-3.5 top-3.5 text-zinc-500" />
+                            <input 
+                              type="text" 
+                              placeholder="Buscar por capitán, celular, correo, folio ID..."
+                              value={reservationSearch}
+                              onChange={(e) => setReservationSearch(e.target.value)}
+                              className="w-full pl-9 pr-4 py-3 rounded-xl bg-zinc-950 border border-zinc-900 focus:outline-none focus:border-emerald-500 text-xs text-white"
+                            />
+                          </div>
+                          <div className="flex gap-2 whitespace-nowrap overflow-x-auto pb-1 sm:pb-0">
+                            {[
+                              { value: 'todos', label: 'Todos' },
+                              { value: 'pending', label: 'Pendientes' },
+                              { value: 'confirmed', label: 'Confirmados' },
+                              { value: 'cancelled', label: 'Cancelados' }
+                            ].map(st => (
+                              <button
+                                key={st.value}
+                                onClick={() => setReservationFilterStatus(st.value as any)}
+                                className={`px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition ${
+                                  reservationFilterStatus === st.value 
+                                    ? "bg-emerald-500 text-black border-emerald-405/20 font-bold shadow-md"
+                                    : "bg-zinc-950 text-zinc-400 border-zinc-900 hover:text-white"
+                                }`}
+                              >
+                                {st.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {filteredReservationsList.length === 0 ? (
+                          <div className="text-center py-20 bg-zinc-950 rounded-2xl border border-zinc-900 text-xs text-zinc-500">
+                            Ninguna reserva registrada coincide con el criterio de búsqueda.
+                          </div>
+                        ) : (
+                          <div className="overflow-x-auto rounded-2xl border border-zinc-900">
+                            <table className="min-w-full divide-y divide-zinc-900 text-xs text-left">
+                              <thead className="bg-zinc-950 font-bold tracking-wider text-zinc-400 uppercase text-[10px]">
+                                <tr>
+                                  <th className="px-5 py-4">Ficha / ID</th>
+                                  <th className="px-5 py-4">Cancha</th>
+                                  <th className="px-5 py-4">Fecha y Hora</th>
+                                  <th className="px-5 py-4">Capitán / Contacto</th>
+                                  <th className="px-5 py-4">Caja (Recaudado)</th>
+                                  <th className="px-5 py-4">Abonos / LLegada</th>
+                                  <th className="px-5 py-4">Estados</th>
+                                  <th className="px-5 py-4 text-center">Controles Operativos</th>
+                                </tr>
+                              </thead>
+                              <tbody className="bg-zinc-950/30 divide-y divide-zinc-900" id="admin-reservations-table-body">
+                                {filteredReservationsList.map(res => (
+                                  <tr key={res.id} className="hover:bg-zinc-900/45 transition">
+                                    <td className="px-5 py-4 font-mono font-bold text-zinc-400">
+                                      #{res.id}
+                                    </td>
+                                    <td className="px-5 py-4 font-semibold text-white">
+                                      {getFieldFriendlyName(res.fieldId)}
+                                    </td>
+                                    <td className="px-5 py-4">
+                                      <div className="flex flex-col gap-0.5">
+                                        <span className="font-semibold text-zinc-200">{res.date}</span>
+                                        <span className="font-mono text-emerald-400 tracking-wide text-[10px]">{res.timeSlot}</span>
+                                      </div>
+                                    </td>
+                                    <td className="px-5 py-4">
+                                      <div className="flex flex-col text-zinc-400 gap-0.5">
+                                        <span className="font-bold text-white font-sans">{res.userName}</span>
+                                        <span className="flex items-center gap-1 text-[10px] text-zinc-550 font-mono">
+                                          <Phone size={10} /> {res.userPhone}
+                                        </span>
+                                      </div>
+                                    </td>
+                                    <td className="px-5 py-4 font-mono font-bold text-white text-sm">
+                                      ${res.totalPrice.toLocaleString("es-MX")}
+                                    </td>
+                                    <td className="px-5 py-4">
+                                      <div className="space-y-1">
+                                        {/* Anticipo display */}
+                                        <div className="flex items-center gap-1.5">
+                                          <span className="text-[10px] text-zinc-400 font-mono">
+                                            Abonado: <strong className="text-emerald-400">${res.advancePaid || 0}</strong>
+                                          </span>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setPayingReservation(res);
+                                              setAbonoAmountInput("200");
+                                            }}
+                                            className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[9px] font-black text-emerald-450 hover:bg-emerald-500 hover:text-black transition cursor-pointer"
+                                            title="Registrar abonado"
+                                          >
+                                            + Abono
+                                          </button>
+                                        </div>
+
+                                        {/* Arrival checkin */}
+                                        <div className="text-[10px]">
+                                          {res.checkedIn ? (
+                                            <span className="text-emerald-450 font-bold flex items-center gap-1">
+                                              ✓ LLEGÓ ({res.checkedInAt || "En cancha"})
+                                            </span>
+                                          ) : (
+                                            <button
+                                              type="button"
+                                              onClick={() => {
+                                                handleUpdateReservation(res.id, 'confirmed', res.paymentStatus, {
+                                                  checkedIn: true,
+                                                  checkedInAt: new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
+                                                });
+                                                addAuditLog('CHECK_IN', `Recepción marcó llegada del equipo de ${res.userName} a cancha.`);
+                                              }}
+                                              className="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-[9px] font-extrabold text-zinc-300 hover:bg-zinc-800 transition cursor-pointer"
+                                            >
+                                              Marcar Llegada
+                                            </button>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td className="px-5 py-4">
+                                      <div className="flex flex-col gap-1.5 items-start">
+                                        <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase border ${
+                                          res.status === 'confirmed' 
+                                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-405" 
+                                            : res.status === 'pending' 
+                                              ? "bg-amber-500/10 border-amber-500/20 text-amber-500" 
+                                              : "bg-rose-500/10 border-rose-500/20 text-rose-400"
+                                        }`}>
+                                          {res.status === 'confirmed' ? "Confirmado" : res.status === 'pending' ? "Pendiente" : "Cancelado"}
+                                        </span>
+                                        <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase border ${
+                                          res.paymentStatus === 'paid' 
+                                            ? "bg-blue-500/10 border-blue-500/20 text-blue-400" 
+                                            : "bg-zinc-800 border-zinc-700/60 text-zinc-500"
+                                        }`}>
+                                          {res.paymentStatus === 'paid' ? "Pagado" : "Impago"}
+                                        </span>
+                                      </div>
+                                    </td>
+                                    <td className="px-5 py-4">
+                                      <div className="flex items-center justify-center gap-1.5">
+                                        {/* WhatsApp Simulation Dispatcher */}
+                                        <button
+                                          type="button"
+                                          onClick={() => setWhatsAppPreviewObj(res)}
+                                          className="px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-[10px] border border-zinc-800 text-emerald-450 font-bold flex items-center gap-1 cursor-pointer transition"
+                                          title="Mensaje de WhatsApp"
+                                        >
+                                          <Send size={11} />
+                                          <span>Notificar WA</span>
+                                        </button>
+
+                                        {res.status !== 'confirmed' && (
+                                          <button 
+                                            onClick={() => handleUpdateReservation(res.id, 'confirmed', 'paid')}
+                                            className="bg-emerald-600 hover:bg-emerald-555 text-black font-extrabold px-2.5 py-1.5 rounded-lg text-[10px] cursor-pointer transition uppercase flex items-center gap-1"
+                                            title="Confirmar Partido y Pago"
+                                          >
+                                            <CheckCircle size={11} />
+                                            <span>Aprobar</span>
+                                          </button>
+                                        )}
+                                        {res.status !== 'cancelled' && (
+                                          <button 
+                                            onClick={() => handleUpdateReservation(res.id, 'cancelled', 'pending')}
+                                            className="bg-rose-950/40 hover:bg-rose-900/60 border border-rose-500/10 text-rose-450 font-semibold px-2.5 py-1.5 rounded-lg text-[10px] cursor-pointer transition uppercase flex items-center gap-1"
+                                            title="Cancelar Partido"
+                                          >
+                                            <XCircle size={11} />
+                                            <span>Cancelar</span>
+                                          </button>
+                                        )}
+                                      </div>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
                       </div>
                     ) : (
-                      <div className="overflow-x-auto rounded-2xl border border-zinc-900">
-                        <table className="min-w-full divide-y divide-zinc-900 text-xs text-left">
-                          <thead className="bg-zinc-950 font-bold tracking-wider text-zinc-400 uppercase text-[10px]">
-                            <tr>
-                              <th className="px-5 py-4">ID / Folio</th>
-                              <th className="px-5 py-4">Cancha</th>
-                              <th className="px-5 py-4">Fecha y Hora</th>
-                              <th className="px-5 py-4">Capitán / Contacto</th>
-                              <th className="px-5 py-4">Monto Cobrado</th>
-                              <th className="px-5 py-4">Estados</th>
-                              <th className="px-5 py-4 text-center">Acciones</th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-zinc-950/30 divide-y divide-zinc-900" id="admin-reservations-table-body">
-                            {filteredReservationsList.map(res => (
-                              <tr key={res.id} className="hover:bg-zinc-905/40 transition">
-                                <td className="px-5 py-4 font-mono font-bold text-zinc-300">#{res.id}</td>
-                                <td className="px-5 py-4 font-semibold text-white">
-                                  {getFieldFriendlyName(res.fieldId)}
-                                </td>
-                                <td className="px-5 py-4">
-                                  <div className="flex flex-col gap-0.5">
-                                    <span className="font-semibold text-zinc-200">{res.date}</span>
-                                    <span className="font-mono text-emerald-400 tracking-wide text-[10px]">{res.timeSlot} HS</span>
-                                  </div>
-                                </td>
-                                <td className="px-5 py-4">
-                                  <div className="flex flex-col text-zinc-400 gap-0.5">
-                                    <span className="font-bold text-white font-sans">{res.userName}</span>
-                                    <span className="flex items-center gap-1 text-[10px] text-zinc-550 font-mono">
-                                      <Phone size={10} /> {res.userPhone}
-                                    </span>
-                                    <span className="flex items-center gap-1 text-[10px] text-zinc-550 font-mono">
-                                      <Mail size={10} /> {res.userEmail}
-                                    </span>
-                                  </div>
-                                </td>
-                                <td className="px-5 py-4 font-mono font-bold text-white text-sm">
-                                  ${res.totalPrice.toLocaleString("es-MX")}
-                                </td>
-                                <td className="px-5 py-4">
-                                  <div className="flex flex-col gap-1.5 items-start">
-                                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase border ${
-                                      res.status === 'confirmed' 
-                                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-405" 
-                                        : res.status === 'pending' 
-                                          ? "bg-amber-500/10 border-amber-500/20 text-amber-500" 
-                                          : "bg-rose-500/10 border-rose-500/20 text-rose-400"
-                                    }`}>
-                                      {res.status === 'confirmed' ? "Confirmado" : res.status === 'pending' ? "Pendiente" : "Cancelado"}
-                                    </span>
-                                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase border ${
-                                      res.paymentStatus === 'paid' 
-                                        ? "bg-blue-500/10 border-blue-500/20 text-blue-400" 
-                                        : "bg-zinc-800 border-zinc-700/60 text-zinc-500"
-                                    }`}>
-                                      {res.paymentStatus === 'paid' ? "Pagado" : "Impago"}
-                                    </span>
-                                  </div>
-                                </td>
-                                <td className="px-5 py-4">
-                                  <div className="flex items-center justify-center gap-1.5">
-                                    {res.status !== 'confirmed' && (
-                                      <button 
-                                        onClick={() => handleUpdateReservation(res.id, 'confirmed', 'paid')}
-                                        className="bg-emerald-600 hover:bg-emerald-555 text-black font-extrabold px-2.5 py-1.5 rounded-lg text-[10px] cursor-pointer transition uppercase flex items-center gap-1"
-                                        title="Confirmar Partido y Pago"
-                                      >
-                                        <CheckCircle size={11} />
-                                        <span>Confirmar</span>
-                                      </button>
-                                    )}
-                                    {res.status !== 'cancelled' && (
-                                      <button 
-                                        onClick={() => handleUpdateReservation(res.id, 'cancelled', 'pending')}
-                                        className="bg-rose-950/40 hover:bg-rose-900/60 border border-rose-500/10 text-rose-450 font-semibold px-2.5 py-1.5 rounded-lg text-[10px] cursor-pointer transition uppercase flex items-center gap-1"
-                                        title="Cancelar Partido"
-                                      >
-                                        <XCircle size={11} />
-                                        <span>Cancelar</span>
-                                      </button>
-                                    )}
-                                  </div>
-                                </td>
-                              </tr>
+                      // V2: DAILY VISUAL GRID SCHEDULER
+                      <div className="space-y-6 animate-in fade-in duration-300">
+                        {/* Interactive Scheduler controls */}
+                        <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-5 text-left space-y-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div className="space-y-1">
+                              <span className="text-[9px] uppercase font-black text-emerald-400 tracking-widest block">Calendario Operativo</span>
+                              <h4 className="text-white font-bold text-sm">Selecciona Fecha de Trabajo</h4>
+                            </div>
+                            <div className="flex gap-2">
+                              <input
+                                type="date"
+                                value={calendarTargetDate}
+                                onChange={(e) => setCalendarTargetDate(e.target.value)}
+                                className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-emerald-500 cursor-pointer"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setCalendarTargetDate(new Date().toISOString().split('T')[0])}
+                                className="px-3 py-2 bg-zinc-900 border border-zinc-800 text-xs font-bold text-zinc-300 rounded-xl hover:text-white transition cursor-pointer"
+                              >
+                                Hoy
+                              </button>
+                            </div>
+                          </div>
+
+                          {movingReservationId && (
+                            <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-xl flex items-center justify-between animate-pulse">
+                              <span className="font-bold flex items-center gap-2">
+                                🔄 Moviendo reserva #{movingReservationId} — Elige un casillero vacío del calendario para soltar el partido.
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setMovingReservationId(null)}
+                                className="px-2 py-1 bg-zinc-950 text-[10px] font-black rounded-lg border border-zinc-800 text-zinc-400 hover:text-white"
+                              >
+                                Cancelar Traslado
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Core calendar matrix grid */}
+                        <div className="overflow-x-auto rounded-3xl border border-zinc-900 bg-zinc-950/60 shadow-xl">
+                          <div className="min-w-[800px] divide-y divide-zinc-900">
+                            {/* Matrix Header (Canchas columns) */}
+                            <div className="grid grid-cols-5 bg-zinc-950 text-center font-black text-[10px] text-zinc-400 uppercase tracking-widest py-3 border-b border-zinc-900">
+                              <div className="py-2 border-r border-zinc-900 text-left pl-5">Rango Horario</div>
+                              {fields.map(f => (
+                                <div key={f.id} className="py-2 border-r border-zinc-900 last:border-0 font-bold text-white flex flex-col justify-center items-center leading-none gap-1">
+                                  <span>{f.name}</span>
+                                  <span className="text-[8px] text-zinc-500 font-normal">Sintético Pro</span>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Matrix Rows (Hours slots) */}
+                            {calendarHours.map((hour) => (
+                              <div key={hour} className="grid grid-cols-5 text-center min-h-[110px]">
+                                {/* Horario column */}
+                                <div className="border-r border-zinc-900 flex items-center justify-start pl-5 bg-zinc-950/40 text-xs font-black text-zinc-350 font-mono tracking-wider">
+                                  {hour}
+                                </div>
+
+                                {/* Canchas slots mapping */}
+                                {fields.map((f) => {
+                                  // Find booking
+                                  const booking = reservations.find(
+                                    (r) => r.fieldId === f.id && r.date === calendarTargetDate && r.timeSlot === hour && r.status !== 'cancelled'
+                                  );
+
+                                  if (booking) {
+                                    return (
+                                      <div key={f.id} className="p-2.5 border-r border-zinc-900 last:border-0 flex flex-col justify-between bg-zinc-950/10 text-left relative group">
+                                        <div className="space-y-1">
+                                          <div className="flex items-center justify-between">
+                                            <span className="text-[10px] font-black text-white uppercase tracking-tight block truncate max-w-[120px]">
+                                              ⚽ {booking.userName}
+                                            </span>
+                                            <span className={`px-1.5 py-0.2 rounded text-[8px] font-black uppercase ${
+                                              booking.paymentStatus === 'paid' ? "bg-emerald-500/10 text-emerald-450 border border-emerald-500/25" : "bg-zinc-900 text-zinc-500 border border-zinc-800"
+                                            }`}>
+                                              {booking.paymentStatus === 'paid' ? "Liquidado" : "Pendiente"}
+                                            </span>
+                                          </div>
+                                          <p className="text-[9px] text-zinc-500 font-mono">{booking.userPhone}</p>
+                                          <div className="flex flex-wrap gap-1">
+                                            <span className="text-[8px] px-1 py-0.2 bg-zinc-900 text-zinc-300 font-mono rounded">
+                                              Ab.: ${booking.advancePaid || 0}
+                                            </span>
+                                            {booking.checkedIn && (
+                                              <span className="text-[8px] px-1 py-0.2 bg-emerald-500/10 text-emerald-400 font-bold rounded">
+                                                En Cancha
+                                              </span>
+                                            )}
+                                          </div>
+                                        </div>
+
+                                        {/* Action controls direct on calendar cards */}
+                                        <div className="pt-2 flex items-center gap-1 flex-wrap">
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setMovingReservationId(booking.id);
+                                              addAuditLog('TRASLAJO_INICIADO', `Se inició movilización de partido de ${booking.userName} en calendario.`);
+                                            }}
+                                            className="px-1.5 py-0.5 rounded bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-[9px] text-amber-500 font-black cursor-pointer transition uppercase"
+                                            title="Cambiar horario / Reajustar"
+                                          >
+                                            Mover
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setPayingReservation(booking);
+                                              setAbonoAmountInput("200");
+                                            }}
+                                            className="px-1.5 py-0.5 rounded bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-[9px] text-emerald-450 font-bold cursor-pointer transition"
+                                            title="Registrar abono de reserva"
+                                          >
+                                            Abono
+                                          </button>
+                                          
+                                          {!booking.checkedIn && (
+                                            <button
+                                              type="button"
+                                              onClick={() => {
+                                                handleUpdateReservation(booking.id, 'confirmed', booking.paymentStatus, {
+                                                  checkedIn: true,
+                                                  checkedInAt: new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
+                                                });
+                                                addAuditLog('CHECK_IN', `Check-in rápido en cancha para ${booking.userName}`);
+                                              }}
+                                              className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[9px] text-zinc-400 font-extrabold hover:text-white transition cursor-pointer"
+                                            >
+                                              Llegó
+                                            </button>
+                                          )}
+                                        </div>
+                                      </div>
+                                    );
+                                  }
+
+                                  // VACANT HOUR SLOT
+                                  return (
+                                    <div key={f.id} className="p-2 border-r border-zinc-900 last:border-0 flex items-center justify-center bg-transparent transition-all">
+                                      {movingReservationId ? (
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            // Execute drag & drop rescheduling update
+                                            const movingId = movingReservationId;
+                                            handleUpdateReservation(movingId, 'confirmed', 'pending', {
+                                              fieldId: f.id,
+                                              date: calendarTargetDate,
+                                              timeSlot: hour
+                                            });
+                                            addAuditLog('TRASLAJO_EXITOSO', `Se reajustó exitosamente la reserva #${movingId} a la cancha [${f.name}] en horario [${hour}] el día [${calendarTargetDate}].`);
+                                            setMovingReservationId(null);
+                                          }}
+                                          className="w-full py-5 rounded-2xl bg-emerald-500/10 border border-dashed border-emerald-500 text-[10px] text-emerald-400 font-extrabold hover:bg-emerald-500 hover:text-black transition cursor-pointer animate-pulse"
+                                        >
+                                          🟢 Soltar Aquí
+                                        </button>
+                                      ) : (
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            // Open Fast Booking popover
+                                            setQuickFieldId(f.id);
+                                            setQuickDate(calendarTargetDate);
+                                            setQuickTimeSlot(hour);
+                                            setIsQuickOpen(true);
+                                          }}
+                                          className="w-full h-full py-4 rounded-xl border border-dashed border-zinc-850 hover:border-zinc-700 text-zinc-650 hover:text-zinc-400 text-[9px] font-bold transition cursor-pointer flex flex-col items-center justify-center gap-1"
+                                        >
+                                          <Plus size={12} className="stroke-[2.5]" />
+                                          <span>DISPONIBLE (RENTAR)</span>
+                                        </button>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
                             ))}
-                          </tbody>
-                        </table>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* POP DIALOGS AND MODALS SECTION */}
+
+                    {/* D1: QUICK ADD BOOKING POP OVER */}
+                    {isQuickOpen && (
+                      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                        <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-6 shadow-2xl max-w-md w-full text-left space-y-4 animate-in zoom-in-95 duration-150">
+                          <div className="border-b border-zinc-900 pb-3 flex items-center justify-between">
+                            <div>
+                              <span className="text-[10px] uppercase font-black text-emerald-400 tracking-widest block">Reserva Express</span>
+                              <h4 className="text-white font-bold text-sm uppercase">Agendar Espacio Directo</h4>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setIsQuickOpen(false)}
+                              className="text-zinc-500 hover:text-white p-1"
+                            >
+                              <XCircle size={18} />
+                            </button>
+                          </div>
+
+                          <form onSubmit={handleQuickCreateBook} className="space-y-4 text-xs font-sans">
+                            <div className="grid grid-cols-2 gap-3 p-3 bg-zinc-900/40 rounded-xl border border-zinc-850 text-[11px] text-zinc-400">
+                              <div>
+                                <span className="block text-[9px] font-bold text-zinc-550">CANCHA SELECCIONADA</span>
+                                <strong className="text-white block mt-0.5">{getFieldFriendlyName(quickFieldId)}</strong>
+                              </div>
+                              <div>
+                                <span className="block text-[9px] font-bold text-zinc-550">HORARIO Y FECHA</span>
+                                <strong className="text-white block mt-0.5 font-mono">{quickDate} ({quickTimeSlot})</strong>
+                              </div>
+                            </div>
+
+                            <div className="space-y-1">
+                              <label className="text-zinc-400 font-medium block">Nombre del Capitán *</label>
+                              <input
+                                type="text"
+                                placeholder="Ej: Fernando Alonso"
+                                value={quickName}
+                                onChange={(e) => setQuickName(e.target.value)}
+                                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-emerald-500"
+                                required
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-1">
+                                <label className="text-zinc-400 font-medium block">Celular del Capitán *</label>
+                                <input
+                                  type="tel"
+                                  placeholder="52155..."
+                                  value={quickPhone}
+                                  onChange={(e) => setQuickPhone(e.target.value)}
+                                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-emerald-505"
+                                  required
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <label className="text-zinc-400 font-medium block">Email (Opcional)</label>
+                                <input
+                                  type="email"
+                                  placeholder="capitan@gmail.com"
+                                  value={quickEmail}
+                                  onChange={(e) => setQuickEmail(e.target.value)}
+                                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-emerald-505"
+                                />
+                              </div>
+                            </div>
+
+                            <button
+                              type="submit"
+                              className="w-full py-3 bg-emerald-500 hover:bg-emerald-450 text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl cursor-pointer transition block text-center"
+                            >
+                              Registrar Reservado ($400 MXN base)
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* D2: ABONO DOWN-PAYMENT REGISTRATION POP OVER */}
+                    {payingReservation && (
+                      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                        <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-6 shadow-2xl max-w-sm w-full text-left space-y-4 animate-in zoom-in-95 duration-150">
+                          <div className="border-b border-zinc-900 pb-3 flex items-center justify-between">
+                            <div>
+                              <span className="text-[10px] uppercase font-black text-emerald-400 tracking-widest block">Pagos anticipados</span>
+                              <h4 className="text-white font-bold text-sm uppercase">Registrar Abono Parcial</h4>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setPayingReservation(null)}
+                              className="text-zinc-500 hover:text-white p-1"
+                            >
+                              <XCircle size={18} />
+                            </button>
+                          </div>
+
+                          <div className="bg-zinc-900/40 border border-zinc-850 p-3 rounded-xl text-xs space-y-1 font-sans">
+                            <div className="flex justify-between">
+                              <span className="text-zinc-400 font-medium">Cliente capitán:</span>
+                              <strong className="text-white">{payingReservation.userName}</strong>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-zinc-400 font-medium">Costo Total Partido:</span>
+                              <strong className="text-white font-mono">${payingReservation.totalPrice} MXN</strong>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-zinc-400 font-medium">Anticipo Anterior:</span>
+                              <strong className="text-emerald-400 font-mono">${payingReservation.advancePaid || 0} MXN</strong>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 text-xs font-sans">
+                            <label className="text-zinc-400 font-medium block">Monto del nuevo abono del cliente ($)*</label>
+                            <input
+                              type="number"
+                              value={abonoAmountInput}
+                              onChange={(e) => setAbonoAmountInput(e.target.value)}
+                              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white text-lg font-bold font-mono focus:outline-none focus:border-emerald-500"
+                            />
+                            <p className="text-[10px] text-zinc-500 leading-tight">El anticipo se registrará en la ficha del folio y se restará del cobro final.</p>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              const extraAbonoVal = Number(abonoAmountInput) || 0;
+                              const prevAbono = payingReservation.advancePaid || 0;
+                              const updatedAbono = prevAbono + extraAbonoVal;
+
+                              // Trigger API update with extra parameters
+                              await handleUpdateReservation(payingReservation.id, payingReservation.status, payingReservation.paymentStatus, {
+                                advancePaid: updatedAbono
+                              });
+
+                              addAuditLog('ABONO_REGISTRADO', `Se abonaron $${extraAbonoVal} MXN a reserva #${payingReservation.id} de ${payingReservation.userName}.`);
+                              setPayingReservation(null);
+                            }}
+                            className="w-full py-3 bg-emerald-500 hover:bg-emerald-450 text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl cursor-pointer text-center block transition"
+                          >
+                            Registrar Abono
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* D3: SMARTPHONE WHATSAPP SIMULATION PREVIEW MODAL */}
+                    {whatsAppPreviewObj && (
+                      <div className="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                        <div className="bg-zinc-950 border border-zinc-900 max-w-sm w-full rounded-[40px] p-6 shadow-2xl relative border-zinc-850/60 ring-8 ring-zinc-900/60 text-left animate-in zoom-in-95 duration-150">
+                          
+                          {/* Close button */}
+                          <button
+                            type="button"
+                            onClick={() => setWhatsAppPreviewObj(null)}
+                            className="absolute top-4 right-4 text-zinc-550 hover:text-white"
+                          >
+                            <XCircle size={18} />
+                          </button>
+
+                          {/* Top speaker notch look */}
+                          <div className="h-4 w-28 bg-zinc-900 rounded-full mx-auto mb-4 border border-zinc-850"></div>
+
+                          {/* Mock WhatsApp screen header */}
+                          <div className="bg-zinc-900 p-4 rounded-t-2xl border-b border-zinc-850 flex items-center gap-2.5">
+                            <div className="h-8 w-8 rounded-full bg-emerald-500/25 border border-emerald-500/40 text-emerald-450 text-xs font-black flex items-center justify-center uppercase">
+                              {whatsAppPreviewObj.userName[0]}
+                            </div>
+                            <div className="text-xs leading-tight">
+                              <h5 className="font-extrabold text-white">{whatsAppPreviewObj.userName}</h5>
+                              <span className="text-[9px] text-emerald-400 font-mono">En Línea (Tribol Canchas)</span>
+                            </div>
+                          </div>
+
+                          {/* Message dialogue bubble look */}
+                          <div className="bg-[#0b141a] p-4 min-h-[220px] rounded-b-2xl space-y-3 relative overflow-hidden font-sans border-t border-black">
+                            <div className="text-[10px] text-center bg-[#182229] py-1 px-3.5 rounded-lg text-[#8696a0] max-w-xs mx-auto">
+                              Hoy • Cifrado de extremo a extremo
+                            </div>
+
+                            <div className="bg-[#005c4b] text-white p-3 rounded-2xl text-[11px] leading-relaxed relative max-w-[85%] self-end ml-auto space-y-1.5 shadow-md">
+                              <p className="font-black text-emerald-300">🏆 FÚTBOL RÁPIDO TRIBOL CANCHAS</p>
+                              <p>¡Hola <strong>{whatsAppPreviewObj.userName}</strong>! Te confirmamos tu partido reservado en el complejo.</p>
+                              <p>⚡ Cancha: <strong>{getFieldFriendlyName(whatsAppPreviewObj.fieldId)}</strong><br />
+                              📅 Fecha: <strong>{whatsAppPreviewObj.date}</strong><br />
+                              ⏰ Horario: <strong>{whatsAppPreviewObj.timeSlot}</strong><br />
+                              💵 Costo Base Renta: <strong>$500 MXN</strong><br />
+                              💰 Anticipo registrado: <strong className="text-emerald-300">${whatsAppPreviewObj.advancePaid || 0} MXN</strong>
+                              </p>
+                              <p className="text-[9px] text-emerald-305 italic">Para cambios de hora o check-in digital, dirígete con el recepcionista.</p>
+                              <span className="block text-[8px] text-right text-emerald-250 italic">10:42 PM ✓✓</span>
+                            </div>
+                          </div>
+
+                          {/* Simulated click sender trigger link */}
+                          <div className="pt-5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const msgText = `🏆 FÚTBOL RÁPIDO TRIBOL CANCHAS\n\n¡Hola *${whatsAppPreviewObj.userName}*! Te confirmamos tu partido reservado:\n⚡ Cancha: *${getFieldFriendlyName(whatsAppPreviewObj.fieldId)}*\n📅 Fecha: *${whatsAppPreviewObj.date}*\n⏰ Horario: *${whatsAppPreviewObj.timeSlot}*\n💵 Costo Base Renta: *$500*\n💰 Anticipo registrado: *$${whatsAppPreviewObj.advancePaid || 0} MXN*\n\n¡Te esperamos en Domo Tribol! ⚽`;
+                                const waUrl = `https://wa.me/${whatsAppPreviewObj.userPhone.replace(/\D/g, '')}?text=${encodeURIComponent(msgText)}`;
+                                addAuditLog('NOTIFICAR_WA', `Envío de plantilla de WhatsApp autorizada a capitán ${whatsAppPreviewObj.userName}.`);
+                                window.open(waUrl, '_blank');
+                                setWhatsAppPreviewObj(null);
+                              }}
+                              className="w-full py-3 bg-emerald-500 hover:bg-emerald-450 text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl cursor-pointer text-center flex items-center justify-center gap-1.5 transition"
+                            >
+                              <Send size={12} className="stroke-[2.5]" />
+                              <span>Enviar por WhatsApp Web</span>
+                            </button>
+                            <p className="text-[9px] text-zinc-500 text-center mt-2">La simulación disparará la API oficial de WhatsApp para computadoras y móviles.</p>
+                          </div>
+                        </div>
                       </div>
                     )}
 
@@ -2221,6 +3167,8 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                   </div>
                 )}
 
+                  </>
+                )}
               </div>
             )}
 

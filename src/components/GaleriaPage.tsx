@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, Eye, Tv, MessageSquare, Send, Users, Play, Pause, Volume2, VolumeX, Sparkles, Heart, Share2, Film } from 'lucide-react';
+import { Camera, Eye, Tv, MessageSquare, Send, Users, Play, Pause, Volume2, VolumeX, Sparkles, Heart, Share2, Film, ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Download, Copy, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Photo, Video } from '../types';
 
 const SIMULATED_CHAT_POOL = [
@@ -24,6 +25,11 @@ export default function GaleriaPage() {
   const [videosFilter, setVideosFilter] = useState<'all' | 'live' | 'highlight' | 'full_match'>('all');
   const [isLoading, setIsLoading] = useState(false);
   const [previewPhoto, setPreviewPhoto] = useState<Photo | null>(null);
+  
+  // Custom Lightbox premium features states
+  const [zoomScale, setZoomScale] = useState<number>(1);
+  const [isAutoplay, setIsAutoplay] = useState<boolean>(false);
+  const [shareCopied, setShareCopied] = useState<boolean>(false);
 
   // Video Player States
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
@@ -262,6 +268,87 @@ export default function GaleriaPage() {
   const filteredVideos = videosFilter === 'all'
     ? videos
     : videos.filter(v => v.category === videosFilter);
+
+  // --- PREMIUM LIGHTBOX EVENT HANDLERS ---
+  const currentPhotoIndex = previewPhoto ? filteredPhotos.findIndex(p => p.id === previewPhoto.id) : -1;
+
+  const handlePrevPhoto = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (filteredPhotos.length === 0 || currentPhotoIndex === -1) return;
+    const prevIndex = (currentPhotoIndex - 1 + filteredPhotos.length) % filteredPhotos.length;
+    setPreviewPhoto(filteredPhotos[prevIndex]);
+    setZoomScale(1); // Reset zoom
+  };
+
+  const handleNextPhoto = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (filteredPhotos.length === 0 || currentPhotoIndex === -1) return;
+    const nextIndex = (currentPhotoIndex + 1) % filteredPhotos.length;
+    setPreviewPhoto(filteredPhotos[nextIndex]);
+    setZoomScale(1); // Reset zoom
+  };
+
+  const toggleZoom = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setZoomScale(prev => (prev === 1 ? 1.5 : prev === 1.5 ? 2.5 : 1));
+  };
+
+  const handleDownload = (e: React.MouseEvent, url: string, filename: string) => {
+    e.stopPropagation();
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename || 'tribol_instalacion.jpg';
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleShare = (e: React.MouseEvent, url: string) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(url).then(() => {
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
+  };
+
+  // Keyboard navigation listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!previewPhoto) return;
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        handleNextPhoto();
+      } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        handlePrevPhoto();
+      } else if (e.key === 'Escape') {
+        setPreviewPhoto(null);
+      } else if (e.key === ' ') {
+        e.preventDefault();
+        setIsAutoplay(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [previewPhoto, currentPhotoIndex, filteredPhotos]);
+
+  // Autoplay progression loop
+  useEffect(() => {
+    if (!isAutoplay || !previewPhoto) return;
+    const timer = setInterval(() => {
+      handleNextPhoto();
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [isAutoplay, previewPhoto, currentPhotoIndex, filteredPhotos]);
+
+  // Clean-up zoom and autoplay states on exit
+  useEffect(() => {
+    if (!previewPhoto) {
+      setZoomScale(1);
+      setIsAutoplay(false);
+    }
+  }, [previewPhoto]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
@@ -762,26 +849,248 @@ export default function GaleriaPage() {
         </div>
       )}
 
-      {/* Lightbox Preview Modal Popup for Photos */}
-      {previewPhoto && (
-        <div
-          onClick={() => setPreviewPhoto(null)}
-          className="fixed inset-0 z-50 bg-black/95 backdrop-blur flex items-center justify-center p-4 animate-fadeIn cursor-pointer"
-        >
-          <div className="relative max-w-4xl max-h-[85vh] overflow-hidden text-center space-y-4">
-            <img 
-              src={previewPhoto.url} 
-              alt={previewPhoto.caption} 
-              className="max-w-full max-h-[70vh] rounded-2xl border border-emerald-500/15 object-contain shadow-2xl mx-auto"
-            />
-            <div className="max-w-2xl mx-auto text-center px-4">
-              <span className="text-[10px] text-emerald-400 font-mono font-bold uppercase tracking-widest">{previewPhoto.category}</span>
-              <p className="text-white text-sm sm:text-base mt-1.5 leading-relaxed font-semibold">{previewPhoto.caption}</p>
-              <span className="text-[11px] text-gray-500 font-mono block mt-2">Haz clic en cualquier parte para cerrar</span>
+      {/* Premium Interactive Lightbox Modal Popup for Photos */}
+      <AnimatePresence>
+        {previewPhoto && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between p-4 md:p-6 select-none overflow-hidden"
+            onClick={() => setPreviewPhoto(null)}
+          >
+            {/* AUTOPLAY INDICATOR PROGRESS BAR */}
+            {isAutoplay && (
+              <motion.div 
+                key={previewPhoto.id}
+                initial={{ width: "0%" }}
+                animate={{ width: "100%" }}
+                transition={{ duration: 4, ease: "linear" }}
+                className="absolute top-0 left-0 h-1 bg-emerald-500 z-50"
+              />
+            )}
+
+            {/* TOP HEADER CONTROLS BAR */}
+            <div 
+              className="w-full flex items-center justify-between bg-zinc-950/40 backdrop-blur-sm px-4 py-3 rounded-2xl border border-zinc-900/60 max-w-7xl mx-auto z-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Left: Counter & Status */}
+              <div className="flex items-center gap-3">
+                <span className="text-gray-400 text-xs font-mono font-medium tracking-wide">
+                  Imagen <strong className="text-white">{currentPhotoIndex + 1}</strong> de <strong className="text-white">{filteredPhotos.length}</strong>
+                </span>
+                <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-bold text-emerald-400 uppercase tracking-widest font-mono">
+                  {previewPhoto.category === 'facilities' ? 'Instalaciones' : previewPhoto.category === 'matches' ? 'Partidos' : 'Torneos'}
+                </span>
+              </div>
+
+              {/* Center: Play/Pause indicator */}
+              {isAutoplay && (
+                <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full text-emerald-400 text-[10px] font-mono font-bold uppercase tracking-widest animate-pulse">
+                  <Sparkles size={11} className="animate-spin" />
+                  <span>Autoplay Activado</span>
+                </div>
+              )}
+
+              {/* Right: Actions */}
+              <div className="flex items-center gap-1 sm:gap-2">
+                {/* Autoplay Play/Pause */}
+                <button
+                  type="button"
+                  onClick={() => setIsAutoplay(prev => !prev)}
+                  className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                    isAutoplay 
+                      ? 'bg-emerald-500 text-black border-emerald-500/30' 
+                      : 'bg-zinc-900 border-zinc-800 text-gray-400 hover:text-white'
+                  }`}
+                  title={isAutoplay ? "Pausar Reproducción Automática (Espacio)" : "Iniciar Reproducción Automática (Espacio)"}
+                >
+                  {isAutoplay ? <Pause size={14} className="stroke-[2.5]" /> : <Play size={14} className="stroke-[2.5]" />}
+                </button>
+
+                {/* Zoom out */}
+                <button
+                  type="button"
+                  onClick={() => setZoomScale(prev => Math.max(1, prev - 0.5))}
+                  disabled={zoomScale <= 1}
+                  className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-gray-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                  title="Alejar Imagen"
+                >
+                  <ZoomOut size={14} />
+                </button>
+
+                {/* Zoom in */}
+                <button
+                  type="button"
+                  onClick={() => setZoomScale(prev => Math.min(3, prev + 0.5))}
+                  disabled={zoomScale >= 3}
+                  className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-gray-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                  title="Acercar Imagen"
+                >
+                  <ZoomIn size={14} />
+                </button>
+
+                {/* Reset Zoom helper */}
+                {zoomScale > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setZoomScale(1)}
+                    className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-black transition-all cursor-pointer text-[10px] font-black font-mono uppercase px-2.5"
+                    title="Restablecer Zoom"
+                  >
+                    {zoomScale.toFixed(1)}x
+                  </button>
+                )}
+
+                {/* Share Link / Copy Info */}
+                <button
+                  type="button"
+                  onClick={(e) => handleShare(e, previewPhoto.url)}
+                  className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                    shareCopied 
+                      ? 'bg-emerald-500 text-black border-emerald-400/25' 
+                      : 'bg-zinc-900 border-zinc-800 text-gray-300 hover:text-white hover:border-zinc-700'
+                  }`}
+                  title="Copiar Enlace de Fotografía"
+                >
+                  {shareCopied ? <Check size={14} className="stroke-[3]" /> : <Copy size={14} />}
+                </button>
+
+                {/* Download */}
+                <button
+                  type="button"
+                  onClick={(e) => handleDownload(e, previewPhoto.url, `Tribol_Galeria_${previewPhoto.id}.jpg`)}
+                  className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-gray-300 hover:text-white hover:border-zinc-700 transition-colors cursor-pointer"
+                  title="Guardar Imagen Original"
+                >
+                  <Download size={14} />
+                </button>
+
+                <div className="w-px h-5 bg-zinc-800 mx-1 hidden sm:block" />
+
+                {/* Close Button */}
+                <button
+                  type="button"
+                  onClick={() => setPreviewPhoto(null)}
+                  className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500 border border-rose-500/20 text-rose-450 hover:text-black transition-all cursor-pointer"
+                  title="Cerrar Visualización (Esc)"
+                >
+                  <X size={14} className="stroke-[2.5]" />
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+
+            {/* MAIN LIGHTBOX CENTER STAGE LAYOUT */}
+            <div className="flex-grow flex items-center justify-between relative max-w-7xl mx-auto w-full px-2 sm:px-6 my-2">
+              
+              {/* Previous Image Chevron */}
+              <button
+                type="button"
+                onClick={handlePrevPhoto}
+                className="absolute left-2 sm:left-4 p-3.5 rounded-full bg-zinc-950/70 hover:bg-emerald-500 hover:text-black text-white hover:scale-105 active:scale-95 transition-all duration-200 z-10 border border-zinc-900/60 cursor-pointer shadow-xl"
+                title="Imagen Anterior (A / Izquierda)"
+              >
+                <ChevronLeft size={20} className="stroke-[3]" />
+              </button>
+
+              {/* Interactive Image Frame */}
+              <div 
+                className="flex-1 h-full flex items-center justify-center p-2 sm:p-6 overflow-auto"
+                onClick={() => setPreviewPhoto(null)}
+              >
+                <motion.div
+                  key={previewPhoto.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.28, ease: "easeOut" }}
+                  className="relative max-h-full flex items-center justify-center cursor-zoom-in"
+                  onClick={(e) => toggleZoom(e)}
+                >
+                  <motion.img
+                    src={previewPhoto.url} 
+                    alt={previewPhoto.caption} 
+                    className="max-w-full rounded-2xl border border-zinc-850 shadow-2xl object-contain origin-center cursor-zoom-in transition-all duration-300"
+                    style={{ 
+                      scale: zoomScale,
+                      maxHeight: '52vh'
+                    }}
+                    referrerPolicy="no-referrer"
+                  />
+                  
+                  {shareCopied && (
+                    <div className="absolute top-4 bg-emerald-500 text-black px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-2xl animate-bounce">
+                      <Check size={12} className="stroke-[3]" />
+                      <span>¡Enlace Copiado al Portapapeles!</span>
+                    </div>
+                  )}
+                </motion.div>
+              </div>
+
+              {/* Next Image Chevron */}
+              <button
+                type="button"
+                onClick={handleNextPhoto}
+                className="absolute right-2 sm:right-4 p-3.5 rounded-full bg-zinc-950/70 hover:bg-emerald-500 hover:text-black text-white hover:scale-105 active:scale-95 transition-all duration-200 z-10 border border-zinc-900/60 cursor-pointer shadow-xl"
+                title="Siguiente Imagen (D / Derecha)"
+              >
+                <ChevronRight size={20} className="stroke-[3]" />
+              </button>
+            </div>
+
+            {/* UNDER LAYOUT: CAPTIONS AND THUMBNAIL TRACK */}
+            <div 
+              className="w-full space-y-4 max-w-4xl mx-auto z-10 pb-2 sm:pb-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Caption text with glassmorphism */}
+              <div className="bg-zinc-950/80 backdrop-blur-md p-4 rounded-2xl border border-zinc-900/80 text-center space-y-1">
+                <p className="text-white text-xs sm:text-sm font-semibold max-w-2xl mx-auto leading-relaxed">
+                  {previewPhoto.caption}
+                </p>
+                <div className="flex items-center justify-center gap-3 text-[10px] font-mono text-zinc-500 pt-1">
+                  <span>Ficha: #{previewPhoto.id}</span>
+                  <span>•</span>
+                  <span>Categoría: <strong className="text-emerald-405 uppercase font-bold">{previewPhoto.category}</strong></span>
+                  <span>•</span>
+                  <span>Fecha: {new Date(previewPhoto.uploadedAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+
+              {/* Mini Thumbnail Strip Roller */}
+              <div className="flex gap-2.5 py-1.5 px-4 overflow-x-auto justify-start sm:justify-center max-w-full no-scrollbar">
+                {filteredPhotos.map((photo, pIdx) => {
+                  const isActive = photo.id === previewPhoto.id;
+                  return (
+                    <div
+                      key={photo.id}
+                      onClick={() => {
+                        setPreviewPhoto(photo);
+                        setZoomScale(1);
+                      }}
+                      className={`relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer transition-all duration-250 ${
+                        isActive 
+                          ? 'ring-2 ring-emerald-500 scale-110 opacity-100 shadow-[0_0_12px_rgba(16,185,129,0.4)]' 
+                          : 'opacity-40 hover:opacity-100'
+                      }`}
+                      title={`Ver imagen ${pIdx + 1}`}
+                    >
+                      <img 
+                        src={photo.url} 
+                        alt={photo.caption} 
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

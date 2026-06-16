@@ -33,6 +33,10 @@ export interface Reservation {
   paymentStatus: 'pending' | 'paid';
   entryCode?: string; // Access code for the complex
   createdAt: string;
+  checkedIn?: boolean; // digital check-in flag
+  checkedInAt?: string; // time of check-in
+  advancePaid?: number; // accumulated down payment
+  historyLogs?: string[]; // audit tracking for this individual reservation
 }
 
 export interface Payment {
@@ -101,7 +105,20 @@ export interface Player {
   contact: string;
   goals?: number; // Goles marcados en el torneo
   createdAt: string;
+  yellowCards?: number; // suspensions or infractions
+  redCards?: number;
+  bannedGames?: number; // suspension games pending
 }
+
+export interface AuditLog {
+  id: string;
+  timestamp: string;
+  role: 'owner' | 'receptionist' | 'moderator';
+  adminName: string;
+  actionType: string;
+  description: string;
+}
+
 
 export interface AppStats {
   totalReservations: number;

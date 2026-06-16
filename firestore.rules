@@ -1,0 +1,255 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Safety Net (Pillar 1)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helper Primitives ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        (request.auth.token.keys().contains('email') && request.auth.token.email.matches('(?i)^admin@canchafutbol\\.com$')) || (
+          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        )
+      );
+    }
+
+    function isOwner(uidField) {
+      return isSignedIn() && uidField == request.auth.uid;
+    }
+
+    // --- Validation Blueprints (Pillar 2 & 5) ---
+    function isValidUser(data) {
+      return data.keys().hasAll(['id', 'name', 'email', 'phone', 'role']) &&
+             data.keys().size() >= 5 && data.keys().size() <= 6 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 150 &&
+             data.email is string && data.email.size() <= 150 &&
+             data.phone is string && data.phone.size() <= 50 &&
+             data.role in ['user', 'admin'];
+    }
+
+    function isValidField(data) {
+      return data.keys().hasAll(['id', 'name', 'basePricePerHour', 'lightPriceSurcharge', 'nightHoursStart']) &&
+             data.keys().size() >= 5 && data.keys().size() <= 7 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 150 &&
+             data.basePricePerHour is number && data.basePricePerHour >= 0 &&
+             data.lightPriceSurcharge is number && data.lightPriceSurcharge >= 0 &&
+             data.nightHoursStart is number && data.nightHoursStart >= 0 && data.nightHoursStart <= 24;
+    }
+
+    function isValidReservation(data) {
+      return data.keys().hasAll(['id', 'userName', 'userEmail', 'userPhone', 'date', 'timeSlot', 'duration', 'fieldId', 'fieldName', 'totalPrice', 'status', 'paymentStatus']) &&
+             data.keys().size() >= 12 && data.keys().size() <= 17 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.userName is string && data.userName.size() <= 150 &&
+             data.userEmail is string && data.userEmail.size() <= 150 &&
+             data.userPhone is string && data.userPhone.size() <= 50 &&
+             data.date is string && data.date.size() <= 30 &&
+             data.timeSlot is string && data.timeSlot.size() <= 100 &&
+             data.duration is number && data.duration > 0 &&
+             data.fieldId is string && data.fieldId.size() <= 128 &&
+             data.fieldName is string && data.fieldName.size() <= 150 &&
+             data.totalPrice is number && data.totalPrice >= -1 &&
+             data.status in ['pending', 'confirmed', 'cancelled'] &&
+             data.paymentStatus in ['pending', 'paid'];
+    }
+
+    function isValidPayment(data) {
+      return data.keys().hasAll(['id', 'reservationId', 'amount', 'paymentMethod', 'status', 'createdAt']) &&
+             data.keys().size() >= 6 && data.keys().size() <= 7 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.reservationId is string && data.reservationId.size() <= 128 &&
+             data.amount is number && data.amount >= 0 &&
+             data.paymentMethod in ['stripe', 'paypal', 'whatsapp_transfer', 'cash'] &&
+             data.status in ['pending', 'completed', 'failed'] &&
+             data.createdAt is string;
+    }
+
+    function isValidPromotion(data) {
+      return data.keys().hasAll(['id', 'title', 'description', 'discountPercentage', 'validUntil', 'isActive', 'type']) &&
+             data.keys().size() >= 7 && data.keys().size() <= 8 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.title is string && data.title.size() <= 150 &&
+             data.description is string && data.description.size() <= 1000 &&
+             data.discountPercentage is number && data.discountPercentage >= 0 && data.discountPercentage <= 100 &&
+             data.validUntil is string && data.validUntil.size() <= 20 &&
+             data.isActive is bool &&
+             data.type in ['discount', 'tournament', 'special'];
+    }
+
+    function isValidPhoto(data) {
+      return data.keys().hasAll(['id', 'url', 'caption', 'category', 'uploadedAt']) &&
+             data.keys().size() == 5 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.url is string && data.url.size() <= 500 &&
+             data.caption is string && data.caption.size() <= 500 &&
+             data.category in ['facilities', 'matches', 'events'] &&
+             data.uploadedAt is string;
+    }
+
+    function isValidVideo(data) {
+      return data.keys().hasAll(['id', 'title', 'url', 'thumbnailUrl', 'category', 'isLive', 'views', 'uploadedAt']) &&
+             data.keys().size() == 8 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.title is string && data.title.size() <= 200 &&
+             data.url is string && data.url.size() <= 500 &&
+             data.thumbnailUrl is string && data.thumbnailUrl.size() <= 500 &&
+             data.category in ['live', 'highlight', 'full_match'] &&
+             data.isLive is bool &&
+             data.views is number && data.views >= 0 &&
+             data.uploadedAt is string;
+    }
+
+    function isValidTeam(data) {
+      return data.keys().hasAll(['id', 'name', 'color', 'captainContact']) &&
+             data.keys().size() >= 4 && data.keys().size() <= 13 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 150 &&
+             data.color is string && data.color.size() <= 100 &&
+             data.captainContact is string && data.captainContact.size() <= 150;
+    }
+
+    function isValidPlayer(data) {
+      return data.keys().hasAll(['id', 'teamId', 'name', 'age', 'position']) &&
+             data.keys().size() >= 5 && data.keys().size() <= 9 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.teamId is string && data.teamId.size() <= 128 &&
+             data.name is string && data.name.size() <= 150 &&
+             data.age is number && data.age >= 0 && data.age <= 120 &&
+             data.position is string && data.position.size() <= 100;
+    }
+
+    function isValidReview(data) {
+      return data.keys().hasAll(['id', 'fieldId', 'fieldName', 'userId', 'userName', 'rating', 'comment', 'status', 'createdAt']) &&
+             data.keys().size() >= 9 && data.keys().size() <= 12 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.fieldId is string && data.fieldId.size() <= 128 &&
+             data.fieldName is string && data.fieldName.size() <= 150 &&
+             data.userId is string && data.userId.size() <= 128 &&
+             data.userName is string && data.userName.size() <= 150 &&
+             data.rating is number && data.rating >= 1 && data.rating <= 5 &&
+             data.comment is string && data.comment.size() <= 2000 &&
+             data.status in ['pending', 'approved', 'rejected'] &&
+             data.createdAt is string;
+    }
+
+    function isValidDynamicPriceRule(data) {
+      return data.keys().hasAll(['id', 'fieldId', 'name', 'multiplier', 'isActive']) &&
+             data.keys().size() >= 5 && data.keys().size() <= 6 &&
+             data.id is string && data.id.size() <= 128 &&
+             data.fieldId is string && data.fieldId.size() <= 128 &&
+             data.name is string && data.name.size() <= 150 &&
+             data.multiplier is number && data.multiplier >= 0 && data.multiplier <= 10 &&
+             data.isActive is bool;
+    }
+
+    // --- Collection Routes & Protection rules ---
+
+    // 1. Users Profile (PII Isolation - Pillar 6)
+    match /users/{userId} {
+      allow get: if isSignedIn() && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && isValidId(userId) && isValidUser(incoming()) && (isOwner(userId) || isAdmin() || incoming().role == 'user');
+      allow update: if isSignedIn() && isValidId(userId) && isValidUser(incoming()) && (isAdmin() || (isOwner(userId) && incoming().role == existing().role));
+      allow delete: if isAdmin();
+    }
+
+    // 2. Fields configurations (Public catalog but write-guarded)
+    match /fields/{fieldId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidId(fieldId) && isValidField(incoming());
+    }
+
+    // 3. Reservations Booking (Action-Based - Pillar 5)
+    match /reservations/{reservationId} {
+      allow get, list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && isValidId(reservationId) && isValidReservation(incoming()) && (incoming().userId == request.auth.uid || isAdmin());
+      allow update: if isSignedIn() && isValidId(reservationId) && isValidReservation(incoming()) && (
+        isAdmin() || 
+        (incoming().userId == request.auth.uid && existing().userId == request.auth.uid && (
+          // Action: Cancel Booking (Strictly only allow status change - Pillar 4)
+          (incoming().diff(existing()).affectedKeys().hasOnly(['status']) && incoming().status == 'cancelled')
+        ))
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 4. Invoices & Receipts (Pillar 6)
+    match /payments/{paymentId} {
+      allow get: if isSignedIn() && (isAdmin() || get(/databases/$(database)/documents/reservations/$(resource.data.reservationId)).data.userId == request.auth.uid);
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && isValidId(paymentId) && isValidPayment(incoming()) && (
+        isAdmin() || 
+        get(/databases/$(database)/documents/reservations/$(incoming().reservationId)).data.userId == request.auth.uid
+      );
+      allow update, delete: if isAdmin();
+    }
+
+    // 5. Promotions
+    match /promotions/{promotionId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidId(promotionId) && isValidPromotion(incoming());
+    }
+
+    // 6. Photo Gallery
+    match /photos/{photoId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidId(photoId) && isValidPhoto(incoming());
+    }
+
+    // 7. Video Streams
+    match /videos/{videoId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidId(videoId) && isValidVideo(incoming());
+    }
+
+    // 8. Teams
+    match /teams/{teamId} {
+      allow read: if true;
+      allow write: if isSignedIn() && isValidId(teamId) && isValidTeam(incoming());
+    }
+
+    // 9. Players list
+    match /players/{playerId} {
+      allow read: if true;
+      allow write: if isSignedIn() && isValidId(playerId) && isValidPlayer(incoming()) && (
+        isAdmin() || 
+        exists(/databases/$(database)/documents/teams/$(incoming().teamId))
+      );
+    }
+
+    // 10. Cancha Customer Reviews
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isValidId(reviewId) && isValidReview(incoming()) && (incoming().userId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    // 11. Dynamic Multipliers
+    match /dynamicPrices/{ruleId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidId(ruleId) && isValidDynamicPriceRule(incoming());
+    }
+  }
+}
