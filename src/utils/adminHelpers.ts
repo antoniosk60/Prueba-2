@@ -79,6 +79,47 @@ export function exportFinancesToCSV(reservations: Reservation[]) {
 }
 
 /**
+ * Downloads a tabular CSV representation of payments history filtered and formatted
+ */
+export function exportPaymentsToCSV(payments: any[], reservations: Reservation[]) {
+  const headers = ['ID Pago', 'Folio Reserva', 'Cliente', 'Correo', 'Monto Pagado', 'Metodo de Pago', 'ID Transactorial', 'Estado Pago', 'Fecha de Registro'];
+  
+  const rows = payments.map(pay => {
+    const res = reservations.find(r => r.id === pay.reservationId);
+    const clientName = res ? res.userName : 'N/A';
+    const clientEmail = res ? res.userEmail : 'N/A';
+    
+    let methodDisplay = pay.paymentMethod;
+    if (pay.paymentMethod === 'stripe') methodDisplay = 'Tarjeta (Stripe)';
+    else if (pay.paymentMethod === 'paypal') methodDisplay = 'PayPal';
+    else if (pay.paymentMethod === 'whatsapp_transfer') methodDisplay = 'Transferencia WhatsApp';
+    else if (pay.paymentMethod === 'cash') methodDisplay = 'Efectivo en Caja';
+    
+    return [
+      `"${pay.id}"`,
+      `"${pay.reservationId}"`,
+      `"${clientName}"`,
+      `"${clientEmail}"`,
+      pay.amount || 0,
+      `"${methodDisplay}"`,
+      `"${pay.transactionId || 'Sin ID'}"`,
+      `"${pay.status === 'completed' ? 'Completado' : pay.status === 'pending' ? 'Pendiente' : 'Fallado'}"`,
+      `"${pay.createdAt}"`
+    ];
+  });
+  
+  const csvContent = "\ufeff" + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", `Tribol_Historial_Pagos_${new Date().toISOString().split('T')[0]}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+/**
  * Analyzes reservation schedule occupancy to identify "Horas Valle" (under-occupied timeslots)
  */
 export function analyzeLowOccupancyHours(reservations: Reservation[]) {

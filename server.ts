@@ -306,6 +306,10 @@ async function startServer() {
   });
 
   // 4. Payments API (Simulated Checkout integration)
+  app.get('/api/payments', requireAdmin, (req, res) => {
+    res.json(dbStore.getPayments());
+  });
+
   app.post('/api/payments', (req, res) => {
     const { reservationId, amount, paymentMethod, transactionId } = req.body;
 

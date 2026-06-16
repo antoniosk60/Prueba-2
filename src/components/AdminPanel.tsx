@@ -32,7 +32,8 @@ import {
   Download,
   Send,
   FileSpreadsheet,
-  QrCode
+  QrCode,
+  CreditCard
 } from 'lucide-react';
 import { 
   Reservation, 
@@ -43,11 +44,13 @@ import {
   Review, 
   Video, 
   FieldConfig,
-  AuditLog
+  AuditLog,
+  Payment
 } from '../types';
 import { 
   exportReservationsToCSV, 
   exportFinancesToCSV, 
+  exportPaymentsToCSV, 
   analyzeLowOccupancyHours, 
   getCapitanesLeaderboard, 
   generateRoundRobinFixtures, 
@@ -138,7 +141,8 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
     'admin-promotions' | 
     'admin-prices' | 
     'admin-reviews' | 
-    'admin-teams'
+    'admin-teams' |
+    'admin-payments'
   >('admin-dashboard');
 
   const [isLoading, setIsLoading] = useState(false);
@@ -149,6 +153,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
 
   // Domain lists
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
@@ -162,6 +167,21 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
   const [reservationSearch, setReservationSearch] = useState('');
   const [reservationFilterStatus, setReservationFilterStatus] = useState<'todos' | 'pending' | 'confirmed' | 'cancelled'>('todos');
   const [teamSearch, setTeamSearch] = useState('');
+
+  // Payment filters state
+  const [paymentSearch, setPaymentSearch] = useState('');
+  const [paymentStartDate, setPaymentStartDate] = useState(() => {
+    const today = new Date();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    return `${today.getFullYear()}-${mm}-01`;
+  });
+  const [paymentEndDate, setPaymentEndDate] = useState(() => {
+    const today = new Date();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${today.getFullYear()}-${mm}-${dd}`;
+  });
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState<'todos' | 'stripe' | 'paypal' | 'whatsapp_transfer' | 'cash'>('todos');
   
   // Create promotion form
   const [promoTitle, setPromoTitle] = useState('');
@@ -308,6 +328,12 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
       const ruleRes = await fetch('/api/admin/prices', { headers });
       if (ruleRes.ok) {
         setDynamicPrices(await ruleRes.json());
+      }
+
+      // Payments
+      const paymentsRes = await fetch('/api/payments', { headers });
+      if (paymentsRes.ok) {
+        setPayments(await paymentsRes.json());
       }
 
     } catch (err: any) {
@@ -959,7 +985,8 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                   { id: 'admin-promotions', label: "Administrar Promos", icon: <Sparkles size={14} /> },
                   { id: 'admin-prices', label: "Configurar Tarifas", icon: <DollarSign size={14} /> },
                   { id: 'admin-reviews', label: "Moderar Opiniones", icon: <MessageSquare size={14} /> },
-                  { id: 'admin-teams', label: "Equipos y Plantillas", icon: <Users size={14} /> }
+                  { id: 'admin-teams', label: "Equipos y Plantillas", icon: <Users size={14} /> },
+                  { id: 'admin-payments', label: "Historial de Pagos", icon: <CreditCard size={14} /> }
                 ].map(item => (
                   <button
                     key={item.id}
@@ -3163,6 +3190,361 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                         })}
                       </div>
                     )}
+
+                  </div>
+                )}
+
+                {activeTab === 'admin-payments' && (
+                  <div className="space-y-8 animate-in fade-in duration-200 text-left" id="admin-payments-container">
+                    
+                    {/* Header Controls */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-900 pb-5">
+                      <div>
+                        <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                          <CreditCard className="text-emerald-400" size={20} />
+                          <span>Auditoría de Pagos y Caja</span>
+                        </h2>
+                        <p className="text-xs text-zinc-500 mt-1">
+                          Consulte y exporte las transacciones de abonos y reservaciones registradas en el sistema.
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          onClick={() => {
+                            setPaymentSearch('');
+                            setPaymentMethodFilter('todos');
+                            const today = new Date();
+                            const mm = String(today.getMonth() + 1).padStart(2, '0');
+                            setPaymentStartDate(`${today.getFullYear()}-${mm}-01`);
+                            setPaymentEndDate(`${today.getFullYear()}-${mm}-${String(today.getDate()).padStart(2, '0')}`);
+                          }}
+                          className="px-3.5 py-2 rounded-xl border border-zinc-900 hover:bg-zinc-900 hover:text-white transition text-xs font-semibold text-zinc-400 cursor-pointer"
+                          title="Restablecer todos los filtros"
+                        >
+                          Reiniciar Filtros
+                        </button>
+                        
+                        <button
+                          onClick={() => {
+                            const filtered = payments.filter(pay => {
+                              const res = reservations.find(r => r.id === pay.reservationId);
+                              const clientName = res ? res.userName.toLowerCase() : '';
+                              const clientEmail = res ? res.userEmail.toLowerCase() : '';
+                              const fieldName = res ? res.fieldName.toLowerCase() : '';
+                              const transId = (pay.transactionId || '').toLowerCase();
+                              const payId = pay.id.toLowerCase();
+                              
+                              const matchesSearch = !paymentSearch ? true : (
+                                clientName.includes(paymentSearch.toLowerCase()) ||
+                                clientEmail.includes(paymentSearch.toLowerCase()) ||
+                                fieldName.includes(paymentSearch.toLowerCase()) ||
+                                transId.includes(paymentSearch.toLowerCase()) ||
+                                payId.includes(paymentSearch.toLowerCase())
+                              );
+                              
+                              let matchesDate = true;
+                              if (pay.createdAt) {
+                                const payDateStr = pay.createdAt.split('T')[0];
+                                if (paymentStartDate && payDateStr < paymentStartDate) matchesDate = false;
+                                if (paymentEndDate && payDateStr > paymentEndDate) matchesDate = false;
+                              }
+                              
+                              let matchesMethod = true;
+                              if (paymentMethodFilter !== 'todos') {
+                                matchesMethod = pay.paymentMethod === paymentMethodFilter;
+                              }
+                              
+                              return matchesSearch && matchesDate && matchesMethod;
+                            });
+                            exportPaymentsToCSV(filtered, reservations);
+                          }}
+                          className="rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black px-4 py-2 text-xs font-black shadow-lg shadow-emerald-500/10 cursor-pointer flex items-center gap-1.5 transition"
+                          title="Exportar transacciones filtradas"
+                        >
+                          <FileSpreadsheet size={13} />
+                          <span>Exportar Lista</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Filter controls section */}
+                    <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 space-y-4">
+                      <span className="text-[10px] text-emerald-400 uppercase font-black tracking-widest block font-sans">
+                        🔍 FILTRADO Y CRONOLOGÍA DE TRANSACCIONES
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        
+                        <div>
+                          <label className="text-[10px] text-zinc-500 uppercase font-bold block mb-1">Palabra clave</label>
+                          <div className="relative">
+                            <Search className="absolute left-3 top-2.5 text-zinc-500" size={13} />
+                            <input
+                              type="text"
+                              value={paymentSearch}
+                              onChange={(e) => setPaymentSearch(e.target.value)}
+                              placeholder="Buscar cliente, correo, folio..."
+                              className="w-full rounded-xl bg-zinc-900/50 border border-zinc-900 px-3 py-2 pl-8 text-xs text-white placeholder-zinc-650 focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] text-zinc-500 uppercase font-bold block mb-1">Caja Desde (Fecha)</label>
+                          <input
+                            type="date"
+                            value={paymentStartDate}
+                            onChange={(e) => setPaymentStartDate(e.target.value)}
+                            className="w-full rounded-xl bg-zinc-900/50 border border-zinc-900 px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] text-zinc-500 uppercase font-bold block mb-1">Caja Hasta (Fecha)</label>
+                          <input
+                            type="date"
+                            value={paymentEndDate}
+                            onChange={(e) => setPaymentEndDate(e.target.value)}
+                            className="w-full rounded-xl bg-zinc-900/50 border border-zinc-900 px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] text-zinc-500 uppercase font-bold block mb-1">Método de cobro</label>
+                          <select
+                            value={paymentMethodFilter}
+                            onChange={(e: any) => setPaymentMethodFilter(e.target.value)}
+                            className="w-full rounded-xl bg-zinc-900/50 border border-zinc-900 px-3 py-2 text-xs text-zinc-300 focus:outline-none focus:border-emerald-500 appearance-none cursor-pointer"
+                          >
+                            <option value="todos">Todos los métodos</option>
+                            <option value="stripe">Tarjetas (Stripe)</option>
+                            <option value="paypal">PayPal Gateway</option>
+                            <option value="whatsapp_transfer">Transferencia de WhatsApp</option>
+                            <option value="cash">Efectivo en Recepción</option>
+                          </select>
+                        </div>
+
+                      </div>
+                    </div>
+
+                    {/* Filter result calculation & Stats summary row */}
+                    {(() => {
+                      const list = payments.filter(pay => {
+                        const res = reservations.find(r => r.id === pay.reservationId);
+                        const clientName = res ? res.userName.toLowerCase() : '';
+                        const clientEmail = res ? res.userEmail.toLowerCase() : '';
+                        const fieldName = res ? res.fieldName.toLowerCase() : '';
+                        const transId = (pay.transactionId || '').toLowerCase();
+                        const payId = pay.id.toLowerCase();
+                        
+                        const matchesSearch = !paymentSearch ? true : (
+                          clientName.includes(paymentSearch.toLowerCase()) ||
+                          clientEmail.includes(paymentSearch.toLowerCase()) ||
+                          fieldName.includes(paymentSearch.toLowerCase()) ||
+                          transId.includes(paymentSearch.toLowerCase()) ||
+                          payId.includes(paymentSearch.toLowerCase())
+                        );
+                        
+                        let matchesDate = true;
+                        if (pay.createdAt) {
+                          const payDateStr = pay.createdAt.split('T')[0];
+                          if (paymentStartDate && payDateStr < paymentStartDate) matchesDate = false;
+                          if (paymentEndDate && payDateStr > paymentEndDate) matchesDate = false;
+                        }
+                        
+                        let matchesMethod = true;
+                        if (paymentMethodFilter !== 'todos') {
+                          matchesMethod = pay.paymentMethod === paymentMethodFilter;
+                        }
+                        
+                        return matchesSearch && matchesDate && matchesMethod;
+                      });
+
+                      const totalAmount = list.reduce((sum, p) => sum + (p.amount || 0), 0);
+                      const stripeSum = list.filter(p => p.paymentMethod === 'stripe').reduce((sum, p) => sum + (p.amount || 0), 0);
+                      const paypalSum = list.filter(p => p.paymentMethod === 'paypal').reduce((sum, p) => sum + (p.amount || 0), 0);
+                      const transferSum = list.filter(p => p.paymentMethod === 'whatsapp_transfer').reduce((sum, p) => sum + (p.amount || 0), 0);
+                      const cashSum = list.filter(p => p.paymentMethod === 'cash').reduce((sum, p) => sum + (p.amount || 0), 0);
+
+                      return (
+                        <>
+                          {/* Bento Grid Analytics */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                            
+                            <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 hover:border-emerald-500/20 transition duration-150">
+                              <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block font-sans">Recaudación Filtrada</span>
+                              <strong className="text-2xl font-mono text-emerald-400 mt-1 block font-black">
+                                ${totalAmount.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              </strong>
+                              <span className="text-[10px] text-zinc-600 mt-1 block font-mono">Período de caja actual</span>
+                            </div>
+
+                            <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 hover:border-emerald-500/20 transition duration-150">
+                              <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block font-sans">Transacciones Totales</span>
+                              <strong className="text-2xl font-mono text-white mt-1 block font-black">
+                                {list.length} <span className="text-xs text-zinc-500 font-sans font-normal">recibos</span>
+                              </strong>
+                              <span className="text-[10px] text-zinc-650 mt-1 block font-mono">Promedio: ${list.length > 0 ? (totalAmount / list.length).toFixed(1) : 0} MXN</span>
+                            </div>
+
+                            <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 hover:border-emerald-500/20 transition duration-150 sm:col-span-2">
+                              <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-2 font-sans">Composición de Caja</span>
+                              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                                <div className="flex justify-between items-center bg-zinc-900/25 border border-zinc-900/50 rounded-lg p-1.5 px-2">
+                                  <span className="text-zinc-400 font-sans">💳 Stripe:</span>
+                                  <strong className="font-mono text-zinc-300 font-bold">${stripeSum}</strong>
+                                </div>
+                                <div className="flex justify-between items-center bg-zinc-900/25 border border-zinc-900/50 rounded-lg p-1.5 px-2">
+                                  <span className="text-zinc-400 font-sans">🌐 PayPal:</span>
+                                  <strong className="font-mono text-zinc-300 font-bold">${paypalSum}</strong>
+                                </div>
+                                <div className="flex justify-between items-center bg-zinc-900/25 border border-zinc-900/50 rounded-lg p-1.5 px-2">
+                                  <span className="text-zinc-400 font-sans">💬 WhatsApp:</span>
+                                  <strong className="font-mono text-zinc-300 font-bold">${transferSum}</strong>
+                                </div>
+                                <div className="flex justify-between items-center bg-zinc-900/25 border border-zinc-900/50 rounded-lg p-1.5 px-2">
+                                  <span className="text-zinc-400 font-sans">💵 Efectivo:</span>
+                                  <strong className="font-mono text-zinc-300 font-bold">${cashSum}</strong>
+                                </div>
+                              </div>
+                            </div>
+
+                          </div>
+
+                          {/* List or Table of payments */}
+                          <div className="bg-zinc-950 border border-zinc-900 rounded-3xl overflow-hidden shadow-xl">
+                            {list.length === 0 ? (
+                              <div className="py-16 text-center text-xs text-zinc-500 space-y-3 font-sans max-w-sm mx-auto">
+                                <p className="font-bold text-zinc-300">No se encontraron pagos en la selección.</p>
+                                <p className="text-[11px] text-zinc-550 leading-relaxed">
+                                  No existen registros que coincidan con la palabra clave o el rango de fechas seleccionado en la base de datos de administración.
+                                </p>
+                                <button
+                                  onClick={() => {
+                                    setPaymentSearch('');
+                                    setPaymentMethodFilter('todos');
+                                    const today = new Date();
+                                    const mm = String(today.getMonth() + 1).padStart(2, '0');
+                                    setPaymentStartDate(`${today.getFullYear()}-${mm}-01`);
+                                    setPaymentEndDate(`${today.getFullYear()}-${mm}-${String(today.getDate()).padStart(2, '0')}`);
+                                  }}
+                                  className="rounded-xl border border-zinc-900 hover:bg-zinc-900 hover:text-white transition px-3.5 py-1.5 text-[11px] font-bold cursor-pointer"
+                                >
+                                  Restablecer Búsqueda
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="overflow-x-auto">
+                                <table className="w-full border-collapse" id="payments-history-table">
+                                  <thead>
+                                    <tr className="border-b border-zinc-900 text-[10px] text-zinc-500 uppercase tracking-widest font-black bg-zinc-950">
+                                      <th className="px-6 py-4 text-left">Registro / ID</th>
+                                      <th className="px-6 py-4 text-left">Capitán / Concepto Reserva</th>
+                                      <th className="px-6 py-4 text-right">Monto Cobrado</th>
+                                      <th className="px-6 py-4 text-center">Método</th>
+                                      <th className="px-6 py-4 text-left">Comprobante Interno</th>
+                                      <th className="px-6 py-4 text-center">Estado</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="divide-y divide-zinc-900 font-sans text-xs">
+                                    {list.map(pay => {
+                                      const res = reservations.find(r => r.id === pay.reservationId);
+                                      
+                                      const renderMethodBadge = (m: string) => {
+                                        switch (m) {
+                                          case 'stripe':
+                                            return <span className="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded font-bold text-[10px]">Tarjeta Stripe</span>;
+                                          case 'paypal':
+                                            return <span className="bg-sky-500/10 text-sky-400 border border-sky-500/20 px-2 py-0.5 rounded font-bold text-[10px]">PayPal</span>;
+                                          case 'whatsapp_transfer':
+                                            return <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-bold text-[10px]">Transferencia WhatsApp</span>;
+                                          case 'cash':
+                                            return <span className="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-bold text-[10px]">Efectivo Caja</span>;
+                                          default:
+                                            return <span className="bg-zinc-500/10 text-zinc-400 border border-zinc-500/20 px-2 py-0.5 rounded font-bold text-[10px]">{m}</span>;
+                                        }
+                                      };
+
+                                      const formattedDate = pay.createdAt 
+                                        ? new Date(pay.createdAt).toLocaleString('es-MX', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                          })
+                                        : 'N/A';
+
+                                      return (
+                                        <tr key={pay.id} className="hover:bg-zinc-900/30 transition duration-100">
+                                          
+                                          <td className="px-6 py-4.5 whitespace-nowrap text-left leading-relaxed">
+                                            <span className="font-mono text-zinc-500 text-[10px] block">{pay.id}</span>
+                                            <span className="text-[10px] text-zinc-500 block font-mono mt-0.5">{formattedDate}</span>
+                                          </td>
+
+                                          <td className="px-6 py-4.5 text-left leading-relaxed">
+                                            {res ? (
+                                              <>
+                                                <div className="font-bold text-white flex items-center gap-1.5">
+                                                  <span>{res.userName}</span>
+                                                  <span className="text-[10px] font-normal text-zinc-500 font-mono">({res.userPhone})</span>
+                                                </div>
+                                                <div className="text-[10px] text-zinc-500 mt-1 block">
+                                                  Cancha: <strong className="text-zinc-400 font-sans">{res.fieldName}</strong> | Fecha del juego: {res.date} ({res.timeSlot})
+                                                </div>
+                                              </>
+                                            ) : (
+                                              <div>
+                                                <span className="text-zinc-500 italic block">Reserva Desasociada</span>
+                                                <span className="text-[9px] text-zinc-650 block mt-0.5">Folio original: {pay.reservationId}</span>
+                                              </div>
+                                            )}
+                                          </td>
+
+                                          <td className="px-6 py-4.5 text-right whitespace-nowrap">
+                                            <strong className="font-mono text-emerald-400 text-sm font-black">
+                                              ${(pay.amount || 0).toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                                            </strong>
+                                            <span className="text-[9px] text-zinc-500 block font-mono mt-0.5">MXN (Abonado)</span>
+                                          </td>
+
+                                          <td className="px-6 py-4.5 text-center whitespace-nowrap">
+                                            {renderMethodBadge(pay.paymentMethod)}
+                                          </td>
+
+                                          <td className="px-6 py-4.5 text-left whitespace-nowrap leading-none">
+                                            <span className="font-mono text-[10px] text-zinc-300 block">{pay.transactionId || 'tx_no_def'}</span>
+                                            <span className="text-[8px] uppercase tracking-wider font-extrabold text-zinc-550 block mt-1.5">REGISTRADOR GENERAL</span>
+                                          </td>
+
+                                          <td className="px-6 py-4.5 text-center whitespace-nowrap">
+                                            {pay.status === 'completed' ? (
+                                              <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider font-sans">
+                                                Exitoso
+                                              </span>
+                                            ) : pay.status === 'pending' ? (
+                                              <span className="bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider font-sans">
+                                                Pendiente
+                                              </span>
+                                            ) : (
+                                              <span className="bg-rose-500/10 text-rose-450 border border-rose-500/30 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider font-sans">
+                                                Fallado
+                                              </span>
+                                            )}
+                                          </td>
+
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      );
+                    })()}
 
                   </div>
                 )}
