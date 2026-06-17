@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import CustomerDetailsModal from './CustomerDetailsModal';
+import AdminGoogleDrive from './AdminGoogleDrive';
 import { 
   LayoutDashboard, 
   Calendar, 
@@ -33,7 +35,8 @@ import {
   Send,
   FileSpreadsheet,
   QrCode,
-  CreditCard
+  CreditCard,
+  Cloud
 } from 'lucide-react';
 import { 
   Reservation, 
@@ -88,6 +91,9 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
   // --- PARTIAL PAYMENT REGISTRATION POP OVER ---
   const [payingReservation, setPayingReservation] = useState<Reservation | null>(null);
   const [abonoAmountInput, setAbonoAmountInput] = useState<string>('200');
+
+  // --- SELECTED CUSTOMER DETAIL REPORT OVERLAY ---
+  const [selectedDetailedCustomer, setSelectedDetailedCustomer] = useState<{ name: string; phone: string; email: string } | null>(null);
 
   // --- MONTHLY ACCOUNTING EXPORT STATE & HELPERS ---
   const [selectedExportMonth, setSelectedExportMonth] = useState<string>(() => {
@@ -986,7 +992,8 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                   { id: 'admin-prices', label: "Configurar Tarifas", icon: <DollarSign size={14} /> },
                   { id: 'admin-reviews', label: "Moderar Opiniones", icon: <MessageSquare size={14} /> },
                   { id: 'admin-teams', label: "Equipos y Plantillas", icon: <Users size={14} /> },
-                  { id: 'admin-payments', label: "Historial de Pagos", icon: <CreditCard size={14} /> }
+                  { id: 'admin-payments', label: "Historial de Pagos", icon: <CreditCard size={14} /> },
+                  { id: 'admin-drive', label: "Copias Google Drive", icon: <Cloud size={14} /> }
                 ].map(item => (
                   <button
                     key={item.id}
@@ -1604,7 +1611,20 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                     </td>
                                     <td className="px-5 py-4">
                                       <div className="flex flex-col text-zinc-400 gap-0.5">
-                                        <span className="font-bold text-white font-sans">{res.userName}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setSelectedDetailedCustomer({
+                                              name: res.userName,
+                                              phone: res.userPhone,
+                                              email: res.userEmail
+                                            });
+                                          }}
+                                          className="font-bold text-white font-sans text-left hover:text-emerald-400 hover:underline transition focus:outline-none cursor-pointer"
+                                          title={`Ver perfil y comportamiento de ${res.userName}`}
+                                        >
+                                          {res.userName}
+                                        </button>
                                         <span className="flex items-center gap-1 text-[10px] text-zinc-550 font-mono">
                                           <Phone size={10} /> {res.userPhone}
                                         </span>
@@ -2124,6 +2144,18 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                           </div>
                         </div>
                       </div>
+                    )}
+
+                    {selectedDetailedCustomer && (
+                      <CustomerDetailsModal
+                        customerName={selectedDetailedCustomer.name}
+                        customerPhone={selectedDetailedCustomer.phone}
+                        customerEmail={selectedDetailedCustomer.email || ''}
+                        allReservations={reservations}
+                        allPayments={payments}
+                        onClose={() => setSelectedDetailedCustomer(null)}
+                        getFieldFriendlyName={getFieldFriendlyName}
+                      />
                     )}
 
                   </div>
@@ -3194,6 +3226,14 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                   </div>
                 )}
 
+                {activeTab === 'admin-drive' && (
+                  <AdminGoogleDrive
+                    reservations={reservations}
+                    payments={payments}
+                    getFieldFriendlyName={getFieldFriendlyName}
+                  />
+                )}
+
                 {activeTab === 'admin-payments' && (
                   <div className="space-y-8 animate-in fade-in duration-200 text-left" id="admin-payments-container">
                     
@@ -3487,7 +3527,20 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                             {res ? (
                                               <>
                                                 <div className="font-bold text-white flex items-center gap-1.5">
-                                                  <span>{res.userName}</span>
+                                                  <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                      setSelectedDetailedCustomer({
+                                                        name: res.userName,
+                                                        phone: res.userPhone,
+                                                        email: res.userEmail
+                                                      });
+                                                    }}
+                                                    className="font-bold text-white font-sans text-left hover:text-emerald-400 hover:underline transition focus:outline-none cursor-pointer"
+                                                    title={`Ver perfil y comportamiento de ${res.userName}`}
+                                                  >
+                                                    {res.userName}
+                                                  </button>
                                                   <span className="text-[10px] font-normal text-zinc-500 font-mono">({res.userPhone})</span>
                                                 </div>
                                                 <div className="text-[10px] text-zinc-500 mt-1 block">

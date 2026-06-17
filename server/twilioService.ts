@@ -165,3 +165,104 @@ Presenta este código al ingresar a las instalaciones deportivas de Ayotla.
     };
   }
 }
+
+/**
+ * Sends a WhatsApp notification to the administrator when a new booking is confirmed.
+ */
+export async function sendAdminConfirmationWhatsApp(
+  reservation: Reservation
+): Promise<WhatsAppSentResult> {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  let fromNumber = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886';
+  const adminPhone = process.env.ADMIN_WHATSAPP_NUMBER || '+525512345678';
+
+  if (!fromNumber.startsWith('whatsapp:')) {
+    fromNumber = `whatsapp:${fromNumber}`;
+  }
+
+  const formattedTo = formatWhatsAppNumber(adminPhone);
+
+  const extrasList: string[] = [];
+  if (reservation.extras.balls) extrasList.push('⚽ Balones de juego');
+  if (reservation.extras.bibs) extrasList.push('🎽 Casacas/Chalecos');
+  if (reservation.extras.referee) extrasList.push('🏁 Árbitro Profesional');
+  const extrasString = extrasList.length > 0 ? extrasList.join(', ') : 'Ninguno';
+
+  const entryCode = reservation.entryCode || 'No asignado';
+
+  const messageBody = `*🔔 NUEVA RESERVA CONFIRMADA - ADMINISTRACIÓN* 🏟️🐢
+Un partido ha sido confirmado en el sistema.
+
+*Detalles de la Reserva:*
+🆔 *ID:* ${reservation.id}
+👤 *Cliente:* ${reservation.userName}
+📞 *Teléfono:* ${reservation.userPhone}
+✉️ *Email:* ${reservation.userEmail}
+📅 *Fecha:* ${reservation.date}
+⏰ *Horario:* ${reservation.timeSlot} (${reservation.duration} h)
+🏟️ *Cancha:* ${reservation.fieldName}
+💡 *Iluminación:* ${reservation.hasLights ? 'Sí' : 'No'}
+🎒 *Adicionales:* ${extrasString}
+💰 *Total:* $${reservation.totalPrice} MXN
+💳 *Estado del Pago:* ${reservation.paymentStatus === 'paid' ? 'PAGADO ✓' : 'PENDIENTE ⚠️'}
+🔑 *Código de Entrada:* \`${entryCode}\`
+
+Se requiere preparar la cancha previo al horario reservado. ¡Buen día! ⚽🔥`;
+
+  const isValidSid = typeof accountSid === 'string' && accountSid.trim().startsWith('AC');
+  const isValidToken = typeof authToken === 'string' && authToken.trim().length > 0 && !authToken.includes('MY_') && !authToken.includes('YOUR_');
+
+  if (!accountSid || !authToken || !isValidSid || !isValidToken) {
+    const errorMsg = 'NOTIFICACIÓN ADMIN SIMULADA: Credenciales de Twilio no válidas o ausentes.';
+    console.warn(`[TWILIO ADMIN WARNING]: ${errorMsg}`);
+    console.log(`[WhatsApp Admin simulado para ${formattedTo}]:\n${messageBody}`);
+    
+    return {
+      success: true,
+      simulated: true,
+      recipient: formattedTo,
+      body: messageBody,
+      error: 'Twilio no configurado correctamente. El mensaje de admin fue simulado.'
+    };
+  }
+
+  try {
+    const client = getTwilioClient();
+    const result = await client.messages.create({
+      body: messageBody,
+      from: fromNumber,
+      to: formattedTo
+    });
+
+    console.log(`[TWILIO ADMIN SUCCESS]: Notificación de admin enviada a ${formattedTo}. SID: ${result.sid}`);
+    return {
+      success: true,
+      messageSid: result.sid,
+      simulated: false,
+      recipient: formattedTo,
+      body: messageBody
+    };
+  } catch (err: any) {
+    const isValidationError = err.message && (err.message.includes('must start with AC') || err.message.includes('Faltan configurar') || err.message.includes('not configured'));
+    if (isValidationError) {
+      console.warn(`[TWILIO ADMIN WARNING]: Credenciales no válidas. Simulación para admin ${formattedTo}:\n${messageBody}`);
+      return {
+        success: true,
+        simulated: true,
+        recipient: formattedTo,
+        body: messageBody,
+        error: err.message
+      };
+    }
+    console.error('[TWILIO ADMIN ERROR]: Falló el envío de WhatsApp a admin.', err);
+    return {
+      success: false,
+      error: err.message || 'Error desconocido al enviar el mensaje de Twilio al admin.',
+      simulated: false,
+      recipient: formattedTo,
+      body: messageBody
+    };
+  }
+}
+

@@ -259,15 +259,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#020403] text-gray-100 flex flex-col justify-between selection:bg-emerald-500 selection:text-black">
       
-      {/* Floating preview toggle for testing Android view in web mock */}
-      {!isCapacitorNative && (
-        <button
-          onClick={toggleAndroidView}
-          className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-black font-extrabold text-xs py-3.5 px-5 rounded-full shadow-[0_4px_22px_rgba(16,185,129,0.35)] flex items-center space-x-2 border border-emerald-300/30 transition-transform hover:scale-105 cursor-pointer"
-        >
-          <span>📱 Vista App Android Admin</span>
-        </button>
-      )}
+
 
       {/* Upper Navigation Header */}
       <Header

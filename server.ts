@@ -3,7 +3,7 @@ import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { dbStore, signToken, verifyToken, FIELDS } from './server/dbStore';
 import { Reservation, Payment, Promotion, Photo, Video, User, Team, Player, Review } from './src/types';
-import { sendReservationWhatsApp, generateEntryCode } from './server/twilioService';
+import { sendReservationWhatsApp, generateEntryCode, sendAdminConfirmationWhatsApp } from './server/twilioService';
 import { sendReservationEmail } from './server/emailService';
 
 
@@ -256,6 +256,13 @@ async function startServer() {
       console.error('[TWILIO EXCEPTION]: Error sending automated transaction WhatsApp:', err);
     });
 
+    // If the reservation is created already confirmed, notify the admin
+    if (saved.status === 'confirmed') {
+      sendAdminConfirmationWhatsApp(saved).catch(err => {
+        console.error('[TWILIO EXCEPTION]: Error sending admin booking confirmation WhatsApp:', err);
+      });
+    }
+
     // Send automated email copy asynchronously in the background
     sendReservationEmail(saved).catch(err => {
       console.error('[EMAIL EXCEPTION]: Error sending confirmation email copy:', err);
@@ -276,6 +283,7 @@ async function startServer() {
 
     // Default status if not provided remains the reservation's current status
     const currentRes = dbStore.getReservations().find(r => r.id === id);
+    const wasAlreadyConfirmed = currentRes ? currentRes.status === 'confirmed' : false;
     const resolvedStatus = status || (currentRes ? currentRes.status : 'pending');
 
     const updated = dbStore.updateReservationStatus(id, resolvedStatus, paymentStatus, extraData);
@@ -287,6 +295,13 @@ async function startServer() {
     sendReservationWhatsApp(updated).catch(err => {
       console.error('[TWILIO EXCEPTION]: Error sending updated WhatsApp notification:', err);
     });
+
+    // If reservation status has transitioned to confirmed, notify the admin
+    if (updated.status === 'confirmed' && !wasAlreadyConfirmed) {
+      sendAdminConfirmationWhatsApp(updated).catch(err => {
+        console.error('[TWILIO EXCEPTION]: Error sending admin booking confirmation WhatsApp:', err);
+      });
+    }
 
     // Send email notification of updated reservation status
     sendReservationEmail(updated).catch(err => {
@@ -317,6 +332,9 @@ async function startServer() {
       return res.status(400).json({ message: 'Faltan datos requeridos del pago.' });
     }
 
+    const currentResObj = dbStore.getReservations().find(r => r.id === reservationId);
+    const wasAlreadyConfirmed = currentResObj ? currentResObj.status === 'confirmed' : false;
+
     const paymentId = 'pay-' + Math.random().toString(36).substr(2, 9);
     const newPayment: Payment = {
       id: paymentId,
@@ -340,6 +358,13 @@ async function startServer() {
       sendReservationEmail(resObj).catch(err => {
         console.error('[EMAIL EXCEPTION]: Error sending payment confirmation Email:', err);
       });
+
+      // Notify administration if booking transitions to confirmed
+      if (resObj.status === 'confirmed' && !wasAlreadyConfirmed) {
+        sendAdminConfirmationWhatsApp(resObj).catch(err => {
+          console.error('[TWILIO EXCEPTION]: Error sending admin payment confirmation WhatsApp:', err);
+        });
+      }
     }
 
     res.status(201).json(savedPayment);
