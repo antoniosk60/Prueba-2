@@ -254,9 +254,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
     '22:00 - 23:00'
   ];
 
-  // WhatsApp Widget simulation
-  const [isWhatsAppOpen, setIsWhatsAppOpen] = useState(false);
-  const [whatsAppText, setWhatsAppText] = useState('');
+
 
   // Review reply state
   const [replyingReviewId, setReplyingReviewId] = useState<string | null>(null);
@@ -503,16 +501,8 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
     }
   };
 
-  // Base64 file decoder
+  // Base64 file decoder - accepts any format and size
   const processImageFile = (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      setPhotoErrorMsg("Por favor ingresa únicamente archivos de tipo imagen (.png, .jpeg, .jpg, .webp).");
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      setPhotoErrorMsg("La imagen excede el límite recomendado de carga de 10MB.");
-      return;
-    }
     setPhotoFileName(file.name);
     setPhotoErrorMsg('');
 
@@ -872,15 +862,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
     }
   };
 
-  // WhatsApp helper click trigger
-  const handleWhatsAppSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!whatsAppText.trim()) return;
-    const url = `https://wa.me/5215512345678?text=${encodeURIComponent(whatsAppText)}`;
-    window.open(url, '_blank');
-    setWhatsAppText('');
-    setIsWhatsAppOpen(false);
-  };
+
 
   // Utilities converters mapping
   const getFieldFriendlyName = (fid: string) => {
@@ -2225,7 +2207,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                             >
                               <input 
                                 type="file" 
-                                accept="image/*"
+                                accept="image/*, .png, .jpg, .jpeg, .gif, .webp, .svg, .bmp, .tiff, .ico, .heic, .heif, .raw"
                                 onChange={(e) => {
                                   const file = e.target.files?.[0];
                                   if (file) processImageFile(file);
@@ -2238,7 +2220,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                   <span className="font-bold text-white break-all font-mono">{photoFileName}</span>
                                 ) : "Arrastra tu imagen aquí o haz clic para buscar."}
                               </p>
-                              <p className="text-[9px] text-zinc-550 leading-none">Formatos: PNG, JPG, WEBP (Max 10MB)</p>
+                              <p className="text-[9px] text-zinc-550 leading-none">Cualquier formato e imagen (Sin límite de tamaño)</p>
                             </div>
                           </div>
 
@@ -3231,6 +3213,8 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                     reservations={reservations}
                     payments={payments}
                     getFieldFriendlyName={getFieldFriendlyName}
+                    adminToken={token}
+                    onPhotosImported={fetchAllAdminData}
                   />
                 )}
 
@@ -3612,61 +3596,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
         </div>
       </main>
 
-      {/* WHATSAPP SUPPORT FLOATING ACTION TRIGGER COMPONENT */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end" id="whatsapp-floating-button">
-        
-        {isWhatsAppOpen && (
-          <div className="mb-3 w-80 rounded-2xl bg-zinc-950 border border-emerald-500/30 p-4 shadow-2xl transition-all duration-300 animate-in fade-in slide-in-from-bottom-5 text-left">
-            <div className="flex items-center justify-between border-b border-zinc-805 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                </span>
-                <div>
-                  <h4 className="text-sm font-bold text-white">Soporte Tribol Fútbol Rápido</h4>
-                  <p className="text-[11px] text-zinc-500 leading-none mt-1">Soporte técnico administrativo en vivo</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setIsWhatsAppOpen(false)}
-                className="text-zinc-500 hover:text-white p-1"
-              >
-                <XCircle size={15} />
-              </button>
-            </div>
-            
-            <p className="py-4 text-xs text-zinc-400 leading-relaxed font-sans">
-              ⚽ ¡Hola Delegado! Escribe tus dudas sobre torneos especiales, facturas de caja o cambios de cancha e inicia chat vía WhatsApp de inmediato.
-            </p>
 
-            <form onSubmit={handleWhatsAppSubmit} className="flex gap-2">
-              <input 
-                type="text"
-                placeholder="Escribe tu mensaje administrativo..."
-                value={whatsAppText}
-                onChange={(e) => setWhatsAppText(e.target.value)}
-                className="flex-1 rounded-xl bg-zinc-900 border border-zinc-800 px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-504"
-              />
-              <button 
-                type="submit"
-                className="rounded-xl bg-emerald-600 hover:bg-emerald-500 p-2 text-black font-extrabold flex items-center justify-center cursor-pointer transition"
-              >
-                <ChevronRight size={14} className="stroke-[3]" />
-              </button>
-            </form>
-          </div>
-        )}
-
-        <button 
-          onClick={() => setIsWhatsAppOpen(!isWhatsAppOpen)}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-black shadow-lg hover:bg-emerald-400 hover:scale-105 active:scale-95 transition-all cursor-pointer border border-emerald-400/20"
-          title="Soporte WhatsApp"
-        >
-          <MessageSquare size={24} className="stroke-[2.5]" />
-        </button>
-
-      </div>
 
     </div>
   );

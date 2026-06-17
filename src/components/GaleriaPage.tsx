@@ -3,19 +3,7 @@ import { Camera, Eye, Tv, MessageSquare, Send, Users, Play, Pause, Volume2, Volu
 import { motion, AnimatePresence } from 'motion/react';
 import { Photo, Video } from '../types';
 
-const SIMULATED_CHAT_POOL = [
-  { sender: 'Luis_Tribol', text: '¡Venga Tribol! Se ve increíble hoy el partido.' },
-  { sender: 'Santi_99', text: '¿Cuánto van? Me perdí el primer bloque.' },
-  { sender: 'GoleadorX', text: '¡Ese penal no era árbitro! Jajaja.' },
-  { sender: 'Familia_Silva', text: '¡Vamos Barça! Excelente jugada.' },
-  { sender: 'Dany_B', text: 'Qué buena calidad de transmisión, un abrazo.' },
-  { sender: 'Barca_Fan_Sabatina', text: '¡Golazo de Piña! Qué definición el fin de semana.' },
-  { sender: 'Arbitro_Oficial', text: 'Juego limpio por favor en los comentarios.' },
-  { sender: 'Tabora_Fiel', text: '¡Excelente partido de las chicas!' },
-  { sender: 'Yael_Tribol', text: 'La cancha techada se ve nítida de noche.' },
-  { sender: 'Ixtapaluca_Pro', text: 'Se viene penal... ¡golazo!' },
-  { sender: 'Neto_Galan', text: 'Qué partidazo, metan a García Mágico.' }
-];
+
 
 export default function GaleriaPage() {
   const [activeTab, setActiveTab] = useState<'photos' | 'videos'>('photos');
@@ -64,14 +52,38 @@ export default function GaleriaPage() {
     }
   };
 
+  // Helper to extract a clean URL or embed url from any raw text (including iframe codes or plain urls)
+  const resolveVideoUrl = (rawUrl: string): string => {
+    if (!rawUrl) return '';
+    const trimmed = rawUrl.trim();
+    
+    // Check if they pasted an <iframe> embed code
+    if (trimmed.toLowerCase().startsWith('<iframe') || trimmed.toLowerCase().includes('src=')) {
+      const srcMatch = trimmed.match(/src=["']([^"']+)["']/i);
+      if (srcMatch && srcMatch[1]) {
+        return srcMatch[1];
+      }
+    }
+    
+    // If it's a general string but doesn't have http/https, prepend https://
+    if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://') && trimmed.length > 3) {
+      return `https://${trimmed}`;
+    }
+    
+    return trimmed;
+  };
+
   // Reset error when selected video changes or validate URL formats
   useEffect(() => {
     setVideoError(null);
     if (selectedVideo) {
       if (!selectedVideo.url) {
         setVideoError("La transmisión no tiene un enlace configurado en el panel administrativo.");
-      } else if (!selectedVideo.url.startsWith('http://') && !selectedVideo.url.startsWith('https://')) {
-        setVideoError("El enlace del video no tiene un formato web válido (debe iniciar con http:// o https://).");
+      } else {
+        const resolved = resolveVideoUrl(selectedVideo.url);
+        if (!resolved.startsWith('http://') && !resolved.startsWith('https://')) {
+          setVideoError("El enlace del video no tiene un formato web válido (debe iniciar con http:// o https://).");
+        }
       }
     }
   }, [selectedVideo?.id, selectedVideo?.url]);
@@ -103,17 +115,67 @@ export default function GaleriaPage() {
     }
   }, [selectedVideo?.isLive, selectedVideo?.id]);
 
-  // Helper to extract YouTube video ID and construct an embed URL
-  const getYouTubeEmbedUrl = (url: string) => {
-    if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    if (match && match[2].length === 11) {
-      const videoId = match[2];
-      // Note: enablejsapi=1 is standard for interaction, loop is enabled by playlist=VIDEO_ID and loop=1
-      return `https://www.youtube.com/embed/${videoId}?autoplay=${isPlaying ? 1 : 0}&mute=${isMuted ? 1 : 0}&loop=1&playlist=${videoId}&enablejsapi=1`;
+  // Helper to extract any video embed URL or detect if it is raw video format
+  const getEmbeddableUrl = (url: string): { type: 'youtube' | 'facebook' | 'vimeo' | 'iframe' | 'video' | 'invalid'; embedUrl?: string } => {
+    if (!url) return { type: 'invalid' };
+    
+    const cleanUrl = resolveVideoUrl(url);
+    if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+      return { type: 'invalid' };
     }
-    return null;
+
+    // 1. YouTube
+    const ytReg = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const ytMatch = cleanUrl.match(ytReg);
+    if (ytMatch && ytMatch[2].length === 11) {
+      const videoId = ytMatch[2];
+      return {
+        type: 'youtube',
+        embedUrl: `https://www.youtube.com/embed/${videoId}?autoplay=${isPlaying ? 1 : 0}&mute=${isMuted ? 1 : 0}&loop=1&playlist=${videoId}&enablejsapi=1`
+      };
+    }
+
+    // 2. Vimeo
+    const vimeoReg = /vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|showcase\/(\d+)\/video\/|video\/|)(\d+)(?:$|\/|\?)/;
+    const vimeoMatch = cleanUrl.match(vimeoReg);
+    if (vimeoMatch && vimeoMatch[4]) {
+      const videoId = vimeoMatch[4];
+      return {
+        type: 'vimeo',
+        embedUrl: `https://player.vimeo.com/video/${videoId}?autoplay=${isPlaying ? 1 : 0}&muted=${isMuted ? 1 : 0}&loop=1`
+      };
+    }
+
+    // 3. Facebook Video
+    if (cleanUrl.includes('facebook.com')) {
+      const encodedUrl = encodeURIComponent(cleanUrl);
+      return {
+        type: 'facebook',
+        embedUrl: `https://www.facebook.com/plugins/video.php?href=${encodedUrl}&show_text=0&autoplay=${isPlaying ? 1 : 0}&mute=${isMuted ? 1 : 0}`
+      };
+    }
+
+    // 4. TikTok Video
+    const tiktokReg = /tiktok\.com\/.*\/video\/(\d+)/;
+    const tiktokMatch = cleanUrl.match(tiktokReg);
+    if (tiktokMatch && tiktokMatch[1]) {
+      return {
+        type: 'iframe',
+        embedUrl: `https://www.tiktok.com/embed/v2/${tiktokMatch[1]}`
+      };
+    }
+
+    // 5. Direct video formats
+    const isDirectVideo = /\.(mp4|webm|ogg|ogv|mov|m4v|m3u8)(\?.*)?$/i.test(cleanUrl) || cleanUrl.includes('stream') || cleanUrl.includes('m3u8');
+    if (isDirectVideo) {
+      return { type: 'video' };
+    }
+
+    // 6. Otherwise: treat general links as iframe fallback so any link can be embedded
+    return {
+      type: 'iframe',
+      embedUrl: cleanUrl
+    };
   };
 
   const fetchGalleryData = async () => {
@@ -180,27 +242,7 @@ export default function GaleriaPage() {
     return () => clearInterval(syncInterval);
   }, [selectedVideo]);
 
-  // Live chat automatic commentary simulator loop
-  useEffect(() => {
-    if (activeTab !== 'videos' || !selectedVideo || !selectedVideo.isLive) return;
 
-    const interval = setInterval(() => {
-      const randomIndex = Math.floor(Math.random() * SIMULATED_CHAT_POOL.length);
-      const chosen = SIMULATED_CHAT_POOL[randomIndex];
-      const now = new Date();
-      const timeString = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-      
-      setChatMessages(prev => [
-        ...prev,
-        { sender: chosen.sender, text: chosen.text, time: timeString }
-      ].slice(-30)); // Keep last 30 messages for performance
-
-      // Randomly change viewer count slightly
-      setViewerCount(prev => Math.max(120, prev + Math.floor(Math.random() * 11) - 5));
-    }, 4500);
-
-    return () => clearInterval(interval);
-  }, [activeTab, selectedVideo]);
 
   // Keep chat scrolled down as new messages arrive
   useEffect(() => {
@@ -499,60 +541,63 @@ export default function GaleriaPage() {
                 <div className="relative aspect-video rounded-3xl overflow-hidden bg-black border border-emerald-500/15 shadow-2xl group flex flex-col justify-end">
                   
                   {/* Dynamic Video Player/Embed Loader */}
-                  {videoError ? (
-                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-zinc-950 p-6 text-center space-y-4 border border-rose-500/10">
-                      <div className="w-16 h-16 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center animate-pulse">
-                        <Tv className="w-8 h-8 text-rose-500" />
+                  {(() => {
+                    const resolved = getEmbeddableUrl(selectedVideo.url);
+                    return videoError ? (
+                      <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-zinc-950 p-6 text-center space-y-4 border border-rose-500/10">
+                        <div className="w-16 h-16 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center animate-pulse">
+                          <Tv className="w-8 h-8 text-rose-500" />
+                        </div>
+                        <div className="space-y-1.5 max-w-sm">
+                          <h4 className="font-display font-extrabold text-sm text-white uppercase tracking-wider">Señal No Disponible</h4>
+                          <p className="text-gray-400 text-xs leading-relaxed font-sans">
+                            {videoError}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={handleRetryConnection}
+                            className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-[10px] uppercase tracking-wider transition-all cursor-pointer shadow-lg shadow-emerald-500/10"
+                          >
+                            Reintentar Conexión
+                          </button>
+                          <a
+                            href={resolveVideoUrl(selectedVideo.url)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-white font-extrabold text-[10px] uppercase tracking-wider transition-all cursor-pointer"
+                          >
+                            Abrir Enlace Original
+                          </a>
+                        </div>
                       </div>
-                      <div className="space-y-1.5 max-w-sm">
-                        <h4 className="font-display font-extrabold text-sm text-white uppercase tracking-wider">Señal No Disponible</h4>
-                        <p className="text-gray-400 text-xs leading-relaxed font-sans">
-                          {videoError}
-                        </p>
+                    ) : (resolved.type === 'youtube' || resolved.type === 'vimeo' || resolved.type === 'facebook' || resolved.type === 'iframe') ? (
+                      <div className="w-full h-full absolute inset-0">
+                        <iframe
+                          key={selectedVideo.id}
+                          src={resolved.embedUrl!}
+                          className="w-full h-full border-0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                          title={selectedVideo.title}
+                        />
                       </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          type="button"
-                          onClick={handleRetryConnection}
-                          className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-[10px] uppercase tracking-wider transition-all cursor-pointer shadow-lg shadow-emerald-500/10"
-                        >
-                          Reintentar Conexión
-                        </button>
-                        <a
-                          href={selectedVideo.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-white font-extrabold text-[10px] uppercase tracking-wider transition-all cursor-pointer"
-                        >
-                          Abrir Enlace Original
-                        </a>
-                      </div>
-                    </div>
-                  ) : getYouTubeEmbedUrl(selectedVideo.url) ? (
-                    <div className="w-full h-full absolute inset-0">
-                      <iframe
+                    ) : (
+                      <video
+                        ref={videoElementRef}
                         key={selectedVideo.id}
-                        src={getYouTubeEmbedUrl(selectedVideo.url)!}
-                        className="w-full h-full border-0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowFullScreen
-                        title={selectedVideo.title}
+                        src={resolveVideoUrl(selectedVideo.url)}
+                        className="w-full h-full object-cover"
+                        autoPlay={isPlaying}
+                        muted={isMuted}
+                        loop
+                        playsInline
+                        referrerPolicy="no-referrer"
+                        onError={handleVideoError}
                       />
-                    </div>
-                  ) : (
-                    <video
-                      ref={videoElementRef}
-                      key={selectedVideo.id}
-                      src={selectedVideo.url}
-                      className="w-full h-full object-cover"
-                      autoPlay={isPlaying}
-                      muted={isMuted}
-                      loop
-                      playsInline
-                      referrerPolicy="no-referrer"
-                      onError={handleVideoError}
-                    />
-                  )}
+                    );
+                  })()}
 
                   {/* Dark Vignette Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none" />

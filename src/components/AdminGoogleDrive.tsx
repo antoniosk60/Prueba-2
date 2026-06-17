@@ -23,6 +23,8 @@ interface AdminGoogleDriveProps {
   reservations: Reservation[];
   payments: Payment[];
   getFieldFriendlyName: (fid: string) => string;
+  adminToken?: string;
+  onPhotosImported?: () => void;
 }
 
 interface DriveFile {
@@ -38,7 +40,9 @@ interface DriveFile {
 export default function AdminGoogleDrive({
   reservations,
   payments,
-  getFieldFriendlyName
+  getFieldFriendlyName,
+  adminToken,
+  onPhotosImported
 }: AdminGoogleDriveProps) {
   const [user, setUser] = useState<any>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -46,6 +50,14 @@ export default function AdminGoogleDrive({
   const [actionLoading, setActionLoading] = useState<boolean>(false);
   const [actionStatus, setActionStatus] = useState<{ type: 'success' | 'error' | null; message: string }>({ type: null, message: '' });
   
+  // Tabs toggle
+  const [activeSubTab, setActiveSubTab] = useState<'backups' | 'import-photos'>('backups');
+  // Photo import custom states
+  const [importFolderId, setImportFolderId] = useState<string>('1ecB8OYnZeDmvErdw8W4d4Nv3q0ztBWXZ');
+  const [importFiles, setImportFiles] = useState<any[]>([]);
+  const [selectedFileIds, setSelectedFileIds] = useState<string[]>([]);
+  const [importCategory, setImportCategory] = useState<'facilities' | 'matches' | 'events'>('facilities');
+
   // Drive list state
   const [driveFiles, setDriveFiles] = useState<DriveFile[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -432,6 +444,123 @@ export default function AdminGoogleDrive({
     }
   };
 
+  // Query custom Google Drive folder for media files
+  const fetchImportFolderFiles = async () => {
+    if (!token) {
+      showStatus('error', 'Por favor, vincula tu cuenta de Google primero.');
+      return;
+    }
+    if (!importFolderId.trim()) {
+      showStatus('error', 'El ID de la carpeta no puede estar vacío.');
+      return;
+    }
+
+    // Extract folder ID if they paste the full URL
+    let parsedFolderId = importFolderId.trim();
+    if (parsedFolderId.includes('drive.google.com')) {
+      const match = parsedFolderId.match(/folders\/([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        parsedFolderId = match[1];
+      }
+    }
+
+    setLoading(true);
+    try {
+      const q = encodeURIComponent(`'${parsedFolderId}' in parents and mimeType startsWith 'image/' and trashed = false`);
+      const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,mimeType,createdTime,size,webViewLink)&orderBy=name&pageSize=100`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!res.ok) {
+        const errorJson = await res.json().catch(() => ({}));
+        throw new Error(errorJson.error?.message || `Error del servidor de Google (Código: ${res.status})`);
+      }
+
+      const data = await res.json();
+      if (data.files) {
+        setImportFiles(data.files);
+        setSelectedFileIds(data.files.map((file: any) => file.id)); // Select all by default
+        showStatus('success', `🎯 Encontradas ${data.files.length} imágenes en la carpeta.`);
+      } else {
+        setImportFiles([]);
+        setSelectedFileIds([]);
+        showStatus('success', 'No se encontraron imágenes en la carpeta especificada.');
+      }
+    } catch (err: any) {
+      console.error('Error al consultar carpeta externa:', err);
+      showStatus('error', 'Error al consultar carpeta: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Import selected images from Google Drive folder directly to App Gallery via Server Endpoint
+  const handleImportSelectedImages = async () => {
+    if (!selectedFileIds.length) {
+      alert('Seleccione al menos una imagen para importar.');
+      return;
+    }
+    if (!adminToken) {
+      showStatus('error', 'La sesión administrativa de Tribol ha expirado o es inválida.');
+      return;
+    }
+
+    const confirmed = window.confirm(`¿Desea importar las ${selectedFileIds.length} imágenes seleccionadas a la galería oficial del Complejo Tribol?`);
+    if (!confirmed) return;
+
+    setActionLoading(true);
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const fileId of selectedFileIds) {
+      const file = importFiles.find(f => f.id === fileId);
+      if (!file) continue;
+
+      // Clean file name to use as caption (remove extension and replace separators with spaces)
+      const caption = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' ');
+
+      // Build target serving URL for Google Drive
+      const imageUrl = `https://lh3.googleusercontent.com/d/${fileId}`;
+
+      try {
+        const res = await fetch('/api/gallery', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminToken}`
+          },
+          body: JSON.stringify({
+            url: imageUrl,
+            caption: caption,
+            category: importCategory
+          })
+        });
+
+        if (res.ok) {
+          successCount++;
+        } else {
+          failCount++;
+        }
+      } catch (err) {
+        console.error(`Error importando archivo ${fileId}:`, err);
+        failCount++;
+      }
+    }
+
+    setActionLoading(false);
+    if (successCount > 0) {
+      showStatus('success', `🎯 ¡Importación exitosa! ${successCount} imágenes añadidas a la galería del Complejo Tribol.`);
+      // Remove successfully imported images from local state
+      setImportFiles(prev => prev.filter(f => !selectedFileIds.includes(f.id)));
+      setSelectedFileIds([]);
+      if (onPhotosImported) {
+        onPhotosImported();
+      }
+    } else {
+      showStatus('error', 'Ocurrió un contratiempo y no se pudo importar ninguna imagen.');
+    }
+  };
+
   // Filter local drive files in browser
   const filteredFilesList = driveFiles.filter(item => 
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -523,6 +652,34 @@ export default function AdminGoogleDrive({
         </div>
       )}
 
+      {/* Sub-Tabs selection (Active only when user is linked) */}
+      {user && (
+        <div className="flex gap-2 border-b border-zinc-900 pb-px">
+          <button
+            onClick={() => setActiveSubTab('backups')}
+            type="button"
+            className={`px-4 py-3 text-xs font-bold uppercase tracking-wider relative transition-all cursor-pointer ${
+              activeSubTab === 'backups'
+                ? 'text-emerald-400 border-b-2 border-emerald-500 font-black'
+                : 'text-zinc-500 hover:text-white'
+            }`}
+          >
+            📁 Respaldos de Caja (Drive Sync)
+          </button>
+          <button
+            onClick={() => setActiveSubTab('import-photos')}
+            type="button"
+            className={`px-4 py-3 text-xs font-bold uppercase tracking-wider relative transition-all cursor-pointer ${
+              activeSubTab === 'import-photos'
+                ? 'text-emerald-400 border-b-2 border-emerald-500 font-black'
+                : 'text-zinc-500 hover:text-white'
+            }`}
+          >
+            🖼️ Importador de Fotos Cooperativas
+          </button>
+        </div>
+      )}
+
       {/* Main drive action interface or empty link guidance */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 bg-zinc-950/50 border border-zinc-900 rounded-3xl">
@@ -547,8 +704,8 @@ export default function AdminGoogleDrive({
             Configurar Conexión Google Drive
           </button>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      ) : activeSubTab === 'backups' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in duration-300">
           
           {/* Column Left: Actions backups */}
           <div className="lg:col-span-1 space-y-6">
@@ -763,6 +920,148 @@ export default function AdminGoogleDrive({
 
           </div>
 
+        </div>
+      ) : (
+        <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-5 shadow-lg space-y-6 text-left animate-in fade-in duration-300">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-900 pb-4">
+            <div>
+              <span className="text-[10px] uppercase font-black text-emerald-400 tracking-widest">Google Drive Media Importer</span>
+              <h3 className="text-lg font-black text-white mt-0.5 uppercase tracking-tight">Importar Fotos desde Carpeta en Google Drive</h3>
+              <p className="text-xs text-zinc-500 mt-1">
+                Conecte cualquier ID de carpeta de Google Drive que contenga imágenes y selecciónelas para importarlas de manera instantánea a la galería multimedia de Fútbol Rápido Tribol. Puede ingresar enlaces de carpetas enteras.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="md:col-span-2 space-y-2">
+              <label className="text-[10px] uppercase font-black tracking-widest text-zinc-400">ID o Enlace de la Carpeta de Google Drive</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={importFolderId}
+                  onChange={(e) => setImportFolderId(e.target.value)}
+                  placeholder="ID de carpeta o enlace completo (ej: https://drive.google.com/drive/folders/1ecB8OYnZeDmvErdw8W4d4Nv3q0ztBWXZ)..."
+                  className="flex-1 rounded-xl bg-zinc-900/60 border border-zinc-800 px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500"
+                />
+                <button
+                  type="button"
+                  onClick={fetchImportFolderFiles}
+                  disabled={loading || actionLoading}
+                  className="rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-5 py-3 text-xs font-bold text-white transition flex items-center gap-2 shrink-0 cursor-pointer"
+                >
+                  {loading ? <RefreshCw className="animate-spin text-emerald-400" size={13} /> : 'Consultar Carpeta'}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase font-black tracking-widest text-zinc-400">Categoría destino de Galería</label>
+              <select
+                value={importCategory}
+                onChange={(e: any) => setImportCategory(e.target.value)}
+                className="w-full rounded-xl bg-zinc-900/60 border border-zinc-800 px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500"
+              >
+                <option value="facilities">Canchas e Instalaciones</option>
+                <option value="matches">Partidos y Liguilla</option>
+                <option value="events">Eventos y Premiaciones</option>
+              </select>
+            </div>
+          </div>
+
+          {importFiles.length > 0 ? (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center bg-zinc-900/40 p-4 border border-zinc-900 rounded-2xl gap-2 flex-wrap">
+                <span className="text-xs text-zinc-400 font-medium">
+                  Seleccionadas <strong className="text-white font-bold">{selectedFileIds.length}</strong> de <strong className="text-white font-bold">{importFiles.length}</strong> imágenes encontradas en la carpeta.
+                </span>
+                <div className="flex gap-2 text-[11px] font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFileIds([])}
+                    className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-850 text-zinc-300 transition cursor-pointer"
+                  >
+                    Deseleccionar todas
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFileIds(importFiles.map(f => f.id))}
+                    className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-850 text-emerald-400 transition cursor-pointer"
+                  >
+                    Seleccionar todas
+                  </button>
+                </div>
+              </div>
+
+              {/* Grid of image templates */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-h-[380px] overflow-y-auto pr-2">
+                {importFiles.map((file) => {
+                  const isSelected = selectedFileIds.includes(file.id);
+                  const thumbUrl = `https://lh3.googleusercontent.com/d/${file.id}`;
+                  return (
+                    <div
+                      key={file.id}
+                      className={`relative rounded-2xl overflow-hidden border transition-all duration-300 flex flex-col justify-between ${
+                        isSelected 
+                          ? 'border-emerald-500 bg-emerald-950/5 ring-1 ring-emerald-500/20' 
+                          : 'border-zinc-850 hover:border-zinc-700 bg-zinc-900/40'
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedFileIds(prev => 
+                            isSelected ? prev.filter(id => id !== file.id) : [...prev, file.id]
+                          );
+                        }}
+                        className="absolute top-2 left-2 z-10 h-5 w-5 rounded bg-black/60 border border-zinc-700 text-white flex items-center justify-center cursor-pointer font-bold text-[11px]"
+                      >
+                        {isSelected ? '✓' : ''}
+                      </button>
+
+                      <div className="aspect-square w-full bg-zinc-950/60 overflow-hidden group flex items-center justify-center">
+                        <img
+                          src={thumbUrl}
+                          alt={file.name}
+                          className="h-full w-full object-cover group-hover:scale-105 transition duration-300"
+                          referrerPolicy="no-referrer"
+                          loading="lazy"
+                        />
+                      </div>
+
+                      <div className="p-3 text-left border-t border-zinc-900">
+                        <span className="font-bold text-[11px] text-zinc-200 block truncate uppercase" title={file.name}>
+                          {file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' ')}
+                        </span>
+                        <span className="text-[9px] text-zinc-500 block mt-0.5 font-mono">
+                          {formatBytes(file.size)}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="flex justify-end pt-4 border-t border-zinc-900">
+                <button
+                  type="button"
+                  onClick={handleImportSelectedImages}
+                  disabled={actionLoading || !selectedFileIds.length}
+                  className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-450 disabled:bg-zinc-900 text-black disabled:text-zinc-600 font-extrabold text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/10 flex items-center gap-2 cursor-pointer"
+                >
+                  <FolderPlus size={14} />
+                  Sincronizar e importar seleccionadas a la Galería ({selectedFileIds.length})
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="py-14 text-center border border-zinc-900/40 rounded-2xl bg-zinc-950/20 flex flex-col items-center justify-center">
+              <FolderPlus size={36} className="text-zinc-700 mb-2" />
+              <p className="text-xs text-zinc-550 max-w-sm mx-auto font-medium leading-relaxed">
+                Ingresa el ID de la carpeta o el enlace compartido de Google Drive, selecciona la categoría destino y presiona "Consultar Carpeta" para visualizar las fotos disponibles para importar.
+              </p>
+            </div>
+          )}
         </div>
       )}
 
