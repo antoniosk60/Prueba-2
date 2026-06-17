@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Futbol Rapido Tribol Admin',
   webDir: 'dist',
   server: {
-    url: 'https://tribolv2.vercel.app/',
+    url: 'https://tribolv2.vercel.app',
     cleartext: true
   }
 };
