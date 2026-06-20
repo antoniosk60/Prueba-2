@@ -3,6 +3,7 @@
   "appId": "1:49659421439:web:8c3efdbdea86c1d046e2ca",
   "apiKey": "AIzaSyD2qGKadsnSB6jNoCjYHDTkTgs8FXFsaCQ",
   "authDomain": "probable-hallway-jlkqp.firebaseapp.com",
+  "firestoreDatabaseId": "ai-studio-22548b9b-b157-4d35-8a28-79744d6730b1",
   "storageBucket": "probable-hallway-jlkqp.firebasestorage.app",
   "messagingSenderId": "49659421439",
   "measurementId": ""
