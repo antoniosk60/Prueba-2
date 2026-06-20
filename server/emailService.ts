@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { Reservation } from '../src/types';
 
 interface EmailSentResult {
@@ -27,7 +28,7 @@ function generateReservationEmailTemplate(reservation: Reservation): string {
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Confirmación de Reserva - Guerreros Ayotla</title>
+      <title>Confirmación de Reserva - TRIBOL</title>
       <style>
         body {
           font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -233,45 +234,47 @@ function generateReservationEmailTemplate(reservation: Reservation): string {
  */
 export async function sendReservationEmail(reservation: Reservation): Promise<EmailSentResult> {
   const emailTo = reservation.userEmail;
-  const emailFrom = process.env.EMAIL_FROM || 'Guerreros Ayotla <comprobantes@canchafutbol.com>';
-  const resendApiKey = process.env.RESEND_API_KEY;
+  const resendApiKey = process.env.RESEND_API_KEY || 're_H6TwCJ3J_6w3WEyTZYSD5MPKdLN2aCSBb';
+
+  let emailFrom = process.env.EMAIL_FROM || 'Guerreros Ayotla <comprobantes@canchafutbol.com>';
+  
+  // Resend free tier onboarding restriction:
+  // If the key is the user's provided onboarding key or if the sender's domain is the default/unverified one,
+  // we must send from onboarding@resend.dev to ensure delivery to verified recipients works.
+  if (resendApiKey === 're_H6TwCJ3J_6w3WEyTZYSD5MPKdLN2aCSBb' || !process.env.EMAIL_FROM || emailFrom.includes('canchafutbol.com')) {
+    emailFrom = 'onboarding@resend.dev';
+  }
 
   // Render HTML template
   const emailHtml = generateReservationEmailTemplate(reservation);
   const emailSubject = `Confirmación de Reserva #${reservation.id} - Guerreros Ayotla`;
 
-  // 1. Attempt to send via Resend API
+  // 1. Attempt to send via Resend SDK
   if (resendApiKey && typeof resendApiKey === 'string' && resendApiKey.startsWith('re_')) {
     try {
-      console.log(`[EMAIL SERVICE]: Attempting to send confirmation email to ${emailTo} via Resend...`);
-      const response = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${resendApiKey}`
-        },
-        body: JSON.stringify({
-          from: emailFrom,
-          to: emailTo,
-          subject: emailSubject,
-          html: emailHtml
-        })
+      console.log(`[EMAIL SERVICE]: Attempting to send confirmation email to ${emailTo} via Resend SDK...`);
+      const resend = new Resend(resendApiKey);
+      const { data, error } = await resend.emails.send({
+        from: emailFrom,
+        to: emailTo,
+        subject: emailSubject,
+        html: emailHtml
       });
 
-      if (response.ok) {
-        const body = await response.json();
-        console.log(`[EMAIL SERVICE RESEND SUCCESS]: Email successful to ${emailTo}. ID: ${body.id}`);
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data && data.id) {
+        console.log(`[EMAIL SERVICE RESEND SUCCESS]: Email successful to ${emailTo}. ID: ${data.id}`);
         return {
           success: true,
-          messageId: body.id,
+          messageId: data.id,
           simulated: false
         };
-      } else {
-        const errText = await response.text();
-        throw new Error(`Resend responded with code ${response.status}: ${errText}`);
       }
     } catch (err: any) {
-      console.error('[EMAIL SERVICE RESEND FAIL]: Failed to send via Resend API. Falling back to simulations...', err);
+      console.error('[EMAIL SERVICE RESEND FAIL]: Failed to send via Resend SDK. Falling back to SMTP/simulations...', err);
     }
   }
 

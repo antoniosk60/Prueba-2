@@ -633,7 +633,7 @@ export class DbStore {
       for (const item of pair.list) {
         try {
           const docRef = doc(db, pair.key, item.id);
-          const { id, ...dataToSave } = item;
+          const dataToSave = { ...item };
           await setDoc(docRef, dataToSave);
         } catch (err) {
           console.error(`[FIRESTORE SEED EXCEPTION] Error seeding item ${item.id} to col "${pair.key}":`, err);

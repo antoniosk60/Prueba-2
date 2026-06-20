@@ -21,7 +21,7 @@ try {
 const app = initializeApp(firebaseConfig);
 
 // CRITICAL: The app will break without this line passing the firestoreDatabaseId
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId || 'ai-studio-22548b9b-b157-4d35-8a28-79744d6730b1');
 export const auth = getAuth(app);
 
 // Server admin authentication routine for Firebase/Firestore operations
