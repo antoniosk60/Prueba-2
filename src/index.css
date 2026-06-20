@@ -1,56 +1,81 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Outfit", "Plus Jakarta Sans", sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Colores primarios ADHLER */
+  --color-adhler-orange: #ED7038;
+  --color-adhler-yellow: #F7D955;
+  --color-adhler-red: #D53C2E;
+  --color-adhler-cyan: #96D7DD;
+  --color-adhler-blue: #0E2BA3;
+  --color-bg-dark: #171E26;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #B0B8C1;
+
+  /* Tints */
+  --color-adhler-orange-light: #F5B89A;
+  --color-adhler-yellow-light: #FBE5B3;
+  --color-adhler-red-light: #E89080;
+  --color-adhler-cyan-light: #C8E9ED;
+  --color-adhler-blue-light: #6B7FD1;
+
+  /* Shades */
+  --color-adhler-orange-dark: #C85A2C;
+  --color-adhler-yellow-dark: #D4A82B;
+  --color-adhler-red-dark: #A82E23;
+  --color-adhler-cyan-dark: #5FA5AD;
+  --color-adhler-blue-dark: #0A1D5F;
 }
 
 /* Custom global overrides */
 body {
-  background-color: #050706; /* Core Sport Obsidian */
-  color: #f3f4f6;
+  background-color: #171E26; /* ADHLER Dark Background */
+  color: #FFFFFF; /* Text Primary */
   font-family: var(--font-sans);
   overflow-x: hidden;
 }
 
-/* Elegant glassmorphism values */
+/* Elegant glassmorphism values with ADHLER identity */
 .glass-panel {
-  background: rgba(15, 23, 20, 0.7);
+  background: rgba(23, 30, 38, 0.9); /* ADHLER Dark Background with sutil opacity */
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(150, 215, 221, 0.15); /* Light Cyan sutil border */
 }
 
 .glass-panel-light {
   background: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(150, 215, 221, 0.08);
 }
 
-.glow-green {
-  text-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+.glow-orange {
+  text-shadow: 0 0 12px rgba(237, 112, 56, 0.5);
 }
 
 .box-glow {
-  box-shadow: 0 0 25px -5px rgba(34, 197, 94, 0.25);
+  box-shadow: 0 0 25px -5px rgba(237, 112, 56, 0.25);
 }
 
-/* Custom Scrollbars */
+/* Custom Scrollbars under ADHLER colors */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #070908;
+  background: #171E26; /* Dark Background */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e2925;
+  background: rgba(150, 215, 221, 0.2); /* Cyan */
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #10b981;
+  background: #ED7038; /* Orange */
 }
+

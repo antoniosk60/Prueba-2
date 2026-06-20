@@ -41,9 +41,9 @@ export default function PromocionesPage({ onRentClick }: PromocionesPageProps) {
       
       {/* Visual Title */}
       <div className="space-y-4 text-center lg:text-left">
-        <div className="inline-flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 rounded-full select-none">
-          <Sparkles className="w-4 h-4 text-emerald-400" />
-          <span className="text-xs font-mono font-semibold text-emerald-400 uppercase tracking-wider">Beneficios Exclusivos 2026</span>
+        <div className="inline-flex items-center space-x-2 bg-adhler-orange/15 border border-adhler-orange/25 px-3.5 py-1.5 rounded-full select-none">
+          <Sparkles className="w-4 h-4 text-adhler-orange" />
+          <span className="text-xs font-mono font-semibold text-adhler-orange uppercase tracking-wider">Beneficios Exclusivos 2026</span>
         </div>
         <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white tracking-tight">
           Inscripciones y Torneos Fútbol Rápido Tribol
@@ -54,9 +54,9 @@ export default function PromocionesPage({ onRentClick }: PromocionesPageProps) {
       </div>
 
       {isLoading ? (
-        <div className="text-center py-20 text-xs font-mono text-emerald-400">Cargando beneficios deportivos...</div>
+        <div className="text-center py-20 text-xs font-mono text-adhler-orange">Cargando beneficios deportivos...</div>
       ) : promotions.length === 0 ? (
-        <div className="text-center py-16 glass-panel rounded-2xl border border-gray-800 text-gray-400">
+        <div className="text-center py-16 glass-panel rounded-2xl border border-[#303846] text-gray-400">
           Actualmente las promociones están siendo actualizadas. Por favor contáctanos por WhatsApp.
         </div>
       ) : (
@@ -66,7 +66,7 @@ export default function PromocionesPage({ onRentClick }: PromocionesPageProps) {
             return (
               <div
                 key={promo.id}
-                className="glass-panel rounded-2xl overflow-hidden border border-emerald-950/40 flex flex-col justify-between hover:border-emerald-500/20 transition-all duration-300 group shadow-md"
+                className="glass-panel rounded-2xl overflow-hidden border border-adhler-cyan/15 flex flex-col justify-between hover:border-adhler-orange/30 transition-all duration-300 group shadow-md"
               >
                 
                 {/* Header aspect */}
@@ -75,20 +75,20 @@ export default function PromocionesPage({ onRentClick }: PromocionesPageProps) {
                   <div className="flex justify-between items-start">
                     <span className={`px-2.5 py-1 text-[9px] font-bold font-mono uppercase rounded-md ${
                       isTournament 
-                        ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' 
-                        : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                        ? 'bg-adhler-yellow/15 text-adhler-yellow border border-adhler-yellow/25' 
+                        : 'bg-adhler-orange/15 text-adhler-orange border border-adhler-orange/25'
                     }`}>
                       {isTournament ? 'TORNEO OFICIAL' : 'DESCUENTO DE HORARIO'}
                     </span>
                     
                     {promo.discountPercentage > 0 && (
-                      <span className="text-2xl font-display font-black text-emerald-400">
+                      <span className="text-2xl font-display font-black text-adhler-orange">
                         -{promo.discountPercentage}%
                       </span>
                     )}
                   </div>
 
-                  <h3 className="font-display font-bold text-lg text-white group-hover:text-emerald-400 transition-colors">
+                  <h3 className="font-display font-bold text-lg text-white group-hover:text-adhler-orange transition-colors">
                     {promo.title}
                   </h3>
                   
@@ -96,7 +96,7 @@ export default function PromocionesPage({ onRentClick }: PromocionesPageProps) {
                     {promo.description}
                   </p>
 
-                  <div className="pt-4 border-t border-emerald-950/20 flex items-center space-x-2 text-[10px] text-gray-500">
+                  <div className="pt-4 border-t border-adhler-cyan/10 flex items-center space-x-2 text-[10px] text-gray-500">
                     <Calendar className="w-3.5 h-3.5" />
                     <span className="font-mono">Vence: {promo.validUntil}</span>
                   </div>
@@ -104,7 +104,7 @@ export default function PromocionesPage({ onRentClick }: PromocionesPageProps) {
 
                 {/* Footer aspect */}
                 {promo.promoCode && (
-                  <div className="p-5 bg-emerald-950/5 border-t border-emerald-950/30 flex items-center justify-between">
+                  <div className="p-5 bg-white/[0.02] border-t border-adhler-cyan/10 flex items-center justify-between">
                     <div>
                       <span className="text-[9px] uppercase tracking-wider text-gray-500 font-mono block">Cupón Oficial:</span>
                       <strong className="text-white text-xs font-mono font-bold tracking-wider">{promo.promoCode}</strong>
@@ -112,11 +112,11 @@ export default function PromocionesPage({ onRentClick }: PromocionesPageProps) {
                     
                     <button
                       onClick={() => handleCopyCode(promo.id, promo.promoCode!)}
-                      className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 text-emerald-400 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+                      className="px-3 py-1.5 rounded-lg bg-adhler-orange/10 border border-adhler-orange/20 hover:bg-adhler-orange/20 text-adhler-orange text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
                     >
                       {copiedId === promo.id ? (
                         <>
-                          <Check className="w-3.5 h-3.5 text-emerald-400" />
+                          <Check className="w-3.5 h-3.5 text-adhler-orange" />
                           <span>Copiado</span>
                         </>
                       ) : (
@@ -131,10 +131,10 @@ export default function PromocionesPage({ onRentClick }: PromocionesPageProps) {
 
                 {/* Tournament join call */}
                 {isTournament && (
-                  <div className="p-5 bg-emerald-950/5 border-t border-emerald-950/30">
+                  <div className="p-5 bg-white/[0.02] border-t border-adhler-cyan/10">
                     <button
                       onClick={onRentClick}
-                      className="w-full bg-emerald-500 text-black font-extrabold text-xs py-2.5 rounded-xl uppercase tracking-wider transition-colors hover:bg-emerald-450 cursor-pointer"
+                      className="w-full bg-adhler-orange hover:bg-adhler-orange-dark text-white font-extrabold text-xs py-2.5 rounded-xl uppercase tracking-wider transition-colors cursor-pointer shadow-[0_4px_12px_rgba(237,112,56,0.2)]"
                     >
                       Inscribirse al Torneo
                     </button>
@@ -148,8 +148,8 @@ export default function PromocionesPage({ onRentClick }: PromocionesPageProps) {
       )}
 
       {/* Bonus Coupon */}
-      <section className="glass-panel p-8 sm:p-10 rounded-3xl border border-emerald-500/20 text-center space-y-4 max-w-4xl mx-auto">
-        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+      <section className="glass-panel p-8 sm:p-10 rounded-3xl border border-adhler-cyan/20 text-center space-y-4 max-w-4xl mx-auto">
+        <div className="w-10 h-10 rounded-xl bg-adhler-orange/10 border border-adhler-orange/20 text-adhler-orange flex items-center justify-center mx-auto">
           <Award className="w-5 h-5 animate-pulse" />
         </div>
         <h3 className="font-display font-extrabold text-xl text-white">¿Tienes un cupón corporativo o escolar?</h3>

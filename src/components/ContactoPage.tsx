@@ -34,12 +34,12 @@ export default function ContactoPage() {
         
         {/* Contact Info (Left column) */}
         <div className="lg:col-span-5 space-y-6 flex flex-col justify-between">
-          <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-emerald-950/40 space-y-6 text-left">
+          <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-adhler-cyan/15 space-y-6 text-left">
             <h3 className="font-display font-bold text-lg text-white">Detalles del Complejo</h3>
             
             <div className="space-y-4">
               <div className="flex items-start space-x-3 text-xs sm:text-sm">
-                <MapPin className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <MapPin className="w-5 h-5 text-adhler-orange shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-medium">Ubicación oficial:</strong>
                   <span className="text-gray-400 font-light">Av. de los Deportes #420, Colonia Estadio, Ciudad de México, CP 06100</span>
@@ -47,7 +47,7 @@ export default function ContactoPage() {
               </div>
 
               <div className="flex items-start space-x-3 text-xs sm:text-sm">
-                <Clock className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <Clock className="w-5 h-5 text-adhler-orange shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-medium">Horarios de Operación:</strong>
                   <span className="text-gray-400 font-light block">Lunes a Sábado: 14:00 - 23:00 Hrs</span>
@@ -56,7 +56,7 @@ export default function ContactoPage() {
               </div>
 
               <div className="flex items-start space-x-3 text-xs sm:text-sm">
-                <Phone className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <Phone className="w-5 h-5 text-adhler-orange shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-medium">Teléfonos de Atención:</strong>
                   <span className="text-gray-400 font-light font-mono">+52 (55) 1234-5678 (Oficina)</span>
@@ -64,7 +64,7 @@ export default function ContactoPage() {
               </div>
 
               <div className="flex items-start space-x-3 text-xs sm:text-sm">
-                <Mail className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <Mail className="w-5 h-5 text-adhler-orange shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-white block font-medium">Correo electrónico:</strong>
                   <span className="text-gray-400 font-light font-mono">contacto@canchaarenagol.com</span>
@@ -74,15 +74,15 @@ export default function ContactoPage() {
           </div>
 
           {/* Sencillo mapa simulado CSS */}
-          <div className="glass-panel p-6 rounded-2xl border border-emerald-950/40 space-y-3 text-left overflow-hidden min-h-[200px] relative flex flex-col justify-end bg-emerald-950/10">
+          <div className="glass-panel p-6 rounded-2xl border border-adhler-cyan/15 space-y-3 text-left overflow-hidden min-h-[200px] relative flex flex-col justify-end bg-white/[0.01]">
             {/* Draw miniature field in CSS background */}
-            <div className="absolute inset-x-4 top-4 bottom-4 opacity-10 border-2 border-emerald-500 rounded flex items-center justify-center">
-              <div className="w-1/2 h-full border-r border-emerald-500" />
-              <div className="absolute w-12 h-12 border border-emerald-500 rounded-full" />
+            <div className="absolute inset-x-4 top-4 bottom-4 opacity-10 border-2 border-adhler-cyan rounded flex items-center justify-center">
+              <div className="w-1/2 h-full border-r border-adhler-cyan" />
+              <div className="absolute w-12 h-12 border border-adhler-cyan rounded-full" />
             </div>
             
             <div className="relative z-10 space-y-1.5">
-              <div className="flex items-center space-x-1 text-emerald-400 font-mono text-[10px] font-bold">
+              <div className="flex items-center space-x-1 text-adhler-orange font-mono text-[10px] font-bold">
                 <MapPin className="w-3.5 h-3.5 animate-bounce" />
                 <span>UBICACIÓN SATELITAL</span>
               </div>
@@ -95,11 +95,11 @@ export default function ContactoPage() {
         {/* Messaging Form & WhatsApp direct CTA (Right column) */}
         <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
           
-          <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-emerald-950/40 text-left space-y-4">
+          <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-adhler-cyan/15 text-left space-y-4">
             <h3 className="font-display font-bold text-lg text-white">Buzón de Sugerencias y Cotizaciones</h3>
             
             {isSent && (
-              <div className="p-3 bg-emerald-950/20 border border-emerald-500/20 text-emerald-400 rounded-xl text-xs flex gap-2 items-center">
+              <div className="p-3 bg-adhler-orange/15 border border-adhler-orange/25 text-adhler-orange rounded-xl text-xs flex gap-2 items-center">
                 <CheckCircle className="w-4 h-4" />
                 <span>¡Mensaje recibido! Nos comunicaremos al correo provisto a la brevedad.</span>
               </div>
@@ -115,7 +115,7 @@ export default function ContactoPage() {
                     placeholder="Tu nombre"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-emerald-950/20 text-white text-xs p-3 rounded-lg border border-gray-800 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-[#1e2530] text-white text-xs p-3 rounded-lg border border-[#2d3846] focus:outline-none focus:border-adhler-orange"
                   />
                 </div>
 
@@ -127,7 +127,7 @@ export default function ContactoPage() {
                     placeholder="correo@ejemplo.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-emerald-950/20 text-white text-xs p-3 rounded-lg border border-gray-800 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-[#1e2530] text-white text-xs p-3 rounded-lg border border-[#2d3846] focus:outline-none focus:border-adhler-orange"
                   />
                 </div>
               </div>
@@ -140,13 +140,13 @@ export default function ContactoPage() {
                   placeholder="Por favor descríbenos tu necesidad corporativa o escolar..."
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="w-full bg-emerald-950/20 text-white text-xs p-3 rounded-lg border border-gray-800 focus:outline-none focus:border-emerald-500 text-left"
+                  className="w-full bg-[#1e2530] text-white text-xs p-3 rounded-lg border border-[#2d3846] focus:outline-none focus:border-adhler-orange text-left"
                 />
               </div>
 
               <button
                 type="submit"
-                className="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs px-6 py-3 rounded-xl uppercase tracking-wider transition-colors flex items-center space-x-1.5 cursor-pointer"
+                className="bg-adhler-orange hover:bg-adhler-orange-dark text-white font-extrabold text-xs px-6 py-3 rounded-xl uppercase tracking-wider transition-colors flex items-center space-x-1.5 cursor-pointer shadow-[0_4px_12px_rgba(237,112,56,0.3)]"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Enviar Comentario</span>
@@ -155,7 +155,7 @@ export default function ContactoPage() {
           </div>
 
           {/* Huge WhatsApp Quick Action Banner */}
-          <div className="glass-panel p-6 rounded-2xl border border-emerald-500/20 text-left relative overflow-hidden bg-gradient-to-r from-[#25D366]/10 to-transparent flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="glass-panel p-6 rounded-2xl border border-adhler-cyan/20 text-left relative overflow-hidden bg-gradient-to-r from-[#25D366]/10 to-transparent flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="space-y-1.5 flex-1">
               <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-[#25D366]">Canal Preferente</span>
               <h4 className="font-display font-extrabold text-white text-lg">¿Prefieres Soporte Inmediato?</h4>

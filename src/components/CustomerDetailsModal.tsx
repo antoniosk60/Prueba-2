@@ -159,16 +159,16 @@ export default function CustomerDetailsModal({
       <div className="relative w-full max-w-4xl bg-zinc-950 border border-zinc-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col my-8 animate-in zoom-in-95 duration-150">
         
         {/* Banner/Header Segment */}
-        <div className="p-6 bg-gradient-to-r from-emerald-950/40 via-zinc-950 to-zinc-950 border-b border-zinc-900 flex items-start justify-between">
+        <div className="p-6 bg-gradient-to-r from-adhler-orange/15 via-[#1e2530] to-[#171E26] border-b border-adhler-cyan/15 flex items-start justify-between">
           <div className="flex items-center gap-4">
-            <div className="h-14 w-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-lg">
+            <div className="h-14 w-14 rounded-2xl bg-adhler-orange/15 border border-adhler-orange/25 text-adhler-orange flex items-center justify-center shadow-lg">
               <User size={28} />
             </div>
             <div className="text-left">
-              <span className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">Detalle del Cliente</span>
+              <span className="text-[10px] uppercase font-bold text-adhler-orange tracking-wider">Detalle del Cliente</span>
               <h2 className="text-2xl font-extrabold text-white tracking-tight uppercase mt-0.5">{customerName}</h2>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-1 text-xs text-zinc-400">
-                <span className="flex items-center gap-1.5 hover:text-emerald-400 transition">
+                <span className="flex items-center gap-1.5 hover:text-adhler-orange transition">
                   <Phone size={12} className="text-zinc-500" />
                   {customerPhone}
                 </span>
@@ -184,7 +184,7 @@ export default function CustomerDetailsModal({
             <button
               onClick={handleContactWhatsApp}
               type="button"
-              className="p-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-450 border border-emerald-500/20 transition cursor-pointer text-xs font-bold flex items-center gap-1.5 self-center"
+              className="p-2 rounded-xl bg-adhler-cyan/10 hover:bg-adhler-cyan/20 text-adhler-cyan border border-adhler-cyan/20 transition cursor-pointer text-xs font-bold flex items-center gap-1.5 self-center"
               title="Contactar vía WhatsApp"
             >
               <MessageSquare size={13} />
@@ -210,7 +210,7 @@ export default function CustomerDetailsModal({
             <div className="bg-zinc-900/40 p-4 border border-zinc-900 rounded-2xl flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] uppercase font-black text-zinc-500 tracking-wider">Historial Reservas</span>
-                <Calendar size={16} className="text-emerald-400" />
+                <Calendar size={16} className="text-adhler-orange" />
               </div>
               <div>
                 <span className="text-2xl font-black text-white font-mono">{stats.total}</span>
@@ -251,12 +251,12 @@ export default function CustomerDetailsModal({
             <div className="bg-zinc-900/40 p-4 border border-zinc-900 rounded-2xl flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] uppercase font-black text-zinc-500 tracking-wider">Desempeño de Pago</span>
-                <TrendingUp size={16} className="text-emerald-400" />
+                <TrendingUp size={16} className="text-adhler-orange" />
               </div>
               <div>
                 <span className="text-2xl font-black text-white font-mono">{stats.paymentFidelityRate}%</span>
                 <div className="w-full bg-zinc-900 h-1 rounded-full overflow-hidden mt-2">
-                  <div className="bg-emerald-500 h-1" style={{ width: `${stats.paymentFidelityRate}%` }}></div>
+                  <div className="bg-[#ED7038] h-1" style={{ width: `${stats.paymentFidelityRate}%` }}></div>
                 </div>
                 <p className="text-[10px] text-zinc-500 mt-1">${stats.totalPaid} pagados de ${stats.totalBilled} MXN</p>
               </div>
@@ -280,13 +280,13 @@ export default function CustomerDetailsModal({
 
               <div className="space-y-1.5">
                 <span className="text-[10px] text-zinc-500 font-bold block uppercase">Total Recaudado / Abonos</span>
-                <span className="text-lg font-bold text-emerald-400 font-mono">${stats.totalPaid.toLocaleString("es-MX")} MXN</span>
+                <span className="text-lg font-bold text-adhler-orange font-mono">${stats.totalPaid.toLocaleString("es-MX")} MXN</span>
                 <p className="text-[10px] text-zinc-500 leading-relaxed">Depósitos por transferencias o cobros en efectivo ya consolidados y verificados por administración.</p>
               </div>
 
               <div className="space-y-1.5">
                 <span className="text-[10px] text-zinc-500 font-bold block uppercase">Saldo Pendiente de Cobro</span>
-                <span className={`text-lg font-bold font-mono ${stats.totalPending > 0 ? "text-amber-450" : "text-zinc-500"}`}>
+                <span className={`text-lg font-bold font-mono ${stats.totalPending > 0 ? "text-adhler-yellow" : "text-zinc-500"}`}>
                   ${stats.totalPending.toLocaleString("es-MX")} MXN
                 </span>
                 <p className="text-[10px] text-zinc-500 leading-relaxed">Monto total restante que el capitán debe finiquitar al ingresar a la cancha o vía digital.</p>
@@ -308,12 +308,12 @@ export default function CustomerDetailsModal({
             )}
 
             {stats.totalPending > 0 && (
-              <div className="mt-3.5 p-3.5 bg-zinc-900 border border-zinc-800 rounded-xl flex items-start gap-3">
-                <DollarSign className="text-emerald-450 shrink-0 mt-0.5 animate-pulse" size={16} />
+              <div className="mt-3.5 p-3.5 bg-zinc-900 border border-zinc-805 rounded-xl flex items-start gap-3">
+                <DollarSign className="text-adhler-orange shrink-0 mt-0.5 animate-pulse" size={16} />
                 <div className="text-left">
                   <span className="text-[11px] font-bold text-white uppercase block">Adeudos Pendientes Activos</span>
                   <p className="text-[10.5px] text-zinc-400 mt-0.5 leading-relaxed">
-                    Hay un saldo pendiente de <strong className="text-emerald-400">${stats.totalPending} MXN</strong> en las reservas activas de este usuario. Asegura la liquidación en caja antes de permitir el encendido de luces o acceso a la cancha seleccionada.
+                    Hay un saldo pendiente de <strong className="text-adhler-orange">${stats.totalPending} MXN</strong> en las reservas activas de este usuario. Asegura la liquidación en caja antes de permitir el encendido de luces o acceso a la cancha seleccionada.
                   </p>
                 </div>
               </div>
@@ -341,7 +341,7 @@ export default function CustomerDetailsModal({
                     onClick={() => setStatusFilter(tab.value as any)}
                     className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase transition cursor-pointer ${
                       statusFilter === tab.value 
-                        ? 'bg-emerald-500 text-black shadow' 
+                        ? 'bg-adhler-orange text-white shadow' 
                         : 'text-zinc-550 hover:text-white'
                     }`}
                   >
@@ -379,7 +379,7 @@ export default function CustomerDetailsModal({
                             
                             {/* Checkin Status Indicator */}
                             {res.checkedIn && (
-                              <span className="text-[9px] font-black uppercase text-emerald-450 bg-emerald-950/20 border border-emerald-500/20 px-1.5 py-0.5 rounded">
+                              <span className="text-[9px] font-black uppercase text-adhler-cyan bg-adhler-cyan/15 border border-adhler-cyan/25 px-1.5 py-0.5 rounded">
                                 ✓ LLEGÓ
                               </span>
                             )}
@@ -387,7 +387,7 @@ export default function CustomerDetailsModal({
                           
                           <div className="flex items-center gap-3 text-xs flex-wrap">
                             <span className="text-white font-bold flex items-center gap-1.5">
-                              <Calendar size={13} className="text-emerald-450" />
+                              <Calendar size={13} className="text-adhler-orange" />
                               {res.date}
                             </span>
                             <span className="text-zinc-400 font-mono flex items-center gap-1">
@@ -414,7 +414,7 @@ export default function CustomerDetailsModal({
 
                           <div className="space-y-0.5 md:min-w-[110px]">
                             <span className="text-[9px] text-zinc-500 font-semibold block">ADEUDO</span>
-                            <span className={`font-mono text-sm font-bold ${hasOwed ? "text-amber-500" : "text-emerald-450"}`}>
+                            <span className={`font-mono text-sm font-bold ${hasOwed ? "text-adhler-yellow" : "text-adhler-cyan"}`}>
                               ${res.status === 'cancelled' ? 0 : (owedAmount > 0 ? owedAmount : 0)}
                             </span>
                           </div>
@@ -428,7 +428,7 @@ export default function CustomerDetailsModal({
                           {res.status !== 'cancelled' && (
                             <span className={`px-2.5 py-1 rounded-lg border flex items-center gap-1 ${
                               res.paymentStatus === 'paid'
-                                ? "bg-emerald-500/10 text-emerald-450 border-emerald-500/20"
+                                ? "bg-adhler-cyan/15 text-adhler-cyan border-adhler-cyan/25"
                                 : "bg-zinc-900 text-zinc-500 border-zinc-800"
                             }`}>
                               {res.paymentStatus === 'paid' ? 'PAGADO ✓' : 'PENDIENTE'}
@@ -438,9 +438,9 @@ export default function CustomerDetailsModal({
                           {/* Reservation progress status badge */}
                           <span className={`px-2.5 py-1 rounded-lg border flex items-center gap-1 ${
                             res.status === 'confirmed'
-                              ? "bg-emerald-500 text-black border-transparent font-extrabold"
+                              ? "bg-adhler-orange text-white border-transparent font-extrabold"
                               : res.status === 'pending'
-                              ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                              ? "bg-adhler-yellow/15 text-adhler-yellow border-adhler-yellow/25"
                               : "bg-rose-950/20 text-rose-450 border-rose-500/20"
                           }`}>
                             {res.status === 'confirmed' && 'CONFIRMADO'}

@@ -538,13 +538,13 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
 
       {successReservation ? (
         /* SUCCESS RECEIPT ANIMATED PANEL */
-        <div className="glass-panel p-8 sm:p-12 rounded-3xl border border-emerald-400/30 text-center space-y-6 max-w-2xl mx-auto shadow-[0_0_50px_rgba(16,185,129,0.15)] animate-scaleIn">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-400 flex items-center justify-center mx-auto shadow-sm">
+        <div className="glass-panel p-8 sm:p-12 rounded-3xl border border-adhler-cyan/30 text-center space-y-6 max-w-2xl mx-auto shadow-[0_0_50px_rgba(45,212,191,0.15)] animate-scaleIn">
+          <div className="w-16 h-16 rounded-full bg-adhler-cyan/10 border border-adhler-cyan/30 text-adhler-cyan flex items-center justify-center mx-auto shadow-sm">
             <CheckCircle className="w-8 h-8" />
           </div>
           
           <div className="space-y-2">
-            <span className="text-emerald-400 text-xs font-mono font-bold tracking-widest uppercase">¡RENTA CONFIRMADA Y PAGADA!</span>
+            <span className="text-adhler-cyan text-xs font-mono font-bold tracking-widest uppercase">¡RENTA CONFIRMADA Y PAGADA!</span>
             <h3 className="font-display font-extrabold text-2xl text-white">¡Disfruta el Cotejo, {successReservation.userName}!</h3>
             <p className="text-xs text-gray-400 max-w-md mx-auto">Tu folio de reserva es <strong className="text-gray-200 font-mono font-bold">{successReservation.id}</strong>. Hemos enviado las instrucciones de acceso, vestidores y tu código por correo electrónico y WhatsApp.</p>
           </div>
@@ -556,13 +556,13 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
           </div>
 
           {/* Copy of Reservation Email Sent Status Badge */}
-          <div className="bg-emerald-500/10 border border-emerald-500/20 py-2.5 px-4 rounded-xl max-w-md mx-auto text-xs flex items-center justify-center space-x-2 text-emerald-400">
+          <div className="bg-adhler-cyan/10 border border-adhler-cyan/20 py-2.5 px-4 rounded-xl max-w-md mx-auto text-xs flex items-center justify-center space-x-2 text-adhler-cyan">
             <span className="animate-pulse">📧</span>
             <span className="font-bold">Copia enviada de manera segura al correo: {successReservation.userEmail}</span>
           </div>
 
           {/* Receipt details */}
-          <div className="p-6 bg-emerald-950/15 rounded-2xl border border-emerald-900/20 text-left space-y-3 divide-y divide-emerald-950/20 text-xs">
+          <div className="p-6 bg-adhler-cyan/5 rounded-2xl border border-adhler-cyan/15 text-left space-y-3 divide-y divide-[#ED7038]/10 text-xs">
             <div className="flex justify-between py-1">
               <span className="text-gray-400">Cancha Seleccionada:</span>
               <strong className="text-white">{successReservation.fieldName}</strong>
@@ -577,7 +577,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
             </div>
             <div className="flex justify-between py-1">
               <span className="text-gray-400">Soporte LED Nocturno:</span>
-              <strong className={successReservation.hasLights ? 'text-emerald-400 font-bold' : 'text-gray-300'}>
+              <strong className={successReservation.hasLights ? 'text-adhler-cyan font-bold' : 'text-gray-300'}>
                 {successReservation.hasLights ? 'Incluido (+ Surcharge)' : 'Sin luces requeridas'}
               </strong>
             </div>
@@ -590,8 +590,8 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
               </strong>
             </div>
 
-            <div className="flex justify-between pt-2 border-t border-emerald-900/30 text-sm font-bold">
-              <span className="text-emerald-400">Total liquidado:</span>
+            <div className="flex justify-between pt-2 border-t border-adhler-cyan/30 text-sm font-bold">
+              <span className="text-adhler-cyan">Total liquidado:</span>
               <strong className="text-white font-mono">${successReservation.totalPrice} MXN</strong>
             </div>
           </div>
@@ -599,7 +599,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
           <div className="flex flex-col sm:flex-row justify-center gap-3 pt-3">
             <button
               onClick={() => setSuccessReservation(null)}
-              className="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs px-6 py-3 rounded-xl uppercase tracking-wider transition-all cursor-pointer"
+              className="bg-[#ED7038] hover:bg-[#ED7038]/90 text-white font-extrabold text-xs px-6 py-3 rounded-xl uppercase tracking-wider transition-all cursor-pointer"
             >
               Nueva Reservación
             </button>
@@ -999,7 +999,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                       <div className="space-y-3">
                         <div className="flex items-center justify-between flex-wrap gap-2">
                           <span className="text-gray-300">
-                            Día Agendado: <strong className="text-emerald-400 font-mono text-xs font-bold leading-none bg-emerald-500/5 px-2 py-1 rounded border border-emerald-500/10">{selectedDate}</strong>
+                            Día Agendado: <strong className="text-adhler-cyan font-mono text-xs font-bold leading-none bg-adhler-cyan/5 px-2 py-1 rounded border border-adhler-cyan/10">{selectedDate}</strong>
                           </span>
                           <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider font-mono border ${
                             stats.status === 'full' 
@@ -1008,7 +1008,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                               ? 'bg-amber-400/15 text-amber-400 border-amber-400/30'
                               : stats.status === 'medium'
                               ? 'bg-yellow-400/15 text-yellow-400 border-yellow-400/30'
-                              : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                              : 'bg-adhler-cyan/15 text-adhler-cyan border-adhler-cyan/30'
                           }`}>
                             {stats.label}
                           </span>
@@ -1028,7 +1028,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                                   ? 'bg-amber-500' 
                                   : stats.status === 'medium'
                                   ? 'bg-yellow-400'
-                                  : 'bg-emerald-400'
+                                  : 'bg-adhler-cyan'
                               }`}
                               style={{ width: `${stats.percentage}%` }}
                             />
@@ -1049,8 +1049,8 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                             ⚡ <strong>Ocupación Regular:</strong> Quedan <strong className="font-mono">{stats.remaining} horarios libres</strong> disponibles. Hay suficiente disponibilidad de renta, pero te aconsejamos reservar en horas de luz baja para óptimo disfrute técnico.
                           </div>
                         ) : (
-                          <div className="text-emerald-400 leading-relaxed text-[11px] font-medium bg-emerald-950/15 p-3 rounded-lg border border-emerald-900/30">
-                            💡 <strong>¡Totalmente Recomendado!</strong> Esta fecha se encuentra con disponibilidad plena (<strong className="font-mono text-emerald-300">{stats.remaining} horas de juego libres</strong>). Podrás reservar con tranquilidad a tu hora predilecta para evitar cualquier contratiempo.
+                          <div className="text-adhler-cyan leading-relaxed text-[11px] font-medium bg-adhler-cyan/15 p-3 rounded-lg border border-adhler-cyan/30">
+                            💡 <strong>¡Totalmente Recomendado!</strong> Esta fecha se encuentra con disponibilidad plena (<strong className="font-mono text-adhler-cyan">{stats.remaining} horas de juego libres</strong>). Podrás reservar con tranquilidad a tu hora predilecta para evitar cualquier contratiempo.
                           </div>
                         )}
                       </div>
@@ -1061,10 +1061,10 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                 )}
                 
                 {/* Custom Color-Coded Indicators Legend to aid user */}
-                <div className="pt-3 border-t border-emerald-950/20 flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] text-gray-400 font-mono">
+                <div className="pt-3 border-t border-adhler-cyan/20 flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] text-gray-400 font-mono">
                   <span className="font-sans font-bold uppercase text-gray-300">Nivel de Cupo:</span>
                   <span className="flex items-center space-x-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-adhler-cyan shrink-0" />
                     <span>Disponible (0-2)</span>
                   </span>
                   <span className="flex items-center space-x-1.5">
@@ -1084,9 +1084,9 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
             </div>
 
             {/* Step 3: Interactive Time Slots */}
-            <div className="glass-panel p-6 rounded-2xl border border-emerald-950/40 space-y-4">
-              <div className="flex items-center space-x-2 pb-2 border-b border-emerald-950/20">
-                <span className="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-500 text-black text-[10px] font-bold">3</span>
+            <div className="glass-panel p-6 rounded-2xl border border-adhler-cyan/40 space-y-4">
+              <div className="flex items-center space-x-2 pb-2 border-b border-adhler-cyan/20">
+                <span className="w-5 h-5 flex items-center justify-center rounded-full bg-[#ED7038] text-white text-[10px] font-bold">3</span>
                 <h3 className="font-display font-bold text-base text-white">Selecciona tu Horario</h3>
               </div>
 
@@ -1109,8 +1109,8 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                         occupied
                           ? 'bg-red-950/5 border-red-900/10 text-red-700/60 opacity-40 line-through cursor-not-allowed'
                           : isSelected
-                          ? 'bg-emerald-500/15 border-emerald-500 text-emerald-400 font-bold'
-                          : 'bg-emerald-950/5 border-gray-800/40 text-gray-300 hover:border-gray-700 hover:bg-emerald-950/10'
+                          ? 'bg-adhler-cyan/15 border-adhler-cyan text-adhler-cyan font-bold'
+                          : 'bg-adhler-cyan/5 border-gray-800/40 text-gray-300 hover:border-gray-700 hover:bg-adhler-cyan/10'
                       }`}
                     >
                       <div className="flex items-center space-x-1">
@@ -1118,7 +1118,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                         <span className="font-mono">{slot}</span>
                       </div>
                       {requiresLight && !occupied && (
-                        <span className="text-[9px] text-emerald-400 font-medium font-sans flex items-center gap-0.5 mt-1">
+                        <span className="text-[9px] text-adhler-cyan font-medium font-sans flex items-center gap-0.5 mt-1">
                           <Lightbulb className="w-2.5 h-2.5" /> Foco LED Activo
                         </span>
                       )}
@@ -1128,15 +1128,15 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
               </div>
 
               {/* Extras and Surcharges Addons */}
-              <div className="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-emerald-950/20">
+              <div className="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-adhler-cyan/20">
                 <label className={`flex items-center space-x-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
-                  ballSurcharge ? 'bg-emerald-900/10 border-emerald-500/30' : 'bg-transparent border-gray-800'
+                  ballSurcharge ? 'bg-adhler-cyan/10 border-[#ED7038]/30' : 'bg-transparent border-gray-800'
                 }`}>
                   <input
                     type="checkbox"
                     checked={ballSurcharge}
                     onChange={(e) => setBallSurcharge(e.target.checked)}
-                    className="accent-emerald-500 w-4 h-4"
+                    className="accent-[#ED7038] w-4 h-4"
                   />
                   <div>
                     <span className="text-xs font-bold block text-white">Alquilar Balones</span>
@@ -1145,13 +1145,13 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                 </label>
 
                 <label className={`flex items-center space-x-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
-                  bibSurcharge ? 'bg-emerald-900/10 border-emerald-500/30' : 'bg-transparent border-gray-800'
+                  bibSurcharge ? 'bg-adhler-cyan/10 border-[#ED7038]/30' : 'bg-transparent border-gray-800'
                 }`}>
                   <input
                     type="checkbox"
                     checked={bibSurcharge}
                     onChange={(e) => setBibSurcharge(e.target.checked)}
-                    className="accent-emerald-500 w-4 h-4"
+                    className="accent-[#ED7038] w-4 h-4"
                   />
                   <div>
                     <span className="text-xs font-bold block text-white">Casacas / Petos</span>
@@ -1160,13 +1160,13 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                 </label>
 
                 <label className={`flex items-center space-x-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
-                  refereeSurcharge ? 'bg-emerald-900/10 border-emerald-500/30' : 'bg-transparent border-gray-800'
+                  refereeSurcharge ? 'bg-adhler-cyan/10 border-[#ED7038]/30' : 'bg-transparent border-gray-800'
                 }`}>
                   <input
                     type="checkbox"
                     checked={refereeSurcharge}
                     onChange={(e) => setRefereeSurcharge(e.target.checked)}
-                    className="accent-emerald-500 w-4 h-4"
+                    className="accent-[#ED7038] w-4 h-4"
                   />
                   <div>
                     <span className="text-xs font-bold block text-white">Servicio de Árbitro</span>
@@ -1177,9 +1177,9 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
             </div>
 
             {/* Client info and payment choice */}
-            <div className="glass-panel p-6 rounded-2xl border border-emerald-950/40 space-y-4">
-              <div className="flex items-center space-x-2 pb-2 border-b border-emerald-950/20">
-                <span className="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-500 text-black text-[10px] font-bold">4</span>
+            <div className="glass-panel p-6 rounded-2xl border border-adhler-cyan/40 space-y-4">
+              <div className="flex items-center space-x-2 pb-2 border-b border-adhler-cyan/20">
+                <span className="w-5 h-5 flex items-center justify-center rounded-full bg-[#ED7038] text-white text-[10px] font-bold">4</span>
                 <h3 className="font-display font-bold text-base text-white">Datos de Responsable & Pago Seguro</h3>
               </div>
 
@@ -1192,7 +1192,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                     placeholder="Ej. Carlos Vela"
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
-                    className="w-full bg-emerald-950/20 text-white font-medium p-3 rounded-xl border border-gray-800 text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full bg-adhler-cyan/5 text-white font-medium p-3 rounded-xl border border-gray-800 text-xs focus:ring-1 focus:ring-adhler-cyan focus:outline-none"
                   />
                 </div>
 
@@ -1204,7 +1204,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                     placeholder="Ej. vela@gmail.com"
                     value={clientEmail}
                     onChange={(e) => setClientEmail(e.target.value)}
-                    className="w-full bg-emerald-950/20 text-white font-medium p-3 rounded-xl border border-gray-800 text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full bg-adhler-cyan/5 text-white font-medium p-3 rounded-xl border border-gray-800 text-xs focus:ring-1 focus:ring-adhler-cyan focus:outline-none"
                   />
                 </div>
 
@@ -1216,7 +1216,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                     placeholder="Ej. +52 55291823"
                     value={clientPhone}
                     onChange={(e) => setClientPhone(e.target.value)}
-                    className="w-full bg-emerald-950/20 text-white font-medium p-3 rounded-xl border border-gray-800 text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full bg-adhler-cyan/5 text-white font-medium p-3 rounded-xl border border-gray-800 text-xs focus:ring-1 focus:ring-adhler-cyan focus:outline-none"
                   />
                 </div>
               </div>
@@ -1230,8 +1230,8 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                     onClick={() => setDuration(1)}
                     className={`flex-1 p-2.5 rounded-xl border text-xs font-semibold text-center transition-all ${
                       duration === 1 
-                        ? 'bg-emerald-500 text-black border-emerald-500' 
-                        : 'bg-emerald-950/5 border-gray-800 text-gray-400 hover:border-gray-700'
+                        ? 'bg-[#ED7038] text-white border-[#ED7038]' 
+                        : 'bg-adhler-cyan/5 border-gray-800 text-gray-400 hover:border-gray-700'
                     }`}
                   >
                     1 Hora de Juego
@@ -1241,8 +1241,8 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                     onClick={() => setDuration(1.5)}
                     className={`flex-1 p-2.5 rounded-xl border text-xs font-semibold text-center transition-all ${
                       duration === 1.5 
-                        ? 'bg-emerald-500 text-black border-emerald-500' 
-                        : 'bg-emerald-950/5 border-gray-800 text-gray-400 hover:border-gray-700'
+                        ? 'bg-[#ED7038] text-white border-[#ED7038]' 
+                        : 'bg-adhler-cyan/5 border-gray-800 text-gray-400 hover:border-gray-700'
                     }`}
                   >
                     1.5 Horas de Juego
@@ -1251,7 +1251,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
               </div>
 
               {/* Secure simulated payment integrations */}
-              <div className="space-y-3 pt-4 border-t border-emerald-950/20">
+              <div className="space-y-3 pt-4 border-t border-adhler-cyan/20">
                 <span className="block text-xs font-bold text-white">Método de Liquidación:</span>
                 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
@@ -1259,7 +1259,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                     type="button"
                     onClick={() => setPaymentMethod('stripe')}
                     className={`p-3 rounded-lg border flex items-center justify-center space-x-2 transition-all ${
-                      paymentMethod === 'stripe' ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400 font-bold' : 'bg-transparent border-gray-800 text-gray-400'
+                      paymentMethod === 'stripe' ? 'bg-[#ED7038]/10 border-[#ED7038] text-white font-bold' : 'bg-transparent border-gray-800 text-gray-400'
                     }`}
                   >
                     <CreditCard className="w-3.5 h-3.5" />
@@ -1270,7 +1270,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                     type="button"
                     onClick={() => setPaymentMethod('paypal')}
                     className={`p-3 rounded-lg border flex items-center justify-center space-x-2 transition-all ${
-                      paymentMethod === 'paypal' ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400 font-bold' : 'bg-transparent border-gray-800 text-gray-400'
+                      paymentMethod === 'paypal' ? 'bg-[#ED7038]/10 border-[#ED7038] text-white font-bold' : 'bg-transparent border-gray-800 text-gray-400'
                     }`}
                   >
                     <span>PayPal</span>
@@ -1280,7 +1280,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                     type="button"
                     onClick={() => setPaymentMethod('whatsapp_transfer')}
                     className={`p-3 rounded-lg border flex items-center justify-center space-x-2 transition-all ${
-                      paymentMethod === 'whatsapp_transfer' ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400 font-bold' : 'bg-transparent border-gray-800 text-gray-400'
+                      paymentMethod === 'whatsapp_transfer' ? 'bg-[#ED7038]/10 border-[#ED7038] text-white font-bold' : 'bg-transparent border-gray-800 text-gray-400'
                     }`}
                   >
                     <span>Transferencia</span>
@@ -1290,7 +1290,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                     type="button"
                     onClick={() => setPaymentMethod('cash')}
                     className={`p-3 rounded-lg border flex items-center justify-center space-x-2 transition-all ${
-                      paymentMethod === 'cash' ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400 font-bold' : 'bg-transparent border-gray-800 text-gray-400'
+                      paymentMethod === 'cash' ? 'bg-[#ED7038]/10 border-[#ED7038] text-white font-bold' : 'bg-transparent border-gray-800 text-gray-400'
                     }`}
                   >
                     <span>En Cancha (Efectivo)</span>
@@ -1299,7 +1299,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
 
                 {/* Sub-panels for payments details */}
                 {paymentMethod === 'stripe' && (
-                  <div className="bg-emerald-950/10 p-4 rounded-xl border border-emerald-500/10 space-y-2.5 animate-fadeIn">
+                  <div className="bg-adhler-cyan/5 p-4 rounded-xl border border-adhler-cyan/10 space-y-2.5 animate-fadeIn">
                     <p className="text-[11px] text-gray-400">Introduce los datos de tu tarjeta de prueba para simular la pasarela en Cloud Run (Sandbox):</p>
                     <div className="grid grid-cols-3 gap-3">
                       <input
@@ -1307,34 +1307,34 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                         value={stripeCard}
                         onChange={(e) => setStripeCard(e.target.value)}
                         placeholder="Número de Tarjeta"
-                        className="col-span-2 bg-emerald-950/20 text-white text-xs p-2.5 rounded-lg border border-gray-850"
+                        className="col-span-2 bg-[#ED7038]/5 text-white text-xs p-2.5 rounded-lg border border-gray-850"
                       />
                       <input
                         type="text"
                         value={stripeCvc}
                         onChange={(e) => setStripeCvc(e.target.value)}
                         placeholder="CVC"
-                        className="bg-emerald-950/20 text-white text-xs p-2.5 rounded-lg border border-gray-850 text-center"
+                        className="bg-[#ED7038]/5 text-white text-xs p-2.5 rounded-lg border border-gray-850 text-center"
                       />
                     </div>
                   </div>
                 )}
 
                 {paymentMethod === 'paypal' && (
-                  <div className="bg-emerald-950/10 p-4 rounded-xl border border-emerald-500/10 space-y-2.5 animate-fadeIn">
+                  <div className="bg-adhler-cyan/5 p-4 rounded-xl border border-adhler-cyan/10 space-y-2.5 animate-fadeIn">
                     <p className="text-[11px] text-gray-400">Acceso exprés simulado vía PayPal checkout API. Introduce tu e-mail:</p>
                     <input
                       type="email"
                       value={paypalEmail}
                       onChange={(e) => setPaypalEmail(e.target.value)}
                       placeholder="paypal-sandbox-user@example.com"
-                      className="w-full bg-emerald-950/20 text-white text-xs p-2.5 rounded-lg border border-gray-850"
+                      className="w-full bg-[#ED7038]/5 text-white text-xs p-2.5 rounded-lg border border-gray-850"
                     />
                   </div>
                 )}
 
                 {paymentMethod === 'whatsapp_transfer' && (
-                  <div className="bg-emerald-950/10 p-4 rounded-xl border border-emerald-500/10 text-left space-y-1 animate-fadeIn text-[11px]">
+                  <div className="bg-adhler-cyan/5 p-4 rounded-xl border border-adhler-cyan/10 text-left space-y-1 animate-fadeIn text-[11px]">
                     <p className="text-gray-300 font-semibold mb-1">Pasos para transferencia:</p>
                     <p className="text-gray-400">1. Al hacer clic en "Confirmar", nuestro sistema generará un Folio de Reserva.</p>
                     <p className="text-gray-400">2. Deberás transferir al número CLABE: <strong className="text-white font-mono">0121 8000 8122 3456</strong>.</p>
@@ -1343,7 +1343,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                 )}
 
                 {paymentMethod === 'cash' && (
-                  <div className="bg-emerald-950/10 p-4 rounded-xl border border-emerald-500/10 text-[11px] text-gray-400 animate-fadeIn">
+                  <div className="bg-adhler-cyan/5 p-4 rounded-xl border border-adhler-cyan/10 text-[11px] text-gray-400 animate-fadeIn">
                     <span>Deberás pagar completo en caja de recepción por lo menos 15 minutos antes de iniciar tu cotejo oficial para evitar cancelaciones automáticas.</span>
                   </div>
                 )}
@@ -1355,13 +1355,13 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
           {/* Pricing Calculator Summary & Booking Activation (Right side) */}
           <div className="lg:col-span-4 lg:sticky lg:top-28 space-y-6">
             
-            <div className="glass-panel p-6 rounded-2xl border border-emerald-500/20 space-y-6 shadow-md text-left">
-              <h3 className="font-display font-extrabold text-lg text-white pb-3 border-b border-emerald-950/20">Ficha de Cotización</h3>
+            <div className="glass-panel p-6 rounded-2xl border border-adhler-orange/20 space-y-6 shadow-md text-left">
+              <h3 className="font-display font-extrabold text-lg text-white pb-3 border-b border-zinc-900">Ficha de Cotización</h3>
               
               {selectedField ? (
                 <div className="space-y-4">
-                  <div className="flex items-center space-x-3 bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10">
-                    <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-lg">
+                  <div className="flex items-center space-x-3 bg-[#ED7038]/5 p-3 rounded-xl border border-[#ED7038]/10">
+                    <div className="p-2.5 bg-adhler-orange/10 text-adhler-orange rounded-lg">
                       <CalendarIcon className="w-5 h-5" />
                     </div>
                     <div>
@@ -1378,8 +1378,8 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                     </div>
 
                     {pricing.lights > 0 && (
-                      <div className="flex justify-between text-emerald-400 font-medium">
-                        <span className="flex items-center gap-1"><Lightbulb className="w-3.5 h-3.5" /> Iluminación LED Nocturna:</span>
+                      <div className="flex justify-between text-adhler-orange font-medium">
+                        <span className="flex items-center gap-1"><Lightbulb className="w-3.5 h-3.5 text-[#ED7038]" /> Iluminación LED Nocturna:</span>
                         <span className="font-mono">+${pricing.lights} MXN</span>
                       </div>
                     )}
@@ -1391,9 +1391,9 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                       </div>
                     )}
 
-                    <div className="pt-3 border-t border-emerald-950/20 flex justify-between items-baseline">
+                    <div className="pt-3 border-t border-zinc-900 flex justify-between items-baseline">
                       <span className="text-sm font-bold text-white uppercase">Monto Total:</span>
-                      <span className="text-2xl font-display font-black text-emerald-400 font-mono">${pricing.total} MXN</span>
+                      <span className="text-2xl font-display font-black text-adhler-orange font-mono">${pricing.total} MXN</span>
                     </div>
                   </div>
 
@@ -1409,7 +1409,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-extrabold text-sm py-4 rounded-xl uppercase tracking-wider shadow-[0_5px_20px_rgba(16,185,129,0.35)] transition-all cursor-pointer text-center block"
+                      className="w-full bg-[#ED7038] hover:bg-[#ED7038]/90 disabled:opacity-50 text-white font-extrabold text-sm py-4 rounded-xl uppercase tracking-wider shadow-[0_5px_20px_rgba(237,112,56,0.25)] transition-all cursor-pointer text-center block"
                     >
                       {isSubmitting ? 'Procediendo al Cobro...' : 'Confirmar & Pagar Cancha'}
                     </button>
@@ -1420,14 +1420,14 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
               )}
 
               <div className="flex items-center justify-center space-x-2 text-[10px] text-gray-500 font-mono">
-                <Shield className="w-3.5 h-3.5 text-emerald-500" />
+                <Shield className="w-3.5 h-3.5 text-adhler-orange" />
                 <span>SSL Pago Encriptado de 256 bits</span>
               </div>
             </div>
 
             {/* Support Widget */}
             <div className="glass-panel p-5 rounded-2xl border border-gray-800 text-left space-y-3.5">
-              <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[9px] font-bold font-mono rounded inline-block uppercase">Dudas Frecuentes</span>
+              <span className="px-2 py-0.5 bg-[#ED7038]/15 text-adhler-orange text-[9px] font-bold font-mono rounded inline-block uppercase">Dudas Frecuentes</span>
               <h4 className="font-display font-bold text-sm text-white">¿Puedo reagendar un cotejo deportivo?</h4>
               <p className="text-[11px] text-gray-400 leading-normal font-light">Sí, se aceptan re-calendarizaciones gratuitas solicitándolo a través del soporte de WhatsApp hasta con 24 horas de antelación.</p>
             </div>
@@ -1438,9 +1438,9 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
       )}
 
       {/* SECCIÓN DE CALIFICACIONES Y COMENTARIOS */}
-      <div className="mt-16 border-t border-emerald-950/20 pt-16 space-y-10 text-left">
+      <div className="mt-16 border-t border-zinc-900 pt-16 space-y-10 text-left">
         <div className="space-y-2">
-          <span className="text-emerald-400 text-xs font-mono font-bold tracking-widest uppercase flex items-center gap-1.5 justify-start">
+          <span className="text-adhler-orange text-xs font-mono font-bold tracking-widest uppercase flex items-center gap-1.5 justify-start">
             <Sparkles className="w-4 h-4" />
             Opinión de los Futbolistas
           </span>
@@ -1455,7 +1455,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Panel Lateral: Promedio y Filtros */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="glass-panel p-6 rounded-2xl border border-emerald-950/40 space-y-6 animate-fadeIn">
+            <div className="glass-panel p-6 rounded-2xl border border-adhler-cyan/20 space-y-6 animate-fadeIn">
               <h4 className="font-display font-bold text-sm text-white uppercase tracking-wider font-mono">
                 Puntuación General
               </h4>
@@ -1494,9 +1494,9 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                     <div key={stars} className="flex items-center space-x-2 text-gray-400">
                       <span className="w-3 text-right text-[11px]">{stars}</span>
                       <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 stroke-none shrink-0" />
-                      <div className="flex-grow h-2 bg-black/40 rounded-full overflow-hidden border border-emerald-950/20">
+                      <div className="flex-grow h-2 bg-black/40 rounded-full overflow-hidden border border-zinc-800">
                         <div
-                          className="h-full bg-emerald-500 rounded-full"
+                          className="h-full bg-[#ED7038] rounded-full"
                           style={{ width: `${percent}%` }}
                         />
                       </div>
@@ -1507,15 +1507,15 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
               </div>
 
               {/* Canchas Filter Switcher */}
-              <div className="space-y-3 pt-4 border-t border-emerald-950/20 text-xs">
+              <div className="space-y-3 pt-4 border-t border-adhler-cyan/20 text-xs">
                 <p className="font-semibold text-gray-400 font-mono text-[11px] uppercase tracking-wider">Filtrar por Cancha:</p>
                 <div className="flex flex-col gap-1.5">
                   <button
                     onClick={() => setFilterFieldId('all')}
                     className={`px-3 py-2 rounded-xl text-left font-medium transition-all cursor-pointer ${
                       filterFieldId === 'all'
-                        ? 'bg-emerald-500 text-black font-bold'
-                        : 'bg-emerald-950/10 hover:bg-emerald-900/10 text-gray-300 shadow-sm border border-emerald-900/5'
+                        ? 'bg-[#ED7038] text-white font-bold'
+                        : 'bg-adhler-cyan/5 hover:bg-adhler-cyan/10 text-gray-300 shadow-sm border border-adhler-cyan/10'
                     }`}
                   >
                     ⚽ Todas las Canchas ({reviewsList.length})
@@ -1528,8 +1528,8 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                         onClick={() => setFilterFieldId(f.id)}
                         className={`px-3 py-2 rounded-xl text-left font-medium transition-all text-xs cursor-pointer ${
                           filterFieldId === f.id
-                            ? 'bg-emerald-500 text-black font-bold'
-                            : 'bg-emerald-950/10 hover:bg-emerald-900/10 text-gray-300 shadow-sm border border-emerald-900/5'
+                            ? 'bg-[#ED7038] text-white font-bold'
+                            : 'bg-adhler-cyan/5 hover:bg-adhler-cyan/10 text-gray-300 shadow-sm border border-adhler-cyan/10'
                         }`}
                       >
                         ⏱️ {f.name} ({count})
@@ -1544,9 +1544,9 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
           {/* Listado de Comentarios y Formulario */}
           <div className="lg:col-span-8 space-y-8">
             {/* Formulario de Calificación */}
-            <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-emerald-500/15 text-left space-y-4 animate-fadeIn">
+            <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-adhler-cyan/20 text-left space-y-4 animate-fadeIn">
               <div className="flex items-center space-x-2">
-                <MessageSquare className="w-5 h-5 text-emerald-400" />
+                <MessageSquare className="w-5 h-5 text-adhler-cyan" />
                 <h4 className="font-display font-extrabold text-base text-white">Dejar Calificación Deportiva</h4>
               </div>
 
@@ -1558,7 +1558,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                       <select
                         value={newReviewFieldId}
                         onChange={(e) => setNewReviewFieldId(e.target.value)}
-                        className="w-full bg-emerald-950/10 text-white text-xs px-3 py-2.5 rounded-xl border border-gray-800 focus:border-emerald-500 focus:outline-none focus:ring-0"
+                        className="w-full bg-zinc-900 text-white text-xs px-3 py-2.5 rounded-xl border border-gray-800 focus:border-adhler-cyan focus:outline-none focus:ring-0"
                         required
                       >
                         {fields.map((f) => (
@@ -1574,7 +1574,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                         placeholder="Ej. res-..."
                         value={newReviewResId}
                         onChange={(e) => setNewReviewResId(e.target.value)}
-                        className="w-full bg-emerald-950/10 text-white text-xs px-3 py-2.5 rounded-xl border border-gray-800 focus:border-emerald-500 focus:outline-none"
+                        className="w-full bg-zinc-900 text-white text-xs px-3 py-2.5 rounded-xl border border-gray-800 focus:border-adhler-cyan focus:outline-none"
                       />
                     </div>
                   </div>
@@ -1607,13 +1607,13 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
                       rows={3}
-                      className="w-full bg-emerald-950/10 text-white text-xs px-4 py-3 rounded-xl border border-gray-800 focus:border-emerald-500 focus:outline-none"
+                      className="w-full bg-zinc-900 text-white text-xs px-4 py-3 rounded-xl border border-gray-800 focus:border-adhler-cyan focus:outline-none"
                       required
                     />
                   </div>
 
                   {reviewSuccess && (
-                    <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400 text-xs">
+                    <div className="p-3.5 bg-adhler-cyan/10 border border-adhler-cyan/20 rounded-xl text-adhler-cyan text-xs">
                       {reviewSuccess}
                     </div>
                   )}
@@ -1629,14 +1629,14 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                     <button
                       type="submit"
                       disabled={isReviewSubmitting}
-                      className="bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black px-6 py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer font-sans shadow-sm"
+                      className="bg-[#ED7038] hover:bg-[#ED7038]/90 disabled:opacity-50 text-white px-6 py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer font-sans shadow-sm"
                     >
                       {isReviewSubmitting ? 'Enviando...' : 'Publicar Opinión'}
                     </button>
                   </div>
                 </form>
               ) : (
-                <div className="p-6 bg-emerald-950/5 border border-dashed border-zinc-800 rounded-2xl text-center space-y-3 animate-fadeIn">
+                <div className="p-6 bg-adhler-cyan/5 border border-dashed border-zinc-800 rounded-2xl text-center space-y-3 animate-fadeIn">
                   <p className="text-xs text-gray-400 max-w-md mx-auto">
                     ¿Quieres calificar alguna cancha? Crea tu cuenta o inicia sesión desde el botón superior <strong className="text-white font-mono">"Ingresar / Registro"</strong> con tus accesos para dejarnos tus opiniones detalladas sobre las instalaciones.
                   </p>
@@ -1657,8 +1657,8 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                   .filter(r => filterFieldId === 'all' || r.fieldId === filterFieldId)
                   .map((review) => (
                     <div
-                      key={review.id}
-                      className="p-5 rounded-2xl glass-panel border border-emerald-950/20 text-left space-y-3 animate-fadeIn"
+                       key={review.id}
+                       className="p-5 rounded-2xl glass-panel border border-adhler-cyan/15 text-left space-y-3 animate-fadeIn"
                     >
                       {/* header reviews details */}
                       <div className="flex justify-between items-start gap-4">
@@ -1666,12 +1666,12 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
                           <div className="flex items-center space-x-2">
                             <span className="text-xs font-bold text-white font-sans">{review.userName}</span>
                             {review.reservationId && (
-                              <span className="bg-emerald-500/10 text-emerald-400 text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded font-mono font-bold border border-emerald-500/10">
+                              <span className="bg-adhler-cyan/10 text-adhler-cyan text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded font-mono font-bold border border-adhler-cyan/10">
                                 ✓ Cliente Verificado
                               </span>
                             )}
                           </div>
-                          <span className="text-[10px] text-emerald-500 font-mono font-medium block mt-1">{review.fieldName}</span>
+                          <span className="text-[10px] text-adhler-cyan font-mono font-medium block mt-1">{review.fieldName}</span>
                         </div>
                         <span className="text-[10px] text-gray-500 font-mono shrink-0">{new Date(review.createdAt).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                       </div>
@@ -1692,7 +1692,7 @@ export default function ReservasPage({ fields, user, token }: ReservasPageProps)
 
                       {/* Reponded from admin context */}
                       {review.reply && (
-                        <div className="p-3 bg-zinc-950/50 rounded-xl border-l-[3px] border-emerald-500/40 text-[11px] mt-2 space-y-1">
+                        <div className="p-3 bg-zinc-950/50 rounded-xl border-l-[3px] border-[#ED7038]/60 text-[11px] mt-2 space-y-1">
                           <span className="font-bold text-amber-400 font-mono text-[9px] uppercase tracking-wider block">Respuesta de Fútbol Rápido Tribol:</span>
                           <p className="text-gray-400 font-light leading-relaxed">{review.reply}</p>
                         </div>

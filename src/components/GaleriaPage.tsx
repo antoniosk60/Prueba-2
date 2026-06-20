@@ -397,9 +397,9 @@ export default function GaleriaPage() {
       
       {/* Visual Header Grid Banner */}
       <div className="space-y-4 text-center lg:text-left">
-        <div className="inline-flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 rounded-full select-none">
-          <Camera className="w-4 h-4 text-emerald-400" />
-          <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest">Multimedia Oficial Fútbol Rápido Tribol</span>
+        <div className="inline-flex items-center space-x-2 bg-adhler-orange/15 border border-adhler-orange/25 px-3.5 py-1.5 rounded-full select-none">
+          <Camera className="w-4 h-4 text-[#ED7038]" />
+          <span className="text-xs font-mono font-bold text-[#ED7038] uppercase tracking-widest">Multimedia Oficial Fútbol Rápido Tribol</span>
         </div>
         <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white tracking-tight">
           Galería, Transmisiones & Videos
@@ -410,13 +410,13 @@ export default function GaleriaPage() {
       </div>
 
       {/* Main Mode Tabs Switch */}
-      <div className="flex border-b border-emerald-950/30 gap-1 sm:gap-2 pb-0.5 overflow-x-auto select-none no-scrollbar">
+      <div className="flex border-b border-adhler-cyan/15 gap-1 sm:gap-2 pb-0.5 overflow-x-auto select-none no-scrollbar">
         <button
           onClick={() => setActiveTab('photos')}
           id="tab-btn-photos"
           className={`px-5 py-3.5 text-xs sm:text-sm font-bold border-b-2 transition-all whitespace-nowrap flex items-center space-x-2.5 cursor-pointer leading-none ${
             activeTab === 'photos'
-              ? 'border-emerald-500 text-emerald-400 font-extrabold bg-emerald-500/5'
+              ? 'border-adhler-orange text-adhler-orange font-extrabold bg-[#ED7038]/5'
               : 'border-transparent text-gray-400 hover:text-white'
           }`}
         >
@@ -428,7 +428,7 @@ export default function GaleriaPage() {
           id="tab-btn-videos"
           className={`px-5 py-3.5 text-xs sm:text-sm font-bold border-b-2 transition-all whitespace-nowrap flex items-center space-x-2.5 cursor-pointer leading-none ${
             activeTab === 'videos'
-              ? 'border-emerald-500 text-emerald-400 font-extrabold bg-emerald-500/5'
+              ? 'border-[#ED7038] text-adhler-orange font-extrabold bg-[#ED7038]/5'
               : 'border-transparent text-gray-400 hover:text-white'
           }`}
         >
@@ -448,7 +448,7 @@ export default function GaleriaPage() {
             <button
               onClick={() => setPhotosFilter('all')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                photosFilter === 'all' ? 'bg-emerald-500 text-black font-extrabold shadow-[0_0_12px_rgba(16,185,129,0.3)]' : 'text-gray-400 hover:text-white bg-emerald-950/15 border border-zinc-900'
+                photosFilter === 'all' ? 'bg-[#ED7038] text-white font-extrabold shadow-[0_0_12px_rgba(237,112,56,0.3)]' : 'text-gray-400 hover:text-white bg-[#1e2530]/20 border border-zinc-900'
               }`}
             >
               Ver Todo
@@ -456,7 +456,7 @@ export default function GaleriaPage() {
             <button
               onClick={() => setPhotosFilter('facilities')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                photosFilter === 'facilities' ? 'bg-emerald-500 text-black font-extrabold shadow-[0_0_12px_rgba(16,185,129,0.3)]' : 'text-gray-400 hover:text-white bg-emerald-950/15 border border-zinc-900'
+                photosFilter === 'facilities' ? 'bg-[#ED7038] text-white font-extrabold shadow-[0_0_12px_rgba(237,112,56,0.3)]' : 'text-gray-400 hover:text-white bg-[#1e2530]/20 border border-zinc-900'
               }`}
             >
               Canchas e Instalaciones
@@ -464,7 +464,7 @@ export default function GaleriaPage() {
             <button
               onClick={() => setPhotosFilter('matches')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                photosFilter === 'matches' ? 'bg-emerald-500 text-black font-extrabold shadow-[0_0_12px_rgba(16,185,129,0.3)]' : 'text-gray-400 hover:text-white bg-emerald-950/15 border border-zinc-900'
+                photosFilter === 'matches' ? 'bg-[#ED7038] text-white font-extrabold shadow-[0_0_12px_rgba(237,112,56,0.3)]' : 'text-gray-400 hover:text-white bg-[#1e2530]/20 border border-zinc-900'
               }`}
             >
               Partidos en Curso
@@ -472,7 +472,7 @@ export default function GaleriaPage() {
             <button
               onClick={() => setPhotosFilter('events')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                photosFilter === 'events' ? 'bg-emerald-500 text-black font-extrabold shadow-[0_0_12px_rgba(16,185,129,0.3)]' : 'text-gray-400 hover:text-white bg-emerald-950/15 border border-zinc-900'
+                photosFilter === 'events' ? 'bg-[#ED7038] text-white font-extrabold shadow-[0_0_12px_rgba(237,112,56,0.3)]' : 'text-gray-400 hover:text-white bg-[#1e2530]/20 border border-zinc-900'
               }`}
             >
               Torneos y Copa Premiaciones
@@ -481,7 +481,7 @@ export default function GaleriaPage() {
 
           {/* Photo Grid */}
           {isLoading ? (
-            <div className="text-center py-20 text-xs font-mono text-emerald-400 animate-pulse">Cargando catálogo visual...</div>
+            <div className="text-center py-20 text-xs font-mono text-adhler-orange animate-pulse">Cargando catálogo visual...</div>
           ) : filteredPhotos.length === 0 ? (
             <div className="text-center py-16 glass-panel rounded-2xl text-gray-400 border border-zinc-900 font-mono text-xs">
               No hay fotografías registradas en esta sección actualmente.
@@ -492,7 +492,7 @@ export default function GaleriaPage() {
                 <div
                   key={photo.id}
                   onClick={() => setPreviewPhoto(photo)}
-                  className="glass-panel overflow-hidden rounded-2xl border border-emerald-950/30 hover:border-emerald-500/25 transition-all duration-300 group cursor-pointer relative shadow-md hover:shadow-lg"
+                  className="glass-panel overflow-hidden rounded-2xl border border-zinc-900 hover:border-[#ED7038]/25 transition-all duration-300 group cursor-pointer relative shadow-md hover:shadow-lg"
                   title="Click para ampliar"
                 >
                   <div className="h-60 overflow-hidden relative">
@@ -505,12 +505,12 @@ export default function GaleriaPage() {
                     
                     {/* On hover view badge */}
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <div className="bg-emerald-500 text-black rounded-full p-3 font-bold flex items-center justify-center transform scale-90 group-hover:scale-100 transition-transform duration-300 shadow-lg">
+                      <div className="bg-[#ED7038] text-white rounded-full p-3 font-bold flex items-center justify-center transform scale-90 group-hover:scale-100 transition-transform duration-300 shadow-lg">
                         <Eye className="w-5 h-5 stroke-[2.5]" />
                       </div>
                     </div>
 
-                    <span className="absolute top-3 left-3 bg-black/85 backdrop-blur rounded uppercase font-mono font-bold text-[8px] px-2 py-0.5 text-emerald-400 tracking-wide border border-emerald-500/10">
+                    <span className="absolute top-3 left-3 bg-black/85 backdrop-blur rounded uppercase font-mono font-bold text-[8px] px-2 py-0.5 text-adhler-orange tracking-wide border border-adhler-orange/10">
                       {photo.category}
                     </span>
                   </div>
@@ -538,7 +538,7 @@ export default function GaleriaPage() {
               
               {/* VIDEO PLAYER CELL */}
               <div className="lg:col-span-2 space-y-4">
-                <div className="relative aspect-video rounded-3xl overflow-hidden bg-black border border-emerald-500/15 shadow-2xl group flex flex-col justify-end">
+                <div className="relative aspect-video rounded-3xl overflow-hidden bg-black border border-adhler-orange/20 shadow-2xl group flex flex-col justify-end">
                   
                   {/* Dynamic Video Player/Embed Loader */}
                   {(() => {
@@ -558,7 +558,7 @@ export default function GaleriaPage() {
                           <button
                             type="button"
                             onClick={handleRetryConnection}
-                            className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-[10px] uppercase tracking-wider transition-all cursor-pointer shadow-lg shadow-emerald-500/10"
+                            className="px-4 py-2 rounded-xl bg-adhler-orange hover:bg-adhler-orange/95 text-white font-extrabold text-[10px] uppercase tracking-wider transition-all cursor-pointer shadow-lg shadow-adhler-orange/10"
                           >
                             Reintentar Conexión
                           </button>
@@ -615,7 +615,7 @@ export default function GaleriaPage() {
                       </span>
                     )}
 
-                    <span className="bg-black/75 backdrop-blur text-[10px] text-emerald-400 font-extrabold font-mono px-2.5 py-1 rounded-full border border-emerald-500/10">
+                    <span className="bg-black/75 backdrop-blur text-[10px] text-adhler-orange font-extrabold font-mono px-2.5 py-1 rounded-full border border-adhler-orange/10">
                       CANCHA 1 TECHADA
                     </span>
                   </div>
@@ -643,18 +643,18 @@ export default function GaleriaPage() {
                       <div className="flex items-center gap-4">
                         <button
                           onClick={handlePlayPause}
-                          className="bg-emerald-500 hover:bg-emerald-400 text-black p-3 rounded-full transition-transform hover:scale-105 shadow-md flex items-center justify-center cursor-pointer"
+                          className="bg-adhler-orange hover:bg-adhler-orange/90 text-white p-3 rounded-full transition-transform hover:scale-105 shadow-md flex items-center justify-center cursor-pointer"
                           title={isPlaying ? 'Pausar' : 'Reproducir'}
                         >
-                          {isPlaying ? <Pause className="w-4 h-4 fill-black" /> : <Play className="w-4 h-4 fill-black" />}
+                          {isPlaying ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white" />}
                         </button>
 
                         <button
                           onClick={handleMuteUnmute}
-                          className="text-white hover:text-emerald-400 p-2 transition-colors cursor-pointer"
+                          className="text-white hover:text-adhler-orange p-2 transition-colors cursor-pointer"
                           title={isMuted ? 'Activar sonido' : 'Silenciar'}
                         >
-                          {isMuted ? <VolumeX className="w-5 h-5 text-gray-400" /> : <Volume2 className="w-5 h-5 text-emerald-400 animate-pulse" />}
+                          {isMuted ? <VolumeX className="w-5 h-5 text-gray-400" /> : <Volume2 className="w-5 h-5 text-adhler-orange animate-pulse" />}
                         </button>
                       </div>
 
@@ -678,13 +678,12 @@ export default function GaleriaPage() {
                       </div>
                     </div>
                   </div>
-
                 </div>
 
                 {/* Banner info text below player */}
                 <div className="glass-panel p-4.5 rounded-2xl border border-zinc-800/80 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between text-left">
                   <div className="space-y-1">
-                    <span className="bg-emerald-950/40 text-emerald-400 border border-emerald-500/10 px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider">
+                    <span className="bg-adhler-cyan/15 text-adhler-cyan border border-adhler-cyan/25 px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider">
                       Señal HD de Altas Prestaciones
                     </span>
                     <p className="text-xs text-gray-300 font-medium">Transmitiendo en vivo cortes de partidos, mejores goles sabatinos y partidos de eliminación dominical.</p>
@@ -702,12 +701,12 @@ export default function GaleriaPage() {
                 {/* Chat Header Widget */}
                 <div className="bg-zinc-950 px-4 py-3 border-b border-zinc-800 flex items-center justify-between shrink-0">
                   <div className="flex items-center space-x-2">
-                    <MessageSquare className="w-4 h-4 text-emerald-400" />
+                    <MessageSquare className="w-4 h-4 text-adhler-orange" />
                     <span className="text-xs font-display font-bold text-white uppercase tracking-wider">Chat en Vivo Gratuito</span>
                   </div>
                   {selectedVideo.isLive ? (
-                    <div className="flex items-center space-x-1.5 text-[9px] bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded border border-emerald-500/20 font-mono">
-                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <div className="flex items-center space-x-1.5 text-[9px] bg-adhler-orange/15 text-adhler-orange px-2.5 py-0.5 rounded border border-adhler-orange/20 font-mono">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-adhler-orange animate-ping"></span>
                       <span>EN VIVO</span>
                     </div>
                   ) : (
@@ -725,12 +724,12 @@ export default function GaleriaPage() {
                       key={index}
                       className={`p-2 rounded-xl border max-w-[85%] transition-all animate-fadeIn ${
                         msg.isUser 
-                          ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-200 ml-auto' 
+                          ? 'bg-adhler-orange/10 border-adhler-orange/20 text-white ml-auto' 
                           : 'bg-zinc-900/60 border-zinc-850/60 text-gray-300 mr-auto'
                       }`}
                     >
                       <div className="flex items-center gap-1.5 mb-1 justify-between">
-                        <span className={`font-black tracking-wide ${msg.isUser ? 'text-emerald-400' : 'text-amber-400'}`}>
+                        <span className={`font-black tracking-wide ${msg.isUser ? 'text-adhler-orange' : 'text-adhler-yellow'}`}>
                           @{msg.sender}
                         </span>
                         <span className="text-[8px] text-gray-500">{msg.time}</span>
@@ -751,14 +750,14 @@ export default function GaleriaPage() {
                     value={newMessage}
                     onChange={e => setNewMessage(e.target.value)}
                     placeholder="Escribe tu mensaje en el chat..."
-                    className="flex-grow bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500/50 font-sans"
+                    className="flex-grow bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ED7038]/50 font-sans"
                     maxLength={100}
                   />
                   <button
                     type="submit"
-                    className="bg-emerald-500 hover:bg-emerald-400 text-black p-2 rounded-xl transition-all flex items-center justify-center shrink-0 cursor-pointer shadow-md"
+                    className="bg-adhler-orange hover:bg-adhler-orange/95 text-white p-2 rounded-xl transition-all flex items-center justify-center shrink-0 cursor-pointer shadow-md"
                   >
-                    <Send className="w-3.5 h-3.5 text-black" />
+                    <Send className="w-3.5 h-3.5 text-white" />
                   </button>
                 </form>
 
@@ -769,10 +768,10 @@ export default function GaleriaPage() {
 
           {/* Archived Video Grid & Navigation Filters */}
           <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-4 border-t border-emerald-950/20 pt-8 text-left">
+            <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-4 border-t border-adhler-cyan/15 pt-8 text-left">
               <div className="space-y-1 self-start">
                 <h4 className="font-display font-extrabold text-xl text-white flex items-center gap-2">
-                  <Film className="w-5 h-5 text-emerald-400" />
+                  <Film className="w-5 h-5 text-adhler-orange" />
                   Videoteca de Goles & Resúmenes
                 </h4>
                 <p className="text-xs text-gray-400 font-sans">Busca y reproduce videos históricos, clips de mejores de la fecha o repeticiones completas.</p>
@@ -784,7 +783,7 @@ export default function GaleriaPage() {
                   onClick={() => setVideosFilter('all')}
                   className={`px-3 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
                     videosFilter === 'all'
-                      ? 'bg-emerald-500 text-black font-black'
+                      ? 'bg-[#ED7038] text-white font-black'
                       : 'bg-zinc-900 border border-zinc-800 text-gray-400 hover:text-white'
                   }`}
                 >
@@ -794,7 +793,7 @@ export default function GaleriaPage() {
                   onClick={() => setVideosFilter('live')}
                   className={`px-3 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
                     videosFilter === 'live'
-                      ? 'bg-emerald-500 text-black font-black'
+                      ? 'bg-[#ED7038] text-white font-black'
                       : 'bg-zinc-900 border border-zinc-800 text-gray-400 hover:text-white'
                   }`}
                 >
@@ -804,7 +803,7 @@ export default function GaleriaPage() {
                   onClick={() => setVideosFilter('highlight')}
                   className={`px-3 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
                     videosFilter === 'highlight'
-                      ? 'bg-emerald-500 text-black font-black'
+                      ? 'bg-[#ED7038] text-white font-black'
                       : 'bg-zinc-900 border border-zinc-800 text-gray-400 hover:text-white'
                   }`}
                 >
@@ -814,7 +813,7 @@ export default function GaleriaPage() {
                   onClick={() => setVideosFilter('full_match')}
                   className={`px-3 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
                     videosFilter === 'full_match'
-                      ? 'bg-emerald-500 text-black font-black'
+                      ? 'bg-[#ED7038] text-white font-black'
                       : 'bg-zinc-900 border border-zinc-800 text-gray-400 hover:text-white'
                   }`}
                 >
@@ -838,8 +837,8 @@ export default function GaleriaPage() {
                       onClick={() => selectActiveVideoPlayer(video)}
                       className={`glass-panel overflow-hidden rounded-2xl border transition-all duration-300 cursor-pointer group text-left ${
                         isActive
-                          ? 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-emerald-500/5'
-                          : 'border-zinc-800/80 hover:border-emerald-500/25 bg-zinc-950/40'
+                          ? 'border-adhler-orange shadow-[0_0_15px_rgba(237,112,56,0.15)] bg-adhler-orange/5'
+                          : 'border-zinc-800/80 hover:border-[#ED7038]/25 bg-zinc-950/40'
                       }`}
                     >
                       <div className="relative h-44 bg-zinc-900 overflow-hidden">
@@ -850,7 +849,7 @@ export default function GaleriaPage() {
                         />
                         <div className="absolute inset-0 bg-black/45 flex items-center justify-center">
                           <div className={`p-3 rounded-full transition-all flex items-center justify-center ${
-                            isActive ? 'bg-emerald-500 text-black' : 'bg-black/60 text-white group-hover:bg-emerald-500 group-hover:text-black'
+                            isActive ? 'bg-[#ED7038] text-white' : 'bg-black/60 text-white group-hover:bg-[#ED7038] group-hover:text-white'
                           }`}>
                             <Play className="w-5 h-5 fill-current ml-0.5" />
                           </div>
@@ -912,7 +911,7 @@ export default function GaleriaPage() {
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
                 transition={{ duration: 4, ease: "linear" }}
-                className="absolute top-0 left-0 h-1 bg-emerald-500 z-50"
+                className="absolute top-0 left-0 h-1 bg-[#ED7038] z-50"
               />
             )}
 
@@ -926,14 +925,14 @@ export default function GaleriaPage() {
                 <span className="text-gray-400 text-xs font-mono font-medium tracking-wide">
                   Imagen <strong className="text-white">{currentPhotoIndex + 1}</strong> de <strong className="text-white">{filteredPhotos.length}</strong>
                 </span>
-                <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-bold text-emerald-400 uppercase tracking-widest font-mono">
+                <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-adhler-orange/15 border border-adhler-orange/25 text-[9px] font-bold text-adhler-orange uppercase tracking-widest font-mono">
                   {previewPhoto.category === 'facilities' ? 'Instalaciones' : previewPhoto.category === 'matches' ? 'Partidos' : 'Torneos'}
                 </span>
               </div>
 
               {/* Center: Play/Pause indicator */}
               {isAutoplay && (
-                <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full text-emerald-400 text-[10px] font-mono font-bold uppercase tracking-widest animate-pulse">
+                <div className="flex items-center gap-1.5 bg-[#ED7038]/15 border border-[#ED7038]/25 px-3 py-1 rounded-full text-[#ED7038] text-[10px] font-mono font-bold uppercase tracking-widest animate-pulse">
                   <Sparkles size={11} className="animate-spin" />
                   <span>Autoplay Activado</span>
                 </div>
@@ -947,7 +946,7 @@ export default function GaleriaPage() {
                   onClick={() => setIsAutoplay(prev => !prev)}
                   className={`p-2 rounded-xl border transition-all cursor-pointer ${
                     isAutoplay 
-                      ? 'bg-emerald-500 text-black border-emerald-500/30' 
+                      ? 'bg-[#ED7038] text-white border-transparent' 
                       : 'bg-zinc-900 border-zinc-800 text-gray-400 hover:text-white'
                   }`}
                   title={isAutoplay ? "Pausar Reproducción Automática (Espacio)" : "Iniciar Reproducción Automática (Espacio)"}
@@ -982,7 +981,7 @@ export default function GaleriaPage() {
                   <button
                     type="button"
                     onClick={() => setZoomScale(1)}
-                    className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-black transition-all cursor-pointer text-[10px] font-black font-mono uppercase px-2.5"
+                    className="p-2 rounded-xl bg-adhler-cyan/15 border border-adhler-cyan/25 text-adhler-cyan hover:bg-[#96D7DD] hover:text-black transition-all cursor-pointer text-[10px] font-black font-mono uppercase px-2.5"
                     title="Restablecer Zoom"
                   >
                     {zoomScale.toFixed(1)}x
@@ -995,7 +994,7 @@ export default function GaleriaPage() {
                   onClick={(e) => handleShare(e, previewPhoto.url)}
                   className={`p-2 rounded-xl border transition-all cursor-pointer ${
                     shareCopied 
-                      ? 'bg-emerald-500 text-black border-emerald-400/25' 
+                      ? 'bg-[#2d3846] text-white border-transparent' 
                       : 'bg-zinc-900 border-zinc-800 text-gray-300 hover:text-white hover:border-zinc-700'
                   }`}
                   title="Copiar Enlace de Fotografía"
@@ -1034,7 +1033,7 @@ export default function GaleriaPage() {
               <button
                 type="button"
                 onClick={handlePrevPhoto}
-                className="absolute left-2 sm:left-4 p-3.5 rounded-full bg-zinc-950/70 hover:bg-emerald-500 hover:text-black text-white hover:scale-105 active:scale-95 transition-all duration-200 z-10 border border-zinc-900/60 cursor-pointer shadow-xl"
+                className="absolute left-2 sm:left-4 p-3.5 rounded-full bg-zinc-950/70 hover:bg-adhler-orange hover:text-white text-white hover:scale-105 active:scale-95 transition-all duration-200 z-10 border border-zinc-900/60 cursor-pointer shadow-xl"
                 title="Imagen Anterior (A / Izquierda)"
               >
                 <ChevronLeft size={20} className="stroke-[3]" />
@@ -1066,7 +1065,7 @@ export default function GaleriaPage() {
                   />
                   
                   {shareCopied && (
-                    <div className="absolute top-4 bg-emerald-500 text-black px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-2xl animate-bounce">
+                    <div className="absolute top-4 bg-adhler-orange text-white px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-2xl animate-bounce">
                       <Check size={12} className="stroke-[3]" />
                       <span>¡Enlace Copiado al Portapapeles!</span>
                     </div>
@@ -1078,7 +1077,7 @@ export default function GaleriaPage() {
               <button
                 type="button"
                 onClick={handleNextPhoto}
-                className="absolute right-2 sm:right-4 p-3.5 rounded-full bg-zinc-950/70 hover:bg-emerald-500 hover:text-black text-white hover:scale-105 active:scale-95 transition-all duration-200 z-10 border border-zinc-900/60 cursor-pointer shadow-xl"
+                className="absolute right-2 sm:right-4 p-3.5 rounded-full bg-zinc-950/70 hover:bg-adhler-orange hover:text-white text-white hover:scale-105 active:scale-95 transition-all duration-200 z-10 border border-zinc-900/60 cursor-pointer shadow-xl"
                 title="Siguiente Imagen (D / Derecha)"
               >
                 <ChevronRight size={20} className="stroke-[3]" />
@@ -1098,7 +1097,7 @@ export default function GaleriaPage() {
                 <div className="flex items-center justify-center gap-3 text-[10px] font-mono text-zinc-500 pt-1">
                   <span>Ficha: #{previewPhoto.id}</span>
                   <span>•</span>
-                  <span>Categoría: <strong className="text-emerald-405 uppercase font-bold">{previewPhoto.category}</strong></span>
+                  <span>Categoría: <strong className="text-adhler-orange uppercase font-bold">{previewPhoto.category}</strong></span>
                   <span>•</span>
                   <span>Fecha: {new Date(previewPhoto.uploadedAt).toLocaleDateString()}</span>
                 </div>
@@ -1117,7 +1116,7 @@ export default function GaleriaPage() {
                       }}
                       className={`relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer transition-all duration-250 ${
                         isActive 
-                          ? 'ring-2 ring-emerald-500 scale-110 opacity-100 shadow-[0_0_12px_rgba(16,185,129,0.4)]' 
+                          ? 'ring-2 ring-adhler-orange scale-110 opacity-100 shadow-[0_0_12px_rgba(237,112,56,0.4)]' 
                           : 'opacity-40 hover:opacity-100'
                       }`}
                       title={`Ver imagen ${pIdx + 1}`}

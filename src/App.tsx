@@ -117,12 +117,12 @@ export default function App() {
   // If in Android view, render the optimized Material-themed Administration frame
   if (isInAndroidView) {
     return (
-      <div className="min-h-screen bg-[#020403] text-gray-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-black">
+      <div className="min-h-screen bg-[#171E26] text-gray-100 flex flex-col font-sans selection:bg-adhler-orange selection:text-white">
         
         {/* Android Native Status Top Bar */}
-        <div className="sticky top-0 z-50 bg-zinc-950 border-b border-emerald-950/40 px-4 py-4 flex items-center justify-between shadow-md">
+        <div className="sticky top-0 z-50 bg-[#0f141a] border-b border-adhler-cyan/15 px-4 py-4 flex items-center justify-between shadow-md">
           <div className="flex items-center space-x-2.5">
-            <div className="w-9 h-9 rounded-lg overflow-hidden border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.25)] bg-emerald-950/20">
+            <div className="w-9 h-9 rounded-lg overflow-hidden border border-adhler-orange/30 shadow-[0_0_8px_rgba(237,112,56,0.25)] bg-[#1e2530]">
               <img 
                 src="/src/assets/images/tribol_logo_1780556302100.png" 
                 alt="Fútbol Rápido Tribol Logo" 
@@ -131,10 +131,10 @@ export default function App() {
               />
             </div>
             <div>
-              <h1 className="text-sm font-extrabold tracking-wider text-white">TRIBOL APP <span className="text-emerald-400 text-[10px] font-mono px-1 py-0.5 rounded bg-emerald-950/50 border border-emerald-500/20 ml-1">ADMIN</span></h1>
+              <h1 className="text-sm font-extrabold tracking-wider text-white">TRIBOL APP <span className="text-adhler-orange text-[10px] font-mono px-1 py-0.5 rounded bg-[#1e2530] border border-adhler-orange/20 ml-1">ADMIN</span></h1>
               <div className="flex items-center space-x-1.5 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span className="text-[9px] text-emerald-400 font-mono font-medium tracking-wide uppercase">Realtime Cloud Sync</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-adhler-orange animate-pulse"></span>
+                <span className="text-[9px] text-adhler-orange font-mono font-medium tracking-wide uppercase">Realtime Cloud Sync</span>
               </div>
             </div>
           </div>
@@ -168,8 +168,13 @@ export default function App() {
             /* Dedicated Android Lock Login Portal */
             <div className="max-w-md mx-auto px-4 py-16 flex flex-col justify-center min-h-[80vh]">
               <div className="text-center mb-8 space-y-3">
-                <div className="w-16 h-16 mx-auto bg-gradient-to-br from-emerald-500 to-teal-400 text-black rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-transform hover:rotate-6 duration-300">
-                  <Shield className="w-8 h-8 font-extrabold" />
+                <div className="w-16 h-16 mx-auto rounded-2xl overflow-hidden border-2 border-adhler-orange bg-[#131920] shadow-[0_0_20px_rgba(237,112,56,0.25)] transition-transform hover:rotate-6 duration-300">
+                  <img 
+                    src="/src/assets/images/tribol_logo_1780556302100.png" 
+                    alt="Fútbol Rápido Tribol" 
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
                 </div>
                 <h2 className="text-2xl font-extrabold text-white tracking-tight">Acceso Administrativo</h2>
                 <p className="text-xs text-gray-400 max-w-xs mx-auto">
@@ -184,7 +189,7 @@ export default function App() {
                 </div>
               )}
 
-              <form onSubmit={handleAndroidLoginSubmit} className="space-y-4 bg-zinc-950/80 p-6 rounded-2xl border border-emerald-950/35 shadow-xl">
+              <form onSubmit={handleAndroidLoginSubmit} className="space-y-4 bg-[#1e2530] p-6 rounded-2xl border border-adhler-cyan/15 shadow-xl">
                 <div className="space-y-1.5">
                   <label className="text-[10px] text-gray-400 font-mono uppercase tracking-wider font-extrabold">Usuario de Control</label>
                   <input
@@ -193,7 +198,7 @@ export default function App() {
                     value={androidEmail}
                     onChange={(e) => setAndroidEmail(e.target.value)}
                     placeholder="ejemplo@canchafutbol.com"
-                    className="w-full bg-[#0a0c0b] border border-zinc-800 rounded-xl px-3.5 py-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all font-mono"
+                    className="w-full bg-[#171E26] border border-[#2d3846] rounded-xl px-3.5 py-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-adhler-orange/55 focus:border-adhler-orange/55 transition-all font-mono"
                   />
                 </div>
 
@@ -205,18 +210,18 @@ export default function App() {
                     value={androidPassword}
                     onChange={(e) => setAndroidPassword(e.target.value)}
                     placeholder="Ingrese su clave"
-                    className="w-full bg-[#0a0c0b] border border-zinc-800 rounded-xl px-3.5 py-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all font-mono"
+                    className="w-full bg-[#171E26] border border-[#2d3846] rounded-xl px-3.5 py-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-adhler-orange/55 focus:border-adhler-orange/55 transition-all font-mono"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={androidLoginLoading}
-                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs py-3.5 px-4 rounded-xl transition-all shadow-[0_4px_15px_rgba(16,185,129,0.35)] flex items-center justify-center space-x-2 tracking-wider uppercase cursor-pointer"
+                  className="w-full bg-adhler-orange hover:bg-adhler-orange-dark text-white font-black text-xs py-3.5 px-4 rounded-xl transition-all shadow-[0_4px_15px_rgba(237,112,56,0.35)] flex items-center justify-center space-x-2 tracking-wider uppercase cursor-pointer"
                 >
                   {androidLoginLoading ? (
                     <>
-                      <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       <span>Verificando...</span>
                     </>
                   ) : (
@@ -224,14 +229,14 @@ export default function App() {
                   )}
                 </button>
 
-                <div className="pt-2 border-t border-zinc-900 flex justify-center">
+                <div className="pt-2 border-t border-[#2d3846] flex justify-center">
                   <button
                     type="button"
                     onClick={() => {
                       setAndroidEmail('admin@canchafutbol.com');
                       setAndroidPassword('admin');
                     }}
-                    className="text-[10px] font-mono text-emerald-400 hover:text-emerald-300 font-bold tracking-wide transition-all uppercase cursor-pointer"
+                    className="text-[10px] font-mono text-adhler-cyan hover:text-adhler-cyan/80 font-bold tracking-wide transition-all uppercase cursor-pointer"
                   >
                     ⚡ Autocompletar Credenciales
                   </button>
@@ -257,7 +262,7 @@ export default function App() {
 
   // Standalone multi-platform visitor layout
   return (
-    <div className="min-h-screen bg-[#020403] text-gray-100 flex flex-col justify-between selection:bg-emerald-500 selection:text-black">
+    <div className="min-h-screen bg-[#171E26] text-gray-100 flex flex-col justify-between selection:bg-adhler-orange selection:text-white">
       
 
 
@@ -318,7 +323,7 @@ export default function App() {
       <AliadosSection onContactClick={() => setCurrentPage('contacto')} />
 
       {/* Responsive Sports Theme Footer */}
-      <footer className="bg-gradient-to-t from-black via-zinc-950 to-[#020403] border-t border-emerald-950/20 pt-16 pb-8 text-left text-xs text-gray-400">
+      <footer className="bg-gradient-to-t from-[#0e1319] via-[#121820] to-[#171E26] border-t border-adhler-cyan/15 pt-16 pb-8 text-left text-xs text-gray-400">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
           
           {/* Column 1: Identity */}
@@ -389,7 +394,7 @@ export default function App() {
         </div>
 
         {/* Closing details */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-emerald-950/10 flex flex-col sm:flex-row justify-between text-gray-600 text-[10px] items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-adhler-cyan/10 flex flex-col sm:flex-row justify-between text-gray-600 text-[10px] items-center">
           <span>© 2026 Fútbol Rápido Tribol Ixtapaluca. Todos los derechos reservados.</span>
           <div className="flex gap-4 mt-2 sm:mt-0 font-mono">
             <span>Privacidad de Plantillas</span>

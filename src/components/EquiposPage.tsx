@@ -311,16 +311,16 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
     };
   }).filter(t => t.value > 0);
 
-  const COLORS = ['#10b981', '#14b8a6', '#06b6d4', '#6366f1', '#e11d48', '#f59e0b', '#a855f7'];
+  const COLORS = ['#ED7038', '#F7D955', '#96D7DD', '#0E2BA3', '#D53C2E', '#a855f7'];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
       
       {/* Page Header */}
       <div className="space-y-4 text-center lg:text-left">
-        <div className="inline-flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 rounded-full select-none">
-          <Users className="w-4 h-4 text-emerald-400" />
-          <span className="text-xs font-mono font-semibold text-emerald-400 uppercase tracking-wider">Fútbol Rápido Tribol Ixtapaluca 2026</span>
+        <div className="inline-flex items-center space-x-2 bg-adhler-orange/15 border border-adhler-orange/25 px-3.5 py-1.5 rounded-full select-none">
+          <Users className="w-4 h-4 text-adhler-orange" />
+          <span className="text-xs font-mono font-semibold text-adhler-orange uppercase tracking-wider">Fútbol Rápido Tribol Ixtapaluca 2026</span>
         </div>
         <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white tracking-tight">
           Equipos y Plantillas
@@ -331,23 +331,23 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
       </div>
 
       {/* Sub-navigation Tabs */}
-      <div className="flex border-b border-emerald-950/30 gap-1 sm:gap-2 pb-0.5 overflow-x-auto select-none no-scrollbar">
+      <div className="flex border-b border-adhler-cyan/15 gap-1 sm:gap-2 pb-0.5 overflow-x-auto select-none no-scrollbar">
         <button
           onClick={() => setSubTab('standings')}
           className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all whitespace-nowrap flex items-center space-x-2 cursor-pointer ${
             subTab === 'standings'
-              ? 'border-emerald-500 text-emerald-400 font-extrabold bg-emerald-500/5'
+              ? 'border-adhler-orange text-adhler-orange font-extrabold bg-adhler-orange/5'
               : 'border-transparent text-gray-400 hover:text-white'
           }`}
         >
-          <Trophy className="w-4 h-4 text-emerald-500" />
+          <Trophy className="w-4 h-4 text-adhler-orange" />
           <span>Tabla de Posiciones</span>
         </button>
         <button
           onClick={() => setSubTab('rosters')}
           className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all whitespace-nowrap flex items-center space-x-2 cursor-pointer ${
             subTab === 'rosters'
-              ? 'border-emerald-500 text-emerald-400 font-extrabold bg-emerald-500/5'
+              ? 'border-adhler-orange text-adhler-orange font-extrabold bg-adhler-orange/5'
               : 'border-transparent text-gray-400 hover:text-white'
           }`}
         >
@@ -358,7 +358,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
           onClick={() => setSubTab('mvps')}
           className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all whitespace-nowrap flex items-center space-x-2 cursor-pointer ${
             subTab === 'mvps'
-              ? 'border-emerald-500 text-emerald-400 font-extrabold bg-emerald-500/5'
+              ? 'border-adhler-orange text-adhler-orange font-extrabold bg-adhler-orange/5'
               : 'border-transparent text-gray-400 hover:text-white'
           }`}
         >
@@ -369,7 +369,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
           onClick={() => setSubTab('schedules')}
           className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all whitespace-nowrap flex items-center space-x-2 cursor-pointer ${
             subTab === 'schedules'
-              ? 'border-emerald-500 text-emerald-400 font-extrabold bg-emerald-500/5'
+              ? 'border-adhler-orange text-adhler-orange font-extrabold bg-adhler-orange/5'
               : 'border-transparent text-gray-400 hover:text-white'
           }`}
         >
@@ -399,7 +399,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
             </div>
 
             {/* Best Attack Card */}
-            <div className="glass-panel p-6 rounded-2xl flex items-center space-x-4 border border-emerald-950/40 shadow-sm">
+            <div className="glass-panel p-6 rounded-2xl flex items-center space-x-4 border border-zinc-900 shadow-sm">
               <div className="p-3.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl">
                 <Flame className="w-6 h-6 animate-pulse" />
               </div>
@@ -415,7 +415,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
             </div>
 
             {/* Best Defense Card */}
-            <div className="glass-panel p-6 rounded-2xl flex items-center space-x-4 border border-emerald-950/40 shadow-sm">
+            <div className="glass-panel p-6 rounded-2xl flex items-center space-x-4 border border-zinc-900 shadow-sm">
               <div className="p-3.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl">
                 <Shield className="w-6 h-6" />
               </div>
@@ -432,15 +432,15 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
           </div>
 
           {/* Standings Table Main Glass Panel */}
-          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-emerald-950/30 shadow-xl space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-emerald-950/30 text-left">
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-zinc-900 shadow-xl space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-zinc-900 text-left">
               <div>
                 <h3 className="font-display font-extrabold text-xl text-white">Tabla General de Clasificación</h3>
                 <p className="text-xs text-gray-400 mt-1">Liguilla directa: Clasifican las posiciones 1 a 4 del campeonato nocturno.</p>
               </div>
               
               {isAdmin && (
-                <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-lg text-xs font-mono font-bold select-none">
+                <div className="bg-[#ED7038]/10 border border-[#ED7038]/20 text-[#ED7038] px-3 py-1.5 rounded-lg text-xs font-mono font-bold select-none">
                   ⚡ Modo Administrador Activo
                 </div>
               )}
@@ -448,9 +448,9 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
 
             {/* Administrative Update Modal Inline Form */}
             {editingTeam && (
-              <div className="bg-emerald-950/15 p-6 rounded-2xl border border-emerald-500/30 space-y-4 animate-scaleIn text-left">
-                <div className="flex justify-between items-center border-b border-emerald-950/30 pb-2">
-                  <h4 className="font-display font-bold text-sm text-emerald-400 flex items-center space-x-2">
+              <div className="bg-zinc-900/30 p-6 rounded-2xl border border-adhler-cyan/20 space-y-4 animate-scaleIn text-left">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="font-display font-bold text-sm text-adhler-cyan flex items-center space-x-2">
                     <Edit2 className="w-4 h-4" />
                     <span>Actualizar Estadísticas: {editingTeam.name}</span>
                   </h4>
@@ -470,7 +470,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                       type="number" 
                       value={editGamesPlayed}
                       onChange={(e) => setEditGamesPlayed(e.target.value)}
-                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-emerald-500"
+                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-adhler-cyan"
                       min="0"
                     />
                   </div>
@@ -481,7 +481,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                       type="number" 
                       value={editGamesWon}
                       onChange={(e) => setEditGamesWon(e.target.value)}
-                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-emerald-500"
+                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-adhler-cyan"
                       min="0"
                     />
                   </div>
@@ -492,7 +492,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                       type="number" 
                       value={editGamesDrawn}
                       onChange={(e) => setEditGamesDrawn(e.target.value)}
-                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-emerald-500"
+                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-adhler-cyan"
                       min="0"
                     />
                   </div>
@@ -503,7 +503,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                       type="number" 
                       value={editGamesLost}
                       onChange={(e) => setEditGamesLost(e.target.value)}
-                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-emerald-500"
+                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-adhler-cyan"
                       min="0"
                     />
                   </div>
@@ -514,7 +514,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                       type="number" 
                       value={editGoalsFor}
                       onChange={(e) => setEditGoalsFor(e.target.value)}
-                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-emerald-500"
+                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-adhler-cyan"
                       min="0"
                     />
                   </div>
@@ -525,7 +525,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                       type="number" 
                       value={editGoalsAgainst}
                       onChange={(e) => setEditGoalsAgainst(e.target.value)}
-                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-emerald-500"
+                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-center focus:outline-none focus:border-adhler-cyan"
                       min="0"
                     />
                   </div>
@@ -537,7 +537,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                       value={editForm}
                       onChange={(e) => setEditForm(e.target.value)}
                       placeholder="G,E,P,G,G"
-                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-left focus:outline-none focus:border-emerald-500"
+                      className="w-full bg-black/40 text-white font-mono p-2 rounded-lg border border-gray-800 text-xs text-left focus:outline-none focus:border-adhler-cyan"
                     />
                   </div>
 
@@ -545,7 +545,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                     <button
                       type="submit"
                       disabled={isSavingStats}
-                      className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold h-9 rounded-lg text-xs transition-colors cursor-pointer uppercase font-mono"
+                      className="w-full bg-[#ED7038] hover:bg-[#ED7038]/90 text-white font-bold h-9 rounded-lg text-xs transition-colors cursor-pointer uppercase font-mono"
                     >
                       {isSavingStats ? 'Salvando...' : 'Guardar'}
                     </button>
@@ -559,7 +559,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
             <div className="overflow-x-auto select-none rounded-xl">
               <table className="w-full text-left font-sans min-w-[700px]">
                 <thead>
-                  <tr className="border-b border-emerald-950/20 text-xs text-gray-500 uppercase font-mono font-bold tracking-widest pb-3">
+                  <tr className="border-b border-adhler-cyan/15 text-xs text-gray-500 uppercase font-mono font-bold tracking-widest pb-3">
                     <th className="pb-3 pl-4 text-center w-12">Pos</th>
                     <th className="pb-3">Club / Escuadra</th>
                     <th className="pb-3 text-center">PJ</th>
@@ -569,15 +569,15 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                     <th className="pb-3 text-center">GF</th>
                     <th className="pb-3 text-center">GC</th>
                     <th className="pb-3 text-center">DG</th>
-                    <th className="pb-3 text-center font-bold text-white bg-emerald-950/20 rounded-t-lg">Pts</th>
+                    <th className="pb-3 text-center font-bold text-white bg-[#1e2530] rounded-t-lg">Pts</th>
                     <th className="pb-3 pl-6">Racha Reciente</th>
                     {isAdmin && <th className="pb-3 text-right pr-4">Acción</th>}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-emerald-950/10 font-mono text-sm">
+                <tbody className="divide-y divide-adhler-cyan/10 font-mono text-sm">
                   {sortedStandingsTeams.map((team, idx) => {
                     const placeColors = [
-                      'text-yellow-400 bg-yellow-400/10 border-yellow-500/20',
+                      'text-adhler-yellow bg-adhler-yellow/10 border-adhler-yellow/20',
                       'text-slate-300 bg-slate-300/10 border-slate-400/20',
                       'text-amber-600 bg-amber-600/10 border-amber-700/20'
                     ];
@@ -595,8 +595,8 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                     return (
                       <tr 
                         key={team.id} 
-                        className={`group hover:bg-emerald-950/5 transition-colors duration-150 ${
-                          isPlayoffs ? 'border-l-2 border-emerald-500/50' : 'border-l-2 border-transparent'
+                        className={`group hover:bg-white/[0.02] transition-colors duration-150 ${
+                          isPlayoffs ? 'border-l-2 border-adhler-orange/50' : 'border-l-2 border-transparent'
                         }`}
                       >
                         {/* Position */}
@@ -604,7 +604,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                         
                         {/* Club with Uniform badge */}
                         <td className="py-4 font-sans text-white font-bold flex items-center space-x-3 text-left">
-                          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/10 flex items-center justify-center text-emerald-400">
+                          <div className="w-8 h-8 rounded-lg bg-adhler-orange/15 border border-adhler-orange/25 flex items-center justify-center text-adhler-orange">
                             <Shield className="w-4.5 h-4.5" />
                           </div>
                           <div>
@@ -616,11 +616,11 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                         {/* PJ */}
                         <td className="py-4 text-center text-gray-300">{team.gamesPlayed ?? 0}</td>
                         {/* PG */}
-                        <td className="py-4 text-center text-emerald-400/90">{team.gamesWon ?? 0}</td>
+                        <td className="py-4 text-center text-adhler-orange/90">{team.gamesWon ?? 0}</td>
                         {/* PE */}
                         <td className="py-4 text-center text-gray-400">{team.gamesDrawn ?? 0}</td>
                         {/* PP */}
-                        <td className="py-4 text-center text-red-400/80">{team.gamesLost ?? 0}</td>
+                        <td className="py-4 text-center text-adhler-red/80">{team.gamesLost ?? 0}</td>
                         {/* GF */}
                         <td className="py-4 text-center text-gray-400">{goalsForVal}</td>
                         {/* GC */}
@@ -628,16 +628,16 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                         {/* DG */}
                         <td className={`py-4 text-center font-bold ${
                           dgVal > 0 
-                            ? 'text-emerald-400' 
+                            ? 'text-adhler-orange' 
                             : dgVal < 0 
-                            ? 'text-red-400' 
+                            ? 'text-adhler-red' 
                             : 'text-gray-500'
                         }`}>
                           {dgVal > 0 ? `+${dgVal}` : dgVal}
                         </td>
                         
                         {/* Points highlighted */}
-                        <td className="py-4 text-center font-extrabold text-white text-base bg-emerald-950/15 border-x border-emerald-950/20">
+                        <td className="py-4 text-center font-extrabold text-white text-base bg-[#1e2530] border-x border-[#2d3846]">
                           {ptsVal}
                         </td>
 
@@ -649,10 +649,10 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                             ) : (
                               team.form.map((f, rIdx) => {
                                 const streakColors = f === 'G' 
-                                  ? 'bg-emerald-500 text-black border-emerald-400/35' 
+                                  ? 'bg-adhler-orange text-white border-adhler-orange/35' 
                                   : f === 'E' 
-                                  ? 'bg-amber-500/80 text-black border-amber-400/35' 
-                                  : 'bg-red-500 text-white border-red-400/35';
+                                  ? 'bg-adhler-yellow/80 text-black border-adhler-yellow/35' 
+                                  : 'bg-adhler-red text-white border-adhler-red/35';
                                 return (
                                   <span 
                                     key={rIdx} 
@@ -672,7 +672,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                           <td className="py-4 text-right pr-4 font-sans">
                             <button
                               onClick={() => handleOpenEditStats(team)}
-                              className="text-xs bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-black border border-emerald-500/30 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer"
+                              className="text-xs bg-adhler-orange/10 hover:bg-adhler-orange text-adhler-orange hover:text-white border border-adhler-orange/30 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer"
                             >
                               Editar
                             </button>
@@ -686,9 +686,9 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
             </div>
 
             {/* Playoff Legend */}
-            <div className="flex flex-col sm:flex-row justify-between pt-4 border-t border-emerald-950/20 text-xs text-gray-500 font-light gap-2 select-none text-left leading-relaxed">
+            <div className="flex flex-col sm:flex-row justify-between pt-4 border-t border-zinc-900 text-xs text-gray-500 font-light gap-2 select-none text-left leading-relaxed">
               <div className="flex items-center space-x-2">
-                <span className="w-3 h-0.5 bg-emerald-500 inline-block rounded"></span>
+                <span className="w-3 h-0.5 bg-adhler-cyan inline-block rounded"></span>
                 <span>Clasificación directa a Liguilla (Top 4)</span>
               </div>
               <p className="font-mono text-[11px]">Actualización en tiempo real • Fútbol Rápido Tribol Ixtapaluca</p>
@@ -702,8 +702,8 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
       <div className="space-y-12 animate-fadeIn">
         {/* Stats Bento Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="glass-panel p-6 rounded-2xl flex items-center space-x-4 border border-emerald-950/40 shadow-sm">
-          <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl">
+        <div className="glass-panel p-6 rounded-2xl flex items-center space-x-4 border border-adhler-orange/15 shadow-sm">
+          <div className="p-3.5 bg-[#ED7038]/10 border border-[#ED7038]/25 text-[#ED7038] rounded-xl">
             <Shield className="w-6 h-6" />
           </div>
           <div>
@@ -712,8 +712,8 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
           </div>
         </div>
 
-        <div className="glass-panel p-6 rounded-2xl flex items-center space-x-4 border border-emerald-950/40 shadow-sm">
-          <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl">
+        <div className="glass-panel p-6 rounded-2xl flex items-center space-x-4 border border-adhler-cyan/15 shadow-sm">
+          <div className="p-3.5 bg-adhler-cyan/10 border border-adhler-cyan/25 text-adhler-cyan rounded-xl">
             <Users className="w-6 h-6" />
           </div>
           <div>
@@ -722,8 +722,8 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
           </div>
         </div>
 
-        <div className="glass-panel p-6 rounded-2xl flex items-center space-x-4 border border-emerald-950/40 shadow-sm">
-          <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl">
+        <div className="glass-panel p-6 rounded-2xl flex items-center space-x-4 border border-adhler-orange/15 shadow-sm">
+          <div className="p-3.5 bg-[#ED7038]/10 border border-[#ED7038]/25 text-[#ED7038] rounded-xl">
             <Award className="w-6 h-6" />
           </div>
           <div>
@@ -733,7 +733,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
             </h4>
             {topScorer && (
               <p className="text-[10px] text-gray-400 font-mono mt-0.5">
-                {topScorer.teamName} • <span className="text-emerald-400 font-bold">{topScorer.goals || 0} Goles</span>
+                {topScorer.teamName} • <span className="text-[#ED7038] font-bold">{topScorer.goals || 0} Goles</span>
               </p>
             )}
           </div>
@@ -741,10 +741,10 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
       </div>
 
       {/* rendimientos y graficas Recharts */}
-      <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-emerald-950/40 shadow-md space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-emerald-950/30">
+      <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-adhler-cyan/15 shadow-md space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-zinc-900">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-lg">
+            <div className="p-2 bg-adhler-cyan/10 border border-adhler-cyan/25 text-adhler-cyan rounded-lg">
               <TrendingUp className="w-5 h-5" />
             </div>
             <div>
@@ -754,13 +754,13 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
           </div>
           
           {/* Chart selector */}
-          <div className="bg-emerald-950/20 p-1.5 rounded-xl border border-gray-800/60 inline-flex self-start md:self-center gap-1.5 font-mono text-[10px] sm:text-xs">
+          <div className="bg-zinc-900 p-1.5 rounded-xl border border-gray-800 inline-flex self-start md:self-center gap-1.5 font-mono text-[10px] sm:text-xs">
             <button
               onClick={() => setChartType('bar')}
               type="button"
               className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
                 chartType === 'bar'
-                  ? 'bg-emerald-500 text-black shadow-sm'
+                  ? 'bg-adhler-orange text-white shadow-sm'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
@@ -772,7 +772,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
               type="button"
               className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
                 chartType === 'pie'
-                  ? 'bg-emerald-500 text-black shadow-sm'
+                  ? 'bg-adhler-orange text-white shadow-sm'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
@@ -874,12 +874,12 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
 
           {/* Leaders Board Sidebar / Table ranking list */}
           <div className="lg:col-span-5 space-y-4">
-            <h4 className="text-xs uppercase font-mono tracking-widest text-emerald-400 font-bold flex items-center space-x-2">
+            <h4 className="text-xs uppercase font-mono tracking-widest text-[#ED7038] font-bold flex items-center space-x-2">
               <Flame className="w-4 h-4 text-orange-500 animate-pulse" />
               <span>Tabla de Goleo Individual</span>
             </h4>
             
-            <div className="bg-black/20 rounded-xl border border-emerald-950/25 p-3.5 divide-y divide-emerald-950/15 max-h-[280px] overflow-y-auto">
+            <div className="bg-black/20 rounded-xl border border-zinc-900 p-3.5 divide-y divide-zinc-900 max-h-[280px] overflow-y-auto">
               {topScorersList.length === 0 ? (
                 <div className="text-center py-10 text-[11px] text-gray-500">Ningún jugador registrado con goles anotados.</div>
               ) : (
@@ -906,10 +906,10 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                       </div>
                       
                       <div className="flex items-center space-x-2">
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 bg-gray-950/40 text-gray-400 border border-emerald-950/20 rounded">
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 bg-gray-950/40 text-gray-400 border border-zinc-800 rounded">
                           {player.position}
                         </span>
-                        <span className="text-xs font-bold text-emerald-400 font-mono bg-emerald-500/5 px-2 py-1 rounded border border-emerald-500/10">
+                        <span className="text-xs font-bold text-[#ED7038] font-mono bg-[#ED7038]/5 px-2 py-1 rounded border border-[#ED7038]/10">
                           {player.goals || 0} G
                         </span>
                       </div>
@@ -930,7 +930,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
             <h3 className="font-display font-bold text-xl text-white">Escuadras oficiales</h3>
             <button
               onClick={() => setShowRegisterForm(!showRegisterForm)}
-              className="flex items-center space-x-1.5 bg-emerald-500 hover:bg-emerald-400 text-black px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-[0_4px_10px_rgba(16,185,129,0.3)] cursor-pointer"
+              className="flex items-center space-x-1.5 bg-[#ED7038] hover:bg-[#ED7038]/90 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-[0_4px_10px_rgba(237,112,56,0.3)] cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5 stroke-[3]" />
               <span>Inscribir Equipo</span>
@@ -945,14 +945,14 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
               placeholder="Buscar escuadra o uniforme..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-emerald-950/10 text-white placeholder-gray-500 px-10 py-2.5 rounded-xl border border-gray-800 text-xs focus:outline-none focus:border-emerald-500 transition-colors"
+              className="w-full bg-zinc-900/50 text-white placeholder-gray-500 px-10 py-2.5 rounded-xl border border-gray-800 text-xs focus:outline-none focus:border-[#ED7038] transition-colors"
             />
           </div>
 
           {/* Register Team Form Popup/Block */}
           {showRegisterForm && (
-            <div className="glass-panel p-5 rounded-2xl border border-emerald-500/20 space-y-4 animate-fadeIn">
-              <div className="flex items-center justify-between pb-3 border-b border-emerald-950/30">
+            <div className="glass-panel p-5 rounded-2xl border border-[#ED7038]/20 space-y-4 animate-fadeIn">
+              <div className="flex items-center justify-between pb-3 border-b border-zinc-900">
                 <h4 className="text-sm font-bold text-white">Ficha de Inscripción</h4>
                 <button 
                   onClick={() => setShowRegisterForm(false)}
@@ -963,7 +963,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
               </div>
 
               {errorMsg && <p className="text-xs text-red-400 bg-red-950/20 px-3 py-2 rounded-lg">{errorMsg}</p>}
-              {successMsg && <p className="text-xs text-emerald-400 bg-emerald-950/20 px-3 py-2 rounded-lg">{successMsg}</p>}
+              {successMsg && <p className="text-xs text-adhler-cyan bg-adhler-cyan/10 px-3 py-2 rounded-lg">{successMsg}</p>}
 
               <form onSubmit={handleRegisterTeam} className="space-y-3">
                 <div>
@@ -973,7 +973,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                     placeholder="Ej. Real San Luis"
                     value={teamName}
                     onChange={(e) => setTeamName(e.target.value)}
-                    className="w-full bg-emerald-950/20 text-white font-medium px-3.5 py-2 rounded-xl border border-gray-800 text-xs focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-zinc-900/40 text-white font-medium px-3.5 py-2 rounded-xl border border-gray-800 text-xs focus:outline-none focus:border-[#ED7038]"
                     required
                   />
                 </div>
@@ -985,7 +985,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                     placeholder="Ej. Camiseta roja, short blanco"
                     value={uniformColor}
                     onChange={(e) => setUniformColor(e.target.value)}
-                    className="w-full bg-emerald-950/20 text-white font-medium px-3.5 py-2 rounded-xl border border-gray-800 text-xs focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-zinc-900/40 text-white font-medium px-3.5 py-2 rounded-xl border border-gray-800 text-xs focus:outline-none focus:border-[#ED7038]"
                     required
                   />
                 </div>
@@ -997,14 +997,14 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                     placeholder="Ej. Juan Pérez (+52 55928172)"
                     value={captainInfo}
                     onChange={(e) => setCaptainInfo(e.target.value)}
-                    className="w-full bg-emerald-950/20 text-white font-medium px-3.5 py-2 rounded-xl border border-gray-800 text-xs focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-zinc-900/40 text-white font-medium px-3.5 py-2 rounded-xl border border-gray-800 text-xs focus:outline-none focus:border-[#ED7038]"
                     required
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-2.5 rounded-xl text-xs transition-colors cursor-pointer uppercase tracking-wider"
+                  className="w-full bg-[#ED7038] hover:bg-[#ED7038]/90 text-white font-bold py-2.5 rounded-xl text-xs transition-colors cursor-pointer uppercase tracking-wider"
                 >
                   Registrar Escuadra en Torneo
                 </button>
@@ -1014,7 +1014,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
 
           {/* Teams list rendering */}
           {isLoading ? (
-            <div className="text-center py-10 text-xs font-mono text-emerald-400">Cargando escuadras de fútbol...</div>
+            <div className="text-center py-10 text-xs font-mono text-adhler-cyan">Cargando escuadras de fútbol...</div>
           ) : filteredTeams.length === 0 ? (
             <div className="text-center py-10 glass-panel rounded-xl text-xs text-gray-400">
               No se encontraron escuadras registradas.
@@ -1034,24 +1034,24 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                     }}
                     className={`p-4 rounded-xl cursor-pointer transition-all duration-200 border text-left ${
                       isSelected
-                        ? 'bg-emerald-950/15 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
-                        : 'bg-emerald-950/5 border-gray-800/40 hover:border-gray-700/50 hover:bg-emerald-950/5'
+                        ? 'bg-adhler-cyan/10 border-[#ED7038]/50 shadow-[0_0_15px_rgba(237,112,56,0.15)]'
+                        : 'bg-zinc-900/10 border-gray-800/40 hover:border-gray-700/50 hover:bg-zinc-900/20'
                     }`}
                   >
                     <div className="flex justify-between items-start">
                       <div>
                         <h4 className="font-bold text-sm text-white flex items-center gap-1.5">
-                          <Shield className="w-4 h-4 text-emerald-400" />
+                          <Shield className="w-4 h-4 text-adhler-cyan" />
                           {team.name}
                         </h4>
                         <p className="text-xs text-gray-400 mt-1">Colores: <strong className="text-gray-300 font-medium">{team.color}</strong></p>
                         <p className="text-[10px] text-gray-500 mt-0.5 font-mono">Capitán: {team.captainContact}</p>
                       </div>
                       <div className="text-right">
-                        <span className="inline-block text-[10px] font-bold font-mono px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded">
+                        <span className="inline-block text-[10px] font-bold font-mono px-2 py-0.5 bg-[#ED7038]/10 text-[#ED7038] rounded">
                           {members.length} JUGADORES
                         </span>
-                        <p className="text-xs font-display font-medium text-emerald-400 mt-1">{team.goalsFor || 0} Goles</p>
+                        <p className="text-xs font-display font-medium text-adhler-cyan mt-1">{team.goalsFor || 0} Goles</p>
                       </div>
                     </div>
                   </div>
@@ -1064,24 +1064,24 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
         {/* Selected Team Players Roster */}
         <div className="lg:col-span-7">
           {selectedTeam ? (
-            <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-emerald-950/40 space-y-6">
+            <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-zinc-900 space-y-6">
               
               {/* Header profile of selected team */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-emerald-950/30">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-zinc-900">
                 <div className="flex items-center space-x-3.5">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                  <div className="w-12 h-12 rounded-xl bg-adhler-cyan/10 border border-adhler-cyan/20 flex items-center justify-center text-adhler-cyan">
                     <Shield className="w-6 h-6" />
                   </div>
                   <div>
                     <h3 className="font-display font-extrabold text-xl text-white">{selectedTeam.name}</h3>
-                    <p className="text-xs text-gray-400">Uniforme oficial: <span className="text-emerald-400 font-medium">{selectedTeam.color}</span></p>
+                    <p className="text-xs text-gray-400">Uniforme oficial: <span className="text-[#ED7038] font-medium">{selectedTeam.color}</span></p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setShowPlayerForm(!showPlayerForm)}
-                    className="flex items-center space-x-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                    className="flex items-center space-x-1.5 bg-adhler-cyan/10 hover:bg-adhler-cyan/20 border border-adhler-cyan/30 text-adhler-cyan px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Agregar Miembro</span>
@@ -1091,8 +1091,8 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
 
               {/* Add player form */}
               {showPlayerForm && (
-                <div className="bg-emerald-950/10 p-5 rounded-xl border border-emerald-500/20 space-y-4 animate-scaleIn">
-                  <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-widest font-mono">Registrar Jugador en la Escuadra</h4>
+                <div className="bg-zinc-900/30 p-5 rounded-xl border border-adhler-cyan/20 space-y-4 animate-scaleIn">
+                  <h4 className="text-xs font-bold text-adhler-cyan uppercase tracking-widest font-mono">Registrar Jugador en la Escuadra</h4>
                   
                   <form onSubmit={handleAddPlayer} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -1102,7 +1102,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                         placeholder="Ej. Esteban Ledesma"
                         value={playerName}
                         onChange={(e) => setPlayerName(e.target.value)}
-                        className="w-full bg-emerald-950/20 text-white font-medium p-2.5 rounded-xl border border-gray-850 text-xs focus:outline-none focus:border-emerald-500"
+                        className="w-full bg-zinc-900/40 text-white font-medium p-2.5 rounded-xl border border-gray-800 text-xs focus:outline-none focus:border-adhler-cyan"
                         required
                       />
                     </div>
@@ -1114,7 +1114,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                         placeholder="Ej. 24"
                         value={playerAge}
                         onChange={(e) => setPlayerAge(e.target.value)}
-                        className="w-full bg-emerald-950/20 text-white font-medium p-2.5 rounded-xl border border-gray-850 text-xs focus:outline-none focus:border-emerald-500"
+                        className="w-full bg-zinc-900/40 text-white font-medium p-2.5 rounded-xl border border-gray-800 text-xs focus:outline-none focus:border-adhler-cyan"
                         required
                       />
                     </div>
@@ -1124,12 +1124,12 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                       <select
                         value={playerPosition}
                         onChange={(e) => setPlayerPosition(e.target.value)}
-                        className="w-full bg-emerald-950/20 text-white font-medium p-2.5 rounded-xl border border-gray-850 text-xs focus:outline-none focus:border-emerald-500 cursor-pointer"
+                        className="w-full bg-zinc-900/40 text-white font-medium p-2.5 rounded-xl border border-gray-800 text-xs focus:outline-none focus:border-adhler-cyan cursor-pointer"
                       >
-                        <option value="Delantero">Delantero</option>
-                        <option value="Medio">Medio</option>
-                        <option value="Defensa">Defensa</option>
-                        <option value="Portero">Portero</option>
+                        <option value="Delantero" className="bg-bg-dark">Delantero</option>
+                        <option value="Medio" className="bg-bg-dark">Medio</option>
+                        <option value="Defensa" className="bg-bg-dark">Defensa</option>
+                        <option value="Portero" className="bg-bg-dark">Portero</option>
                       </select>
                     </div>
 
@@ -1140,7 +1140,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                         placeholder="Ej. +52 55938472"
                         value={playerContact}
                         onChange={(e) => setPlayerContact(e.target.value)}
-                        className="w-full bg-emerald-950/20 text-white font-medium p-2.5 rounded-xl border border-gray-850 text-xs focus:outline-none focus:border-emerald-500"
+                        className="w-full bg-zinc-900/40 text-white font-medium p-2.5 rounded-xl border border-gray-800 text-xs focus:outline-none focus:border-adhler-cyan"
                         required
                       />
                     </div>
@@ -1152,7 +1152,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                         placeholder="Ej. 0"
                         value={playerGoals}
                         onChange={(e) => setPlayerGoals(e.target.value)}
-                        className="w-full bg-emerald-950/20 text-white font-medium p-2.5 rounded-xl border border-gray-850 text-xs focus:outline-none focus:border-emerald-500"
+                        className="w-full bg-zinc-900/40 text-white font-medium p-2.5 rounded-xl border border-gray-800 text-xs focus:outline-none focus:border-adhler-cyan"
                         min="0"
                       />
                     </div>
@@ -1167,7 +1167,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                       </button>
                       <button
                         type="submit"
-                        className="bg-emerald-500 hover:bg-emerald-400 text-black px-4 py-2 rounded-xl text-xs font-bold shadow-md cursor-pointer"
+                        className="bg-adhler-orange hover:bg-adhler-orange/90 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md cursor-pointer"
                       >
                         Guardar Ficha
                       </button>
@@ -1178,10 +1178,10 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
 
               {/* Players table roster */}
               <div className="space-y-4">
-                <h4 className="text-xs uppercase font-mono tracking-widest text-emerald-400 font-bold block">Plantilla Registrada ({teamPlayers.length})</h4>
+                <h4 className="text-xs uppercase font-mono tracking-widest text-[#ED7038] font-bold block">Plantilla Registrada ({teamPlayers.length})</h4>
 
                 {teamPlayers.length === 0 ? (
-                  <div className="text-center py-12 bg-emerald-950/5 rounded-xl border border-dashed border-gray-800">
+                  <div className="text-center py-12 bg-adhler-cyan/5 rounded-xl border border-dashed border-gray-800">
                     <User className="w-8 h-8 text-gray-600 mx-auto mb-2" />
                     <p className="text-xs text-gray-400">Esta escuadra aún no tiene jugadores registrados.</p>
                     <p className="text-[11px] text-gray-500 mt-1">¡Haz clic arriba en "Agregar Miembro" para sumar jugadores a la ficha!</p>
@@ -1190,7 +1190,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead>
-                        <tr className="border-b border-emerald-950/20 text-[10px] text-gray-500 uppercase tracking-widest font-mono">
+                        <tr className="border-b border-zinc-900 text-[10px] text-gray-500 uppercase tracking-widest font-mono">
                           <th className="pb-3 pl-2">Jugador</th>
                           <th className="pb-3 text-center">Edad</th>
                           <th className="pb-3">Posición</th>
@@ -1198,11 +1198,11 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                           <th className="pb-3 text-right">Contacto</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-emerald-950/10">
+                      <tbody className="divide-y divide-zinc-900">
                         {teamPlayers.map((player) => (
-                          <tr key={player.id} className="group hover:bg-emerald-950/5">
+                          <tr key={player.id} className="group hover:bg-adhler-cyan/5">
                             <td className="py-3.5 pl-2 font-medium text-sm text-white flex items-center space-x-2.5">
-                              <div className="w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-xs text-emerald-400">
+                              <div className="w-7 h-7 rounded-full bg-[#ED7038]/10 border border-[#ED7038]/20 flex items-center justify-center text-xs text-[#ED7038]">
                                 {player.name.charAt(0)}
                               </div>
                               <span>{player.name}</span>
@@ -1216,12 +1216,12 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                                   ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                                   : player.position.includes('Defensa')
                                   ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                                  : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                  : 'bg-[#ED7038]/10 text-adhler-orange border border-adhler-orange/20'
                               }`}>
                                 {player.position}
                               </span>
                             </td>
-                            <td className="py-3.5 text-center font-bold text-sm text-emerald-400 font-mono">
+                            <td className="py-3.5 text-center font-bold text-sm text-adhler-orange font-mono">
                               {player.goals ?? 0}
                             </td>
                             <td className="py-3.5 text-right font-mono text-xs text-gray-400">{player.contact}</td>
@@ -1234,7 +1234,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
               </div>
 
               {/* Tournament rules placeholder */}
-              <div className="bg-emerald-950/5 border border-emerald-800/15 p-4 rounded-xl space-y-2">
+              <div className="bg-adhler-cyan/5 border border-adhler-cyan/15 p-4 rounded-xl space-y-2">
                 <h5 className="text-xs font-bold text-white uppercase font-mono tracking-wide">Reglas Básicas de Inscripción</h5>
                 <p className="text-[11px] text-gray-400 leading-relaxed font-light">
                   Cada plantilla debe poseer un mínimo de 5 jugadores calificados y un máximo de 10. El capitán debe ser mayor de edad y se hará responsable de contactar al arbitraje antes de iniciar los cotejos oficiales de Copa.
@@ -1243,7 +1243,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
 
             </div>
           ) : (
-            <div className="glass-panel p-12 rounded-2xl border border-emerald-950/40 text-center text-gray-400">
+            <div className="glass-panel p-12 rounded-2xl border border-zinc-900 text-center text-gray-400">
               <Shield className="w-12 h-12 text-gray-700 mx-auto mb-3" />
               <h4 className="font-display font-bold text-lg text-white">Ningún Equipo Seleccionado</h4>
               <p className="text-xs text-gray-400 mt-1">Selecciona una escuadra de la lista para ver su roster completo de deportistas.</p>
@@ -1284,9 +1284,9 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                 Nuestros futbolistas del complejo Fútbol Rápido Tribol se entregan en la cancha para convertirse en leyendas. Cada semana seleccionamos a los destacados por su técnica, lealtad y aportación goleadora de Copa de todas las ligas.
               </p>
               <div className="flex flex-wrap gap-4 justify-center lg:justify-start pt-2 text-xs font-mono text-gray-300">
-                <span className="flex items-center"><Check className="w-4 h-4 text-emerald-400 mr-1.5" /> Goleo Limpio</span>
-                <span className="flex items-center"><Check className="w-4 h-4 text-emerald-400 mr-1.5" /> MVP Semanal</span>
-                <span className="flex items-center"><Check className="w-4 h-4 text-emerald-400 mr-1.5" /> Fair Play Activo</span>
+                <span className="flex items-center"><Check className="w-4 h-4 text-adhler-orange mr-1.5" /> Goleo Limpio</span>
+                <span className="flex items-center"><Check className="w-4 h-4 text-adhler-orange mr-1.5" /> MVP Semanal</span>
+                <span className="flex items-center"><Check className="w-4 h-4 text-[#ED7038] mr-1.5" /> Fair Play Activo</span>
               </div>
             </div>
           </div>
@@ -1294,7 +1294,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
           {/* Cards Grid */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <Award className="w-5 h-5 text-emerald-400" />
+              <Award className="w-5 h-5 text-[#ED7038]" />
               <h4 className="font-display font-extrabold text-xl text-white">Tarjetas Digitales Oficiales</h4>
             </div>
             
@@ -1351,53 +1351,53 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
               </div>
 
               {/* Card 2: García */}
-              <div className="group glass-panel rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 via-zinc-950 to-zinc-950 p-1 overflow-hidden transition-all duration-300 hover:scale-103 hover:shadow-[0_0_20px_rgba(16,185,129,0.25)] relative">
+              <div className="group glass-panel rounded-2xl border border-adhler-cyan/25 bg-gradient-to-br from-adhler-cyan/10 via-zinc-950 to-zinc-950 p-1 overflow-hidden transition-all duration-300 hover:scale-103 hover:shadow-[0_0_20px_rgba(150,215,221,0.25)] relative">
                 <div className="h-64 overflow-hidden rounded-xl relative bg-zinc-900 border border-gray-800">
-                  <div className="w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-950 via-zinc-950 to-black flex items-center justify-center p-4 relative">
+                  <div className="w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-950 via-zinc-950 to-black flex items-center justify-center p-4 relative">
                     <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=300')] opacity-5 bg-cover bg-center"></div>
                     <div className="text-center space-y-3 z-10">
-                      <span className="text-emerald-400 text-3xl font-black tracking-wider animate-pulse block font-mono">¡GOOOOOL!</span>
-                      <div className="w-24 h-24 rounded-full border-2 border-emerald-500/30 overflow-hidden mx-auto shadow-lg shadow-emerald-500/10">
+                      <span className="text-adhler-cyan text-3xl font-black tracking-wider animate-pulse block font-mono">¡GOOOOOL!</span>
+                      <div className="w-24 h-24 rounded-full border-2 border-adhler-cyan/30 overflow-hidden mx-auto shadow-lg shadow-adhler-cyan/10">
                         <div className="w-full h-full bg-zinc-800 flex items-center justify-center text-4xl text-gray-200 font-bold">⚽</div>
                       </div>
                       <h6 className="font-display font-black text-white text-sm uppercase tracking-wide">GARCÍA</h6>
                     </div>
                   </div>
-                  <div className="absolute top-2.5 left-2.5 bg-black/80 text-emerald-400 text-[8px] font-mono px-2 py-0.5 rounded border border-emerald-500/20 font-black">
+                  <div className="absolute top-2.5 left-2.5 bg-black/80 text-adhler-cyan text-[8px] font-mono px-2 py-0.5 rounded border border-adhler-cyan/20 font-black">
                     MVP JORNADA RÁPIDO
                   </div>
                 </div>
                 <div className="p-4 space-y-1.5 text-left">
                   <div className="flex justify-between items-center">
                     <h5 className="font-display font-black text-white text-base">García "Mágico"</h5>
-                    <span className="text-[10px] font-mono font-black px-1.5 py-0.5 rounded bg-emerald-500 text-black">91 MCO</span>
+                    <span className="text-[10px] font-mono font-black px-1.5 py-0.5 rounded bg-adhler-cyan text-black">91 MCO</span>
                   </div>
-                  <p className="text-[10px] text-gray-400 font-mono">Equipo: <span className="text-emerald-400 font-bold">Sensación</span> • Goles: <span className="text-white font-bold">11</span></p>
+                  <p className="text-[10px] text-gray-400 font-mono">Equipo: <span className="text-adhler-cyan font-bold">Sensación</span> • Goles: <span className="text-white font-bold">11</span></p>
                   
                   <div className="grid grid-cols-6 gap-1 pt-1.5 border-t border-zinc-800 font-mono text-[9px] text-center text-gray-300 font-semibold uppercase">
                     <div>
                       <p className="text-[7px] text-gray-500">RIT</p>
-                      <p className="text-emerald-400">92</p>
+                      <p className="text-adhler-cyan">92</p>
                     </div>
                     <div>
                       <p className="text-[7px] text-gray-500">TIR</p>
-                      <p className="text-emerald-400">88</p>
+                      <p className="text-adhler-cyan">88</p>
                     </div>
                     <div>
                       <p className="text-[7px] text-gray-500">PAS</p>
-                      <p className="text-emerald-400">94</p>
+                      <p className="text-adhler-cyan">94</p>
                     </div>
                     <div>
                       <p className="text-[7px] text-gray-500">REG</p>
-                      <p className="text-emerald-400">95</p>
+                      <p className="text-adhler-cyan">95</p>
                     </div>
                     <div>
                       <p className="text-[7px] text-gray-500">DEF</p>
-                      <p className="text-emerald-400">58</p>
+                      <p className="text-adhler-cyan">58</p>
                     </div>
                     <div>
                       <p className="text-[7px] text-gray-500">FIS</p>
-                      <p className="text-emerald-400">71</p>
+                      <p className="text-adhler-cyan">71</p>
                     </div>
                   </div>
                 </div>
@@ -1519,28 +1519,28 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                     <p className="text-white font-bold">Nerik Silva</p>
                     <p className="text-[10px] text-gray-500">Medio • Tabora Jr</p>
                   </div>
-                  <span className="bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded text-[10px]">8 Goles</span>
+                  <span className="bg-[#ED7038]/10 text-adhler-orange font-bold px-2 py-0.5 rounded text-[10px]">8 Goles</span>
                 </div>
                 <div className="p-3 bg-zinc-950/40 rounded-xl border border-zinc-900 flex justify-between items-center">
                   <div>
                     <p className="text-white font-bold">Martín Ortiz</p>
                     <p className="text-[10px] text-gray-500">Frente • Tabora FC</p>
                   </div>
-                  <span className="bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded text-[10px]">9 Goles</span>
+                  <span className="bg-[#ED7038]/10 text-adhler-orange font-bold px-2 py-0.5 rounded text-[10px]">9 Goles</span>
                 </div>
                 <div className="p-3 bg-zinc-950/40 rounded-xl border border-zinc-900 flex justify-between items-center">
                   <div>
                     <p className="text-white font-bold">Fernandito</p>
                     <p className="text-[10px] text-gray-500">Pivote • Tabora Jr</p>
                   </div>
-                  <span className="bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded text-[10px]">7 Goles</span>
+                  <span className="bg-[#ED7038]/10 text-adhler-orange font-bold px-2 py-0.5 rounded text-[10px]">7 Goles</span>
                 </div>
                 <div className="p-3 bg-zinc-950/40 rounded-xl border border-zinc-900 flex justify-between items-center">
                   <div>
                     <p className="text-white font-bold">Gaby Martínez</p>
                     <p className="text-[10px] text-gray-500">Delantera • España</p>
                   </div>
-                  <span className="bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded text-[10px]">14 Goles</span>
+                  <span className="bg-[#ED7038]/10 text-adhler-orange font-bold px-2 py-0.5 rounded text-[10px]">14 Goles</span>
                 </div>
               </div>
             </div>
@@ -1554,13 +1554,13 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
       {subTab === 'schedules' && (
         <div className="space-y-8 animate-fadeIn">
           
-          <div className="glass-panel p-6 rounded-2xl border border-emerald-500/10 bg-emerald-950/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="glass-panel p-6 rounded-2xl border border-zinc-900 bg-zinc-900/15 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h4 className="font-display font-extrabold text-lg text-white">Rol de Juegos Semanal</h4>
               <p className="text-xs text-gray-400 font-sans mt-0.5">Consulta la programación de partidos oficiales, horarios de prácticas de fin de semana y resultados de Cuartos de Final y Semifinales.</p>
             </div>
             <div className="bg-zinc-950 px-4 py-2 border border-zinc-800 rounded-xl font-mono text-[10px] sm:text-xs text-gray-300">
-              📅 Fecha Actual del Corte: <strong className="text-emerald-400 text-xs text-nowrap">Domingo 31 de Mayo - Lunes 1 de Junio</strong>
+              📅 Fecha Actual del Corte: <strong className="text-adhler-cyan text-xs text-nowrap">Domingo 31 de Mayo - Lunes 1 de Junio</strong>
             </div>
           </div>
 
@@ -1568,9 +1568,9 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
             
             {/* Category 1: Libre Sabatina */}
             <div className="glass-panel rounded-2xl border border-zinc-800/80 overflow-hidden flex flex-col text-left">
-              <div className="bg-emerald-950/20 px-4 py-3 border-b border-zinc-800/80 flex justify-between items-center">
+              <div className="bg-zinc-900/30 px-4 py-3 border-b border-zinc-800/80 flex justify-between items-center">
                 <span className="text-white font-display font-bold text-xs uppercase tracking-wider">Libre Sabatina</span>
-                <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 rounded px-2 py-0.5 font-mono text-[9px] font-black uppercase">Jornada 10</span>
+                <span className="bg-adhler-cyan/15 text-adhler-cyan border border-adhler-cyan/25 rounded px-2 py-0.5 font-mono text-[9px] font-black uppercase">Jornada 10</span>
               </div>
               <div className="p-4 divide-y divide-zinc-900 space-y-3.5 flex-grow font-mono text-[11px]">
                 
@@ -1604,7 +1604,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
 
                 <div className="flex justify-between items-center pt-3 py-1.5">
                   <div className="flex items-center space-x-2">
-                    <span className="text-emerald-400 font-black">CLA</span><span className="text-gray-500">vs</span><span className="text-sky-400 font-black">RIV</span>
+                    <span className="text-adhler-cyan font-black">CLA</span><span className="text-gray-500">vs</span><span className="text-sky-400 font-black">RIV</span>
                   </div>
                   <span className="text-gray-300 font-semibold text-[10px] bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded">8:40 PM</span>
                 </div>
@@ -1635,7 +1635,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
 
             {/* Category 2: Nuevos Valores & Femenil */}
             <div className="glass-panel rounded-2xl border border-zinc-800/80 overflow-hidden flex flex-col text-left">
-              <div className="bg-emerald-950/20 px-4 py-3 border-b border-zinc-800/80 flex justify-between items-center">
+              <div className="bg-zinc-900/30 px-4 py-3 border-b border-zinc-800/80 flex justify-between items-center">
                 <span className="text-white font-display font-bold text-xs uppercase tracking-wider">Nuevos Valores & Femenil</span>
                 <span className="bg-amber-500/15 text-amber-400 border border-amber-500/25 rounded px-2 py-0.5 font-mono text-[9px] font-black uppercase">Fase Final</span>
               </div>
@@ -1675,7 +1675,7 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
                   <div className="flex justify-between items-center font-bold">
                     <span className="text-white">Argentina</span>
                     <span className="text-gray-500 font-sans">vs</span>
-                    <span className="text-emerald-400">Águilas</span>
+                    <span className="text-adhler-cyan">Águilas</span>
                   </div>
                   <div className="flex justify-between text-[10px] text-gray-500 pt-1 border-t border-zinc-900">
                     <span>Domingo 31 de Mayo</span>
@@ -1702,26 +1702,26 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
 
             {/* Category 3: Libre Dominical & Intersemanal */}
             <div className="glass-panel rounded-2xl border border-zinc-800/80 overflow-hidden flex flex-col text-left">
-              <div className="bg-emerald-950/20 px-4 py-3 border-b border-zinc-800/80 flex justify-between items-center">
+              <div className="bg-zinc-900/30 px-4 py-3 border-b border-zinc-800/80 flex justify-between items-center">
                 <span className="text-white font-display font-bold text-xs uppercase tracking-wider">Libre Dom. & Intersemanal</span>
                 <span className="bg-sky-500/15 text-sky-400 border border-sky-500/25 rounded px-2 py-0.5 font-mono text-[9px] font-black uppercase">Jornadas Especiales</span>
               </div>
               <div className="p-4 space-y-4 flex-grow font-mono text-[11px]">
                 
                 {/* Result 1: Lib. Dom Semifinal Vuelta */}
-                <div className="bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/20 space-y-1.5">
-                  <span className="text-[9px] bg-emerald-500 text-black px-1.5 py-0.2 rounded font-black font-mono">RESULTADO OFICIAL (SEMIFINAL VUELTA)</span>
+                <div className="bg-[#ED7038]/5 p-3 rounded-xl border border-[#ED7038]/20 space-y-1.5">
+                  <span className="text-[9px] bg-[#ED7038] text-white px-1.5 py-0.2 rounded font-black font-mono">RESULTADO OFICIAL (SEMIFINAL VUELTA)</span>
                   <div className="flex justify-between items-center font-black mt-1">
                     <span className="text-rose-400">Galácticos FC</span>
                     <span className="text-white bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">2 - 3</span>
-                    <span className="text-emerald-400">Atlas</span>
+                    <span className="text-adhler-cyan">Atlas</span>
                   </div>
                   <p className="text-[10px] text-gray-500 mt-1">Global: <strong className="text-white">Atlas Avanza a la Final (Global)</strong></p>
                 </div>
 
                 {/* Result 2: Lib. Dom Semifinal Vuelta */}
-                <div className="bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/20 space-y-1.5">
-                  <span className="text-[9px] bg-emerald-500 text-black px-1.5 py-0.2 rounded font-black font-mono">RESULTADO OFICIAL (SEMIFINAL VUELTA)</span>
+                <div className="bg-[#ED7038]/5 p-3 rounded-xl border border-[#ED7038]/20 space-y-1.5">
+                  <span className="text-[9px] bg-[#ED7038] text-white px-1.5 py-0.2 rounded font-black font-mono">RESULTADO OFICIAL (SEMIFINAL VUELTA)</span>
                   <div className="flex justify-between items-center font-black mt-1">
                     <span className="text-yellow-400">Tazos Dorados</span>
                     <span className="text-white bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">6 - 3</span>
@@ -1762,17 +1762,17 @@ export default function EquiposPage({ isAdmin, adminToken }: EquiposPageProps) {
             </h5>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs font-mono">
               <div className="bg-zinc-950/50 p-3 rounded-xl border border-zinc-900 space-y-1">
-                <span className="text-[9px] bg-zinc-850 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded font-bold font-mono">CANCHA 2 PRACTICAS</span>
+                <span className="text-[9px] bg-zinc-850 text-adhler-cyan border border-adhler-cyan/25 px-1.5 py-0.5 rounded font-bold font-mono">CANCHA 2 PRACTICAS</span>
                 <p className="text-white font-bold mt-1">Bambis vs Juventus</p>
                 <p className="text-gray-500 text-[10px]">Horario: 12:20 PM • Domingo</p>
               </div>
               <div className="bg-zinc-950/50 p-3 rounded-xl border border-zinc-900 space-y-1">
-                <span className="text-[9px] bg-zinc-850 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded font-bold font-mono">CANCHA 2 PRACTICAS</span>
+                <span className="text-[9px] bg-zinc-850 text-adhler-cyan border border-adhler-cyan/25 px-1.5 py-0.5 rounded font-bold font-mono">CANCHA 2 PRACTICAS</span>
                 <p className="text-white font-bold mt-1">Del Valle vs Real Madrid</p>
                 <p className="text-gray-500 text-[10px]">Horario: 2:20 PM • Domingo</p>
               </div>
               <div className="bg-zinc-950/50 p-3 rounded-xl border border-zinc-900 space-y-1">
-                <span className="text-[9px] bg-zinc-850 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded font-bold font-mono">CANCHA 1 PRACTICAS</span>
+                <span className="text-[9px] bg-zinc-850 text-adhler-cyan border border-adhler-cyan/25 px-1.5 py-0.5 rounded font-bold font-mono">CANCHA 1 PRACTICAS</span>
                 <p className="text-white font-bold mt-1">Sin Nombre vs River (3:00) • Ajax vs Mexico (3:40)</p>
                 <p className="text-gray-500 text-[10px]">Inicio bloques vespertinos prácticos de fútbol base</p>
               </div>

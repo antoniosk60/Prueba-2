@@ -27,7 +27,7 @@ export default function InicioPage({ fields, onRentClick, onExplorePromos }: Ini
             <div 
               key={field.id} 
               id={`field-card-${field.id}`}
-              className="glass-panel overflow-hidden rounded-2xl border border-emerald-950/40 hover:border-emerald-500/30 transition-all duration-300 group hover:-translate-y-1 shadow-md"
+              className="glass-panel overflow-hidden rounded-2xl border border-adhler-cyan/15 hover:border-adhler-orange/30 transition-all duration-300 group hover:-translate-y-1 shadow-md"
             >
               <div className="relative h-56 overflow-hidden">
                 <img 
@@ -35,37 +35,37 @@ export default function InicioPage({ fields, onRentClick, onExplorePromos }: Ini
                   alt={field.name} 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/40 to-transparent p-4 flex items-end justify-between">
-                  <span className="bg-emerald-500 text-black text-[10px] font-extrabold uppercase px-2.5 py-1 rounded font-mono">
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/44 to-transparent p-4 flex items-end justify-between">
+                  <span className="bg-adhler-orange text-white text-[10px] font-extrabold uppercase px-2.5 py-1 rounded font-mono">
                     DISPONIBLE
                   </span>
                   <span className="text-white font-mono font-bold text-sm bg-black/60 px-2.5 py-1 rounded backdrop-blur">
-                    ${field.basePricePerHour} <span className="text-xs text-emerald-400">MXN/Hr</span>
+                    ${field.basePricePerHour} <span className="text-xs text-adhler-cyan">MXN/Hr</span>
                   </span>
                 </div>
               </div>
 
               <div className="p-6 space-y-4 text-left">
-                <h3 className="font-display font-bold text-lg text-white group-hover:text-emerald-400 transition-colors">
+                <h3 className="font-display font-bold text-lg text-white group-hover:text-adhler-orange transition-colors">
                   {field.name}
                 </h3>
                 <p className="text-xs text-gray-400 leading-relaxed font-light">
                   {field.description}
                 </p>
 
-                <div className="pt-4 border-t border-emerald-950/20 grid grid-cols-2 gap-2 text-xs text-gray-300">
+                <div className="pt-4 border-t border-adhler-cyan/10 grid grid-cols-2 gap-2 text-xs text-gray-300">
                   <p className="flex items-center gap-1.5 font-mono text-[11px] text-gray-400">
-                    <Users className="w-3.5 h-3.5 text-emerald-400" /> 5v5 a 7v7
+                    <Users className="w-3.5 h-3.5 text-adhler-orange" /> 5v5 a 7v7
                   </p>
                   <p className="flex items-center gap-1.5 font-mono text-[11px] text-gray-400">
-                    <Lightbulb className="w-3.5 h-3.5 text-emerald-400" /> Luz Nocturna
+                    <Lightbulb className="w-3.5 h-3.5 text-adhler-yellow" /> Luz Nocturna
                   </p>
                 </div>
 
                 <div className="pt-2">
                   <button
                     onClick={onRentClick}
-                    className="w-full bg-emerald-500/10 hover:bg-emerald-500 hover:text-black border border-emerald-500/30 text-emerald-400 py-2.5 rounded-xl text-xs font-bold transition-all uppercase tracking-wide cursor-pointer text-center"
+                    className="w-full bg-adhler-orange/10 hover:bg-adhler-orange hover:text-white border border-adhler-orange/30 text-adhler-orange py-2.5 rounded-xl text-xs font-bold transition-all uppercase tracking-wide cursor-pointer text-center"
                   >
                     Ver Horarios Disponibles
                   </button>
@@ -77,9 +77,9 @@ export default function InicioPage({ fields, onRentClick, onExplorePromos }: Ini
       </section>
 
       {/* MVP de la Semana Showcase Section - Cartas estilo FIFA */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-emerald-950/20">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-adhler-cyan/10">
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-          <div className="inline-flex items-center space-x-2 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full text-amber-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center space-x-2 bg-adhler-orange/10 border border-adhler-orange/20 px-3 py-1 rounded-full text-adhler-orange font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider">
             🏆 Reconocimientos Especiales Tribol
           </div>
           <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white tracking-tight">
@@ -96,33 +96,33 @@ export default function InicioPage({ fields, onRentClick, onExplorePromos }: Ini
           {/* Card 1: Piña */}
           <div className="relative group mx-auto w-[280px]">
             {/* Ambient gold glow */}
-            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-t from-amber-600 via-yellow-400 to-amber-500 opacity-20 group-hover:opacity-45 blur-lg transition duration-500" />
+            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-t from-adhler-orange via-adhler-yellow to-[#D53C2E] opacity-20 group-hover:opacity-45 blur-lg transition duration-500" />
             
             {/* FIFA-style Card Structure */}
-            <div className="relative h-[390px] w-[270px] bg-gradient-to-br from-[#121a15] via-[#1c2c22] to-[#0d130f] border-2 border-amber-500/50 rounded-2xl p-5 text-center flex flex-col justify-between overflow-hidden shadow-2xl transition duration-300 group-hover:-translate-y-2">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none" />
+            <div className="relative h-[390px] w-[270px] bg-gradient-to-br from-[#171E26] via-[#212933] to-[#0f151c] border-2 border-adhler-orange/50 rounded-2xl p-5 text-center flex flex-col justify-between overflow-hidden shadow-2xl transition duration-300 group-hover:-translate-y-2">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-adhler-orange/5 rounded-full blur-2xl pointer-events-none" />
               
               {/* Badge & Top Row */}
               <div className="flex justify-between items-start border-b border-white/5 pb-3">
                 <div className="text-left font-mono">
-                  <div className="text-3xl font-black text-amber-400 leading-none">94</div>
+                  <div className="text-3xl font-black text-adhler-yellow leading-none">94</div>
                   <div className="text-[10px] font-bold text-gray-400 leading-none uppercase mt-1">DEL</div>
-                  <div className="text-[8px] bg-amber-500/20 text-amber-400 px-1 py-0.5 rounded font-bold uppercase mt-1">MVP DEL TORNEO</div>
+                  <div className="text-[8px] bg-adhler-orange/25 text-adhler-orange px-1 py-0.5 rounded font-bold uppercase mt-1">MVP DEL TORNEO</div>
                 </div>
                 <div className="text-right">
-                  <span className="text-2xl" title="Fútbol Rápido Tribol">🍀</span>
-                  <div className="text-[8px] font-bold text-amber-400 uppercase tracking-widest mt-1">Barcelona</div>
+                  <span className="text-2xl" title="Fútbol Rápido Tribol">⚽</span>
+                  <div className="text-[8px] font-bold text-adhler-orange uppercase tracking-widest mt-1">Barcelona</div>
                 </div>
               </div>
 
               {/* Player Image / Silhouette placeholder with soccer theme */}
               <div className="relative h-32 my-2 flex items-center justify-center">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-amber-500/10 to-yellow-500/20 border border-amber-500/30 flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-300">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-adhler-orange/15 to-adhler-yellow/20 border border-adhler-orange/30 flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-300">
                   <span className="text-4xl">⚽</span>
                   {/* Glowing halo */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-amber-500/30 via-transparent to-transparent opacity-60" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-adhler-orange/30 via-transparent to-transparent opacity-60" />
                 </div>
-                <div className="absolute bottom-1 bg-amber-500 text-black text-[9px] font-extrabold uppercase px-3 py-0.5 rounded-full font-mono tracking-wider shadow">
+                <div className="absolute bottom-1 bg-adhler-orange text-white text-[9px] font-extrabold uppercase px-3 py-0.5 rounded-full font-mono tracking-wider shadow">
                   PIÑA
                 </div>
               </div>
@@ -130,7 +130,7 @@ export default function InicioPage({ fields, onRentClick, onExplorePromos }: Ini
               {/* Player Name and Team Details */}
               <div className="space-y-1">
                 <h4 className="font-display font-black text-white text-base">E. "Piña" López</h4>
-                <p className="text-[10px] text-emerald-400 font-mono font-bold">Categoría: Libre Sabatina</p>
+                <p className="text-[10px] text-adhler-cyan font-mono font-bold">Categoría: Libre Sabatina</p>
                 <p className="text-[11px] text-gray-300 leading-relaxed font-light italic px-2">
                   "Metió doblete, demostró mucha calidad y fue pieza clave para la victoria del equipo en la Gran Final."
                 </p>
@@ -169,33 +169,33 @@ export default function InicioPage({ fields, onRentClick, onExplorePromos }: Ini
           {/* Card 2: Gaby Martínez */}
           <div className="relative group mx-auto w-[280px]">
             {/* Ambient gold glow */}
-            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-t from-emerald-600 via-yellow-400 to-amber-500 opacity-20 group-hover:opacity-45 blur-lg transition duration-500" />
+            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-t from-adhler-orange via-adhler-yellow to-[#D53C2E] opacity-20 group-hover:opacity-45 blur-lg transition duration-500" />
             
             {/* FIFA-style Card Structure */}
-            <div className="relative h-[390px] w-[270px] bg-gradient-to-br from-[#121a15] via-[#1c2c22] to-[#0d130f] border-2 border-amber-500/50 rounded-2xl p-5 text-center flex flex-col justify-between overflow-hidden shadow-2xl transition duration-300 group-hover:-translate-y-2">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none" />
+            <div className="relative h-[390px] w-[270px] bg-gradient-to-br from-[#171E26] via-[#212933] to-[#0f151c] border-2 border-adhler-orange/50 rounded-2xl p-5 text-center flex flex-col justify-between overflow-hidden shadow-2xl transition duration-300 group-hover:-translate-y-2">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-adhler-orange/5 rounded-full blur-2xl pointer-events-none" />
               
               {/* Badge & Top Row */}
               <div className="flex justify-between items-start border-b border-white/5 pb-3">
                 <div className="text-left font-mono">
-                  <div className="text-3xl font-black text-amber-400 leading-none">92</div>
+                  <div className="text-3xl font-black text-adhler-yellow leading-none">92</div>
                   <div className="text-[10px] font-bold text-gray-400 leading-none uppercase mt-1">MED</div>
-                  <div className="text-[8px] bg-amber-500/20 text-amber-400 px-1 py-0.5 rounded font-bold uppercase mt-1">MVP DE LA COPA</div>
+                  <div className="text-[8px] bg-adhler-orange/25 text-adhler-orange px-1 py-0.5 rounded font-bold uppercase mt-1">MVP DE LA COPA</div>
                 </div>
                 <div className="text-right">
-                  <span className="text-2xl" title="Fútbol Rápido Tribol">🍀</span>
-                  <div className="text-[8px] font-bold text-amber-400 uppercase tracking-widest mt-1">España</div>
+                  <span className="text-2xl" title="Fútbol Rápido Tribol">🏃‍♀️</span>
+                  <div className="text-[8px] font-bold text-adhler-orange uppercase tracking-widest mt-1">España</div>
                 </div>
               </div>
 
               {/* Player Image / Silhouette placeholder with soccer theme */}
               <div className="relative h-32 my-2 flex items-center justify-center">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-amber-500/10 to-yellow-500/20 border border-amber-500/30 flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-300">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-adhler-orange/15 to-adhler-yellow/20 border border-adhler-orange/30 flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-300">
                   <span className="text-4xl">🏃‍♀️</span>
                   {/* Glowing halo */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-amber-500/30 via-transparent to-transparent opacity-60" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-adhler-orange/30 via-transparent to-transparent opacity-60" />
                 </div>
-                <div className="absolute bottom-1 bg-amber-500 text-black text-[9px] font-extrabold uppercase px-3 py-0.5 rounded-full font-mono tracking-wider shadow">
+                <div className="absolute bottom-1 bg-adhler-orange text-white text-[9px] font-extrabold uppercase px-3 py-0.5 rounded-full font-mono tracking-wider shadow">
                   GABY
                 </div>
               </div>
@@ -203,7 +203,7 @@ export default function InicioPage({ fields, onRentClick, onExplorePromos }: Ini
               {/* Player Name and Team Details */}
               <div className="space-y-1">
                 <h4 className="font-display font-black text-white text-base">Gaby Martínez</h4>
-                <p className="text-[10px] text-emerald-400 font-mono font-bold">Categoría: Femenil Dominical</p>
+                <p className="text-[10px] text-adhler-cyan font-mono font-bold">Categoría: Femenil Dominical</p>
                 <p className="text-[11px] text-gray-300 leading-relaxed font-light italic px-2">
                   "Metió hat-trick, manejó la media cancha con una intensidad incansable y lideró la victoria ante Real Alianza."
                 </p>
@@ -242,33 +242,33 @@ export default function InicioPage({ fields, onRentClick, onExplorePromos }: Ini
           {/* Card 3: Tito Portero */}
           <div className="relative group mx-auto w-[280px]">
             {/* Ambient gold glow */}
-            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-t from-amber-600 via-yellow-400 to-amber-500 opacity-20 group-hover:opacity-45 blur-lg transition duration-500" />
+            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-t from-adhler-orange via-adhler-yellow to-[#D53C2E] opacity-20 group-hover:opacity-45 blur-lg transition duration-500" />
             
             {/* FIFA-style Card Structure */}
-            <div className="relative h-[390px] w-[270px] bg-gradient-to-br from-[#121a15] via-[#1c2c22] to-[#0d130f] border-2 border-amber-500/50 rounded-2xl p-5 text-center flex flex-col justify-between overflow-hidden shadow-2xl transition duration-300 group-hover:-translate-y-2">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none" />
+            <div className="relative h-[390px] w-[270px] bg-gradient-to-br from-[#171E26] via-[#212933] to-[#0f151c] border-2 border-adhler-orange/50 rounded-2xl p-5 text-center flex flex-col justify-between overflow-hidden shadow-2xl transition duration-300 group-hover:-translate-y-2">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-adhler-orange/5 rounded-full blur-2xl pointer-events-none" />
               
               {/* Badge & Top Row */}
               <div className="flex justify-between items-start border-b border-white/5 pb-3">
                 <div className="text-left font-mono">
-                  <div className="text-[30px] font-black text-amber-400 leading-none">90</div>
+                  <div className="text-[30px] font-black text-adhler-yellow leading-none">90</div>
                   <div className="text-[10px] font-bold text-gray-400 leading-none uppercase mt-1">POR</div>
-                  <div className="text-[8px] bg-amber-500/20 text-amber-400 px-1 py-0.5 rounded font-bold uppercase mt-1">EL MURO</div>
+                  <div className="text-[8px] bg-adhler-orange/25 text-adhler-orange px-1 py-0.5 rounded font-bold uppercase mt-1">EL MURO</div>
                 </div>
                 <div className="text-right">
-                  <span className="text-2xl" title="Fútbol Rápido Tribol">🍀</span>
-                  <div className="text-[8px] font-bold text-amber-400 uppercase tracking-widest mt-1">Barrios</div>
+                  <span className="text-2xl" title="Fútbol Rápido Tribol">🧤</span>
+                  <div className="text-[8px] font-bold text-adhler-orange uppercase tracking-widest mt-1">Barrios</div>
                 </div>
               </div>
 
               {/* Player Image / Silhouette placeholder with soccer theme */}
               <div className="relative h-32 my-2 flex items-center justify-center">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-amber-500/10 to-yellow-500/20 border border-amber-500/30 flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-300">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-adhler-orange/15 to-adhler-yellow/20 border border-adhler-orange/30 flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-300">
                   <span className="text-4xl">🧤</span>
                   {/* Glowing halo */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-amber-500/30 via-transparent to-transparent opacity-60" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-adhler-orange/30 via-transparent to-transparent opacity-60" />
                 </div>
-                <div className="absolute bottom-1 bg-amber-500 text-black text-[9px] font-extrabold uppercase px-3 py-0.5 rounded-full font-mono tracking-wider shadow">
+                <div className="absolute bottom-1 bg-adhler-orange text-white text-[9px] font-extrabold uppercase px-3 py-0.5 rounded-full font-mono tracking-wider shadow">
                   TITO
                 </div>
               </div>
@@ -276,7 +276,7 @@ export default function InicioPage({ fields, onRentClick, onExplorePromos }: Ini
               {/* Player Name and Team Details */}
               <div className="space-y-1">
                 <h4 className="font-display font-black text-white text-base">Tito "El Muro"</h4>
-                <p className="text-[10px] text-emerald-400 font-mono font-bold">Categoría: Nuevos Valores</p>
+                <p className="text-[10px] text-adhler-cyan font-mono font-bold">Categoría: Nuevos Valores</p>
                 <p className="text-[11px] text-gray-300 leading-relaxed font-light italic px-2">
                   "Atajó penal decisivo en el último minuto para coronar campeones a Barrios en el torneo dominical."
                 </p>
@@ -316,13 +316,13 @@ export default function InicioPage({ fields, onRentClick, onExplorePromos }: Ini
       </section>
 
       {/* Modern Highlighting Features Banner */}
-      <section className="bg-gradient-to-r from-emerald-950/20 via-black to-emerald-950/10 py-16 border-y border-emerald-950/30">
+      <section className="bg-gradient-to-r from-adhler-blue/10 via-black to-adhler-orange/5 py-16 border-y border-adhler-cyan/15">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             <div className="lg:col-span-12 grid grid-cols-1 sm:grid-cols-4 gap-8 text-center sm:text-left">
               <div className="space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-2 mx-auto sm:mx-0">
+                <div className="w-12 h-12 rounded-xl bg-adhler-orange/10 border border-adhler-orange/20 text-adhler-orange flex items-center justify-center mb-2 mx-auto sm:mx-0">
                   <Shield className="w-6 h-6" />
                 </div>
                 <h4 className="font-display font-bold text-white text-base">Pasto Sintético FIFA</h4>
@@ -332,19 +332,19 @@ export default function InicioPage({ fields, onRentClick, onExplorePromos }: Ini
               </div>
 
               <div className="space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-2 mx-auto sm:mx-0">
+                <div className="w-12 h-12 rounded-xl bg-adhler-yellow/10 border border-adhler-yellow/20 text-adhler-yellow flex items-center justify-center mb-2 mx-auto sm:mx-0">
                   <Lightbulb className="w-6 h-6" />
                 </div>
                 <h4 className="font-display font-bold text-white text-base">Iluminación LED Profesional</h4>
                 <p className="text-xs text-gray-400 leading-relaxed font-light">
-                  Balastra de tungsteno con distribución refractaria homogénea para partidos de alta visibilidad bajo la luna.
+                  Distribución refractaria homogénea de luz blanca para una experiencia diurna inigualable por las noches.
                 </p>
               </div>
 
               <div className="space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-2 mx-auto sm:mx-0">
+                <div className="w-12 h-12 rounded-xl bg-adhler-cyan/10 border border-adhler-cyan/20 text-adhler-cyan flex items-center justify-center mb-2 mx-auto sm:mx-0">
                   <Users className="w-6 h-6" />
-                  </div>
+                </div>
                 <h4 className="font-display font-bold text-white text-base">Marcador Electrónico</h4>
                 <p className="text-xs text-gray-400 leading-relaxed font-light">
                   Pantallas de alta densidad para registrar anotaciones y faltas de forma profesional durante el juego.
@@ -352,7 +352,7 @@ export default function InicioPage({ fields, onRentClick, onExplorePromos }: Ini
               </div>
 
               <div className="space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-2 mx-auto sm:mx-0">
+                <div className="w-12 h-12 rounded-xl bg-adhler-blue/20 border border-adhler-blue/40 text-adhler-cyan flex items-center justify-center mb-2 mx-auto sm:mx-0">
                   <Award className="w-6 h-6" />
                 </div>
                 <h4 className="font-display font-bold text-white text-base">Vestidores & Regaderas</h4>
@@ -368,9 +368,9 @@ export default function InicioPage({ fields, onRentClick, onExplorePromos }: Ini
 
       {/* Fast CTA Block */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative glass-panel rounded-3xl border border-emerald-500/20 overflow-hidden py-14 px-8 sm:px-12 text-center space-y-6 shadow-[0_0_50px_rgba(16,185,129,0.06)]">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl" />
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-500/15 rounded-full blur-3xl" />
+        <div className="relative glass-panel rounded-3xl border border-adhler-cyan/25 overflow-hidden py-14 px-8 sm:px-12 text-center space-y-6 shadow-[0_0_50px_rgba(237,112,56,0.06)]">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-adhler-orange/10 rounded-full blur-2xl" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-adhler-yellow/15 rounded-full blur-3xl" />
           
           <h3 className="font-display font-black text-3xl sm:text-4xl text-white">¿Quieres Armar una Reta esta Noche?</h3>
           <p className="text-gray-300 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
@@ -380,7 +380,7 @@ export default function InicioPage({ fields, onRentClick, onExplorePromos }: Ini
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <button
               onClick={onRentClick}
-              className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-sm px-8 py-3.5 rounded-xl shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
+              className="w-full sm:w-auto bg-adhler-orange hover:bg-adhler-orange-dark text-white font-extrabold text-sm px-8 py-3.5 rounded-xl shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
             >
               Consultar Disponibilidad Real
             </button>

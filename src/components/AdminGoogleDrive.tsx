@@ -583,9 +583,9 @@ export default function AdminGoogleDrive({
       {/* Tab Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 bg-zinc-900/30 border border-zinc-900 rounded-3xl">
         <div className="text-left">
-          <span className="text-[10px] uppercase font-black text-emerald-400 tracking-widest">Workspace Cloud Sync</span>
+          <span className="text-[10px] uppercase font-black text-adhler-orange tracking-widest">Workspace Cloud Sync</span>
           <h2 className="text-2xl font-black text-white mt-1 uppercase tracking-tight">Sincronización Google Drive</h2>
-          <p className="text-xs text-zinc-500 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs text-zinc-550 mt-1 max-w-2xl leading-relaxed">
             Respalde de manera segura y automática las bases de datos de reservaciones, reportes financieros de caja y logs en formato CSV del sistema directamente en su Google Drive.
           </p>
         </div>
@@ -596,9 +596,9 @@ export default function AdminGoogleDrive({
             {user ? (
               <div className="flex items-center gap-3 bg-zinc-950 px-4 py-3 border border-zinc-850 rounded-2xl">
                 {user.photoURL ? (
-                  <img src={user.photoURL} alt={user.displayName} className="h-8 w-8 rounded-full border border-emerald-500/25" referrerPolicy="no-referrer" />
+                  <img src={user.photoURL} alt={user.displayName} className="h-8 w-8 rounded-full border border-adhler-orange/25" referrerPolicy="no-referrer" />
                 ) : (
-                  <div className="h-8 w-8 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-black">
+                  <div className="h-8 w-8 rounded-full bg-adhler-orange/15 text-adhler-orange flex items-center justify-center text-xs font-black">
                     {user.displayName?.[0] || 'A'}
                   </div>
                 )}
@@ -640,7 +640,7 @@ export default function AdminGoogleDrive({
       {actionStatus.message && (
         <div className={`p-4 rounded-2xl flex items-start gap-3 border ${
           actionStatus.type === 'success' 
-            ? 'bg-emerald-950/20 border-emerald-500/20 text-emerald-450' 
+            ? 'bg-[#1e2530] border-adhler-cyan/20 text-adhler-cyan' 
             : 'bg-rose-950/20 border-rose-500/20 text-rose-450'
         }`}>
           {actionStatus.type === 'success' ? (
@@ -660,7 +660,7 @@ export default function AdminGoogleDrive({
             type="button"
             className={`px-4 py-3 text-xs font-bold uppercase tracking-wider relative transition-all cursor-pointer ${
               activeSubTab === 'backups'
-                ? 'text-emerald-400 border-b-2 border-emerald-500 font-black'
+                ? 'text-[#ED7038] border-b-2 border-[#ED7038] font-black'
                 : 'text-zinc-500 hover:text-white'
             }`}
           >
@@ -671,7 +671,7 @@ export default function AdminGoogleDrive({
             type="button"
             className={`px-4 py-3 text-xs font-bold uppercase tracking-wider relative transition-all cursor-pointer ${
               activeSubTab === 'import-photos'
-                ? 'text-emerald-400 border-b-2 border-emerald-500 font-black'
+                ? 'text-[#ED7038] border-b-2 border-[#ED7038] font-black'
                 : 'text-zinc-500 hover:text-white'
             }`}
           >
@@ -683,7 +683,7 @@ export default function AdminGoogleDrive({
       {/* Main drive action interface or empty link guidance */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 bg-zinc-950/50 border border-zinc-900 rounded-3xl">
-          <RefreshCw className="text-emerald-500 animate-spin mb-4" size={32} />
+          <RefreshCw className="text-adhler-cyan animate-spin mb-4" size={32} />
           <p className="text-xs text-zinc-500 font-mono">Conectando con Google Drive Client...</p>
         </div>
       ) : !user ? (
@@ -698,7 +698,7 @@ export default function AdminGoogleDrive({
           <button
             onClick={handleLogin}
             type="button"
-            className="mt-6 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/10 cursor-pointer flex items-center gap-2"
+            className="mt-6 px-6 py-3 rounded-xl bg-[#ED7038] hover:bg-[#ED7038]/90 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-[#ED7038]/10 cursor-pointer flex items-center gap-2"
           >
             <Cloud size={14} />
             Configurar Conexión Google Drive
@@ -724,9 +724,9 @@ export default function AdminGoogleDrive({
                   onClick={backupReservations}
                   disabled={actionLoading}
                   type="button"
-                  className="w-full text-left p-3.5 rounded-2xl bg-zinc-900/60 hover:bg-emerald-950/20 border border-zinc-850 hover:border-emerald-500/20 transition cursor-pointer flex items-center gap-3 font-semibold group"
+                  className="w-full text-left p-3.5 rounded-2xl bg-zinc-900/60 hover:bg-adhler-orange/5 border border-zinc-850 hover:border-adhler-orange/20 transition cursor-pointer flex items-center gap-3 font-semibold group"
                 >
-                  <div className="p-2 bg-emerald-500/5 group-hover:bg-emerald-500/10 rounded-xl text-emerald-450 border border-emerald-500/10">
+                  <div className="p-2 bg-adhler-orange/5 group-hover:bg-adhler-orange/10 rounded-xl text-adhler-orange border border-adhler-orange/10">
                     <Database size={15} />
                   </div>
                   <div className="text-left flex-1 min-w-0">
@@ -740,9 +740,9 @@ export default function AdminGoogleDrive({
                   onClick={backupFinances}
                   disabled={actionLoading}
                   type="button"
-                  className="w-full text-left p-3.5 rounded-2xl bg-zinc-900/60 hover:bg-emerald-950/20 border border-zinc-850 hover:border-emerald-500/20 transition cursor-pointer flex items-center gap-3 font-semibold group"
+                  className="w-full text-left p-3.5 rounded-2xl bg-zinc-900/60 hover:bg-adhler-orange/5 border border-zinc-850 hover:border-adhler-orange/20 transition cursor-pointer flex items-center gap-3 font-semibold group"
                 >
-                  <div className="p-2 bg-emerald-500/5 group-hover:bg-emerald-500/10 rounded-xl text-emerald-450 border border-emerald-500/10">
+                  <div className="p-2 bg-adhler-orange/5 group-hover:bg-adhler-orange/10 rounded-xl text-adhler-orange border border-adhler-orange/10">
                     <FileText size={15} />
                   </div>
                   <div className="text-left flex-1 min-w-0">
@@ -756,9 +756,9 @@ export default function AdminGoogleDrive({
                   onClick={backupPayments}
                   disabled={actionLoading}
                   type="button"
-                  className="w-full text-left p-3.5 rounded-2xl bg-zinc-900/60 hover:bg-emerald-950/20 border border-zinc-850 hover:border-emerald-500/20 transition cursor-pointer flex items-center gap-3 font-semibold group"
+                  className="w-full text-left p-3.5 rounded-2xl bg-zinc-900/60 hover:bg-adhler-orange/5 border border-zinc-850 hover:border-adhler-orange/20 transition cursor-pointer flex items-center gap-3 font-semibold group"
                 >
-                  <div className="p-2 bg-emerald-500/5 group-hover:bg-emerald-500/10 rounded-xl text-emerald-450 border border-emerald-500/10">
+                  <div className="p-2 bg-adhler-orange/5 group-hover:bg-adhler-orange/10 rounded-xl text-adhler-orange border border-adhler-orange/10">
                     <CheckCircle size={15} />
                   </div>
                   <div className="text-left flex-1 min-w-0">
@@ -778,7 +778,7 @@ export default function AdminGoogleDrive({
               onDrop={handleDrop}
               className={`bg-zinc-950/40 border border-dashed rounded-3xl p-6 text-center transition flex flex-col items-center justify-center space-y-3 cursor-pointer ${
                 dragging 
-                  ? 'border-emerald-500 bg-emerald-950/10' 
+                  ? 'border-adhler-orange bg-adhler-orange/5' 
                   : 'border-zinc-850 hover:border-zinc-700 bg-zinc-950/20'
               }`}
               onClick={() => fileInputRef.current?.click()}
@@ -790,7 +790,7 @@ export default function AdminGoogleDrive({
                 className="hidden" 
               />
               <div className="h-12 w-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-zinc-400 border border-zinc-850 shadow">
-                <UploadCloud size={22} className={dragging ? 'text-emerald-400 animate-bounce' : 'text-zinc-550'} />
+                <UploadCloud size={22} className={dragging ? 'text-adhler-orange animate-bounce' : 'text-zinc-550'} />
               </div>
               <div className="text-xs">
                 <span className="font-extrabold text-white block uppercase">Cargar Archivo a Drive</span>
@@ -800,9 +800,9 @@ export default function AdminGoogleDrive({
               {isUploading && (
                 <div className="w-full space-y-1.5 pt-2">
                   <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-emerald-500 h-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
+                    <div className="bg-[#ED7038] h-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
                   </div>
-                  <span className="text-[9px] font-mono text-emerald-400 block uppercase">Subiendo al 100% cloud...</span>
+                  <span className="text-[9px] font-mono text-adhler-orange block uppercase">Subiendo al 100% cloud...</span>
                 </div>
               )}
             </div>
@@ -816,7 +816,7 @@ export default function AdminGoogleDrive({
               
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-zinc-900 pb-4 mb-4">
                 <div className="text-left mb-1 sm:mb-0">
-                  <span className="text-[10px] bg-emerald-500/10 text-emerald-400 font-extrabold px-2 py-0.5 rounded border border-emerald-500/15 uppercase font-mono">
+                  <span className="text-[10px] bg-adhler-cyan/15 text-adhler-cyan font-extrabold px-2 py-0.5 rounded border border-adhler-cyan/25 uppercase font-mono">
                     Carpeta: Futbol_Rapido_Tribol_Respaldos
                   </span>
                   <div className="flex items-center gap-2 mt-1">
@@ -866,7 +866,7 @@ export default function AdminGoogleDrive({
                         <div className="flex items-center gap-3 min-w-0 flex-1">
                           <div className={`p-2 rounded-xl text-zinc-450 border shrink-0 ${
                             isCSV 
-                              ? 'bg-emerald-500/5 border-emerald-500/10 text-emerald-440' 
+                              ? 'bg-adhler-cyan/10 border-adhler-cyan/20 text-adhler-cyan' 
                               : 'bg-zinc-900 border-zinc-850'
                           }`}>
                             <FileText size={16} />
@@ -925,7 +925,7 @@ export default function AdminGoogleDrive({
         <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-5 shadow-lg space-y-6 text-left animate-in fade-in duration-300">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-900 pb-4">
             <div>
-              <span className="text-[10px] uppercase font-black text-emerald-400 tracking-widest">Google Drive Media Importer</span>
+              <span className="text-[10px] uppercase font-black text-[#ED7038] tracking-widest">Google Drive Media Importer</span>
               <h3 className="text-lg font-black text-white mt-0.5 uppercase tracking-tight">Importar Fotos desde Carpeta en Google Drive</h3>
               <p className="text-xs text-zinc-500 mt-1">
                 Conecte cualquier ID de carpeta de Google Drive que contenga imágenes y selecciónelas para importarlas de manera instantánea a la galería multimedia de Fútbol Rápido Tribol. Puede ingresar enlaces de carpetas enteras.
@@ -942,7 +942,7 @@ export default function AdminGoogleDrive({
                   value={importFolderId}
                   onChange={(e) => setImportFolderId(e.target.value)}
                   placeholder="ID de carpeta o enlace completo (ej: https://drive.google.com/drive/folders/1ecB8OYnZeDmvErdw8W4d4Nv3q0ztBWXZ)..."
-                  className="flex-1 rounded-xl bg-zinc-900/60 border border-zinc-800 px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500"
+                  className="flex-1 rounded-xl bg-zinc-900/60 border border-zinc-800 px-4 py-3 text-xs text-white focus:outline-none focus:border-adhler-orange"
                 />
                 <button
                   type="button"
@@ -950,7 +950,7 @@ export default function AdminGoogleDrive({
                   disabled={loading || actionLoading}
                   className="rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-5 py-3 text-xs font-bold text-white transition flex items-center gap-2 shrink-0 cursor-pointer"
                 >
-                  {loading ? <RefreshCw className="animate-spin text-emerald-400" size={13} /> : 'Consultar Carpeta'}
+                  {loading ? <RefreshCw className="animate-spin text-adhler-orange" size={13} /> : 'Consultar Carpeta'}
                 </button>
               </div>
             </div>
@@ -960,7 +960,7 @@ export default function AdminGoogleDrive({
               <select
                 value={importCategory}
                 onChange={(e: any) => setImportCategory(e.target.value)}
-                className="w-full rounded-xl bg-zinc-900/60 border border-zinc-800 px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="w-full rounded-xl bg-zinc-900/60 border border-zinc-800 px-4 py-3 text-xs text-white focus:outline-none focus:border-adhler-orange"
               >
                 <option value="facilities">Canchas e Instalaciones</option>
                 <option value="matches">Partidos y Liguilla</option>
@@ -986,7 +986,7 @@ export default function AdminGoogleDrive({
                   <button
                     type="button"
                     onClick={() => setSelectedFileIds(importFiles.map(f => f.id))}
-                    className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-850 text-emerald-400 transition cursor-pointer"
+                    className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-850 text-adhler-cyan transition cursor-pointer"
                   >
                     Seleccionar todas
                   </button>
@@ -1003,7 +1003,7 @@ export default function AdminGoogleDrive({
                       key={file.id}
                       className={`relative rounded-2xl overflow-hidden border transition-all duration-300 flex flex-col justify-between ${
                         isSelected 
-                          ? 'border-emerald-500 bg-emerald-950/5 ring-1 ring-emerald-500/20' 
+                          ? 'border-adhler-orange bg-adhler-orange/5 ring-1 ring-adhler-orange/20' 
                           : 'border-zinc-850 hover:border-zinc-700 bg-zinc-900/40'
                       }`}
                     >
@@ -1047,7 +1047,7 @@ export default function AdminGoogleDrive({
                   type="button"
                   onClick={handleImportSelectedImages}
                   disabled={actionLoading || !selectedFileIds.length}
-                  className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-450 disabled:bg-zinc-900 text-black disabled:text-zinc-600 font-extrabold text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/10 flex items-center gap-2 cursor-pointer"
+                  className="px-6 py-3 rounded-xl bg-adhler-orange hover:bg-adhler-orange/95 disabled:bg-zinc-900 text-white disabled:text-zinc-600 font-extrabold text-xs uppercase tracking-wider transition shadow-lg shadow-adhler-orange/10 flex items-center gap-2 cursor-pointer"
                 >
                   <FolderPlus size={14} />
                   Sincronizar e importar seleccionadas a la Galería ({selectedFileIds.length})

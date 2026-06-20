@@ -908,8 +908,15 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
       {/* HEADER BAR FOR THE THEME */}
       <header className="border-b border-zinc-900 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-xl">🏆</span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg overflow-hidden border border-zinc-800 bg-zinc-900 shadow-sm flex-shrink-0">
+              <img 
+                src="/src/assets/images/tribol_logo_1780556302100.png" 
+                alt="Tribol Logo" 
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            </div>
             <span className="font-extrabold text-white tracking-wider text-sm uppercase">Fútbol Rápido Tribol — Admin</span>
           </div>
           
@@ -935,7 +942,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                   }}
                   className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition cursor-pointer ${
                     adminRole === role 
-                      ? "bg-emerald-500 text-black shadow-md shadow-emerald-500/10 font-black" 
+                      ? "bg-[#ED7038] text-white shadow-md shadow-[#ED7038]/10 font-black" 
                       : "text-zinc-500 hover:text-white"
                   }`}
                 >
@@ -962,7 +969,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
           {/* SIDEBAR NAVIGATION REGION (Col index 1) */}
           <aside className="lg:col-span-1 space-y-4">
             <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-5 shadow-2xl text-left space-y-4">
-              <span className="text-[9px] uppercase font-black text-emerald-400 tracking-widest block border-b border-zinc-900 pb-2.5">
+              <span className="text-[9px] uppercase font-black text-adhler-cyan tracking-widest block border-b border-zinc-900 pb-2.5">
                 🛡️ CONTROL ADMINISTRATIVO
               </span>
               <nav className="space-y-1 text-xs font-bold font-sans">
@@ -982,7 +989,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                     onClick={() => setActiveTab(item.id as any)}
                     className={`w-full text-left px-3.5 py-3 rounded-xl flex items-center gap-2.5 transition cursor-pointer ${
                       activeTab === item.id 
-                        ? "bg-emerald-500 text-black font-black shadow-lg shadow-emerald-500/20 scale-95 duration-100" 
+                        ? "bg-[#ED7038] text-white font-black shadow-lg shadow-[#ED7038]/20 scale-95 duration-100" 
                         : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
                     }`}
                   >
@@ -1014,7 +1021,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
 
             {isLoading && (
               <div className="py-20 text-center text-xs text-zinc-550 font-mono flex flex-col items-center justify-center gap-2">
-                <RefreshCw size={24} className="animate-spin text-emerald-500" />
+                <RefreshCw size={24} className="animate-spin text-adhler-cyan" />
                 <span>Cargando indicadores y sincronizando bases de datos...</span>
               </div>
             )}
@@ -1037,11 +1044,11 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                       </div>
                       <h2 className="text-xl font-bold text-white uppercase tracking-wider text-center">Acceso Restringido</h2>
                       <p className="text-xs text-zinc-400 leading-relaxed text-center">
-                        Tu nivel de simulación actual de <strong className="text-emerald-450 uppercase">[{adminRole === 'receptionist' ? 'Recepcionista' : 'Moderador'}]</strong> no tiene autorización para acceder a la pestaña de <strong className="text-white uppercase">[{activeTab.replace('admin-', '')}]</strong>.
+                        Tu nivel de simulación actual de <strong className="text-adhler-cyan uppercase">[{adminRole === 'receptionist' ? 'Recepcionista' : 'Moderador'}]</strong> no tiene autorización para acceder a la pestaña de <strong className="text-white uppercase">[{activeTab.replace('admin-', '')}]</strong>.
                       </p>
                       <div className="bg-zinc-900/50 rounded-xl p-4 border border-zinc-850 xs:text-center mt-2">
                         <p className="text-[11px] text-zinc-500 leading-relaxed">
-                          🛡️ El sistema de roles jerárquicos (RBAC) restringe estas operaciones de caja y configuraciones tácticas. Cambia de rol en la barra superior a <strong className="text-emerald-400">Dueño 👑</strong> para desbloquear todas las propiedades y realizar esta prueba.
+                          🛡️ El sistema de roles jerárquicos (RBAC) restringe estas operaciones de caja y configuraciones tácticas. Cambia de rol en la barra superior a <strong className="text-adhler-cyan font-black">Dueño 👑</strong> para desbloquear todas las propiedades y realizar esta prueba.
                         </p>
                       </div>
                     </div>
@@ -1055,7 +1062,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                     {/* View Header */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-zinc-900 pb-5">
                       <div>
-                        <span className="text-xs font-extrabold uppercase text-emerald-400 tracking-widest flex items-center gap-1">
+                        <span className="text-xs font-extrabold uppercase text-adhler-cyan tracking-widest flex items-center gap-1">
                           <LayoutDashboard size={12} /> BIENVENIDO DE NUEVO
                         </span>
                         <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-wide mt-1">Estadísticas de Canchas</h1>
@@ -1065,7 +1072,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                         onClick={fetchAllAdminData}
                         className="rounded-xl px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-850 text-xs font-bold text-white flex items-center gap-1.5 cursor-pointer self-start sm:self-auto"
                       >
-                        <RefreshCw size={12} className="text-emerald-400" />
+                        <RefreshCw size={12} className="text-adhler-cyan" />
                         <span>Refrescar</span>
                       </button>
                     </div>
@@ -1077,12 +1084,12 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                       <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 flex items-center justify-between shadow-xl">
                         <div className="space-y-1">
                           <span className="text-[10px] uppercase font-black text-zinc-500 tracking-widest block">INGRESOS NETOS</span>
-                          <span className="text-xl sm:text-2xl font-black text-emerald-450 font-mono">
+                          <span className="text-xl sm:text-2xl font-black text-adhler-cyan font-mono">
                             {adminRole === 'receptionist' ? '🔒 [Restringido]' : `$${(stats.totalRevenue || stats.totalEarnings || 0).toLocaleString("es-MX")}`}
                           </span>
                           <span className="text-[10px] text-zinc-500 block font-mono">Pesos Mexicanos (MXN)</span>
                         </div>
-                        <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-450 flex items-center justify-center">
+                        <div className="h-12 w-12 rounded-xl bg-adhler-cyan/10 border border-adhler-cyan/20 text-adhler-cyan flex items-center justify-center">
                           <DollarSign size={20} />
                         </div>
                       </div>
@@ -1093,7 +1100,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                           <span className="text-[10px] uppercase font-black text-zinc-500 tracking-widest block">RESERVAS TOTALES</span>
                           <span className="text-xl sm:text-2xl font-black text-white font-mono">{stats.totalReservations || stats.totalBookings || 0}</span>
                           <div className="flex gap-2 text-[9px] font-mono mt-1 scale-95 origin-left">
-                            <span className="text-emerald-400">{(stats.confirmedCount || stats.totalReservations - stats.pendingReservations || 0)} listos</span>
+                            <span className="text-adhler-cyan">{(stats.confirmedCount || stats.totalReservations - stats.pendingReservations || 0)} listos</span>
                             <span className="text-amber-500">{(stats.pendingCount || stats.pendingReservations || 0)} pend.</span>
                           </div>
                         </div>
@@ -1131,7 +1138,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                     {/* Business Intelligence Export Tools Row */}
                     <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 shadow-md text-left">
                       <div className="space-y-1">
-                        <h4 className="text-xs font-black uppercase text-emerald-400 tracking-widest flex items-center gap-1.5">
+                        <h4 className="text-xs font-black uppercase text-adhler-cyan tracking-widest flex items-center gap-1.5">
                           <FileSpreadsheet size={14} /> GESTIÓN CONTABLE Y EXPORTADOR (CSV)
                         </h4>
                         <p className="text-[11px] text-zinc-400">Descarga los registros depurados de caja chica y bitácoras de reservas para tu contabilidad en Excel o Google Sheets.</p>
@@ -1147,7 +1154,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                             <select
                               value={selectedExportMonth}
                               onChange={(e) => setSelectedExportMonth(e.target.value)}
-                              className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded-lg px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer min-w-[140px]"
+                              className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs rounded-lg px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-adhler-cyan cursor-pointer min-w-[140px]"
                             >
                               {getAvailableExportMonths().map(ym => (
                                 <option key={ym} value={ym} className="bg-zinc-950 text-white">
@@ -1170,7 +1177,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               exportReservationsToCSV(monthlyRes, getFieldFriendlyName);
                               addAuditLog('EXPORTAR_CSV_MES', `Exportación mensual (${formatYearMonthSpanish(selectedExportMonth)}) con ${monthlyRes.length} registros.`);
                             }}
-                            className="w-full sm:w-auto py-2 px-3.5 bg-emerald-500 hover:bg-emerald-400 text-black text-[11px] font-black uppercase rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg hover:shadow-emerald-500/10 h-[34px]"
+                            className="w-full sm:w-auto py-2 px-3.5 bg-[#ED7038] hover:bg-[#ED7038]/90 text-white text-[11px] font-black uppercase rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg hover:shadow-[#ED7038]/10 h-[34px]"
                             title="Exportar reservas del mes seleccionado en formato CSV"
                           >
                             <Download size={12} className="stroke-[3]" />
@@ -1241,14 +1248,14 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               <div key={idx} className="space-y-1 text-xs">
                                 <div className="flex justify-between items-center text-[11px]">
                                   <span className="font-bold text-zinc-350">{item.day}</span>
-                                  <span className="font-mono font-bold text-emerald-400">
+                                  <span className="font-mono font-bold text-adhler-cyan">
                                     {item.reservations} {item.reservations === 1 ? 'partido' : 'partidos'}
                                   </span>
                                 </div>
                                 <div className="w-full bg-zinc-900 h-2.5 rounded-full overflow-hidden border border-zinc-850">
                                   <div 
                                     style={{ width: `${percent}%` }}
-                                    className="bg-emerald-500 rounded-full h-full transition-all duration-1000 ease-out"
+                                    className="bg-adhler-cyan rounded-full h-full transition-all duration-1000 ease-out"
                                   />
                                 </div>
                               </div>
@@ -1277,20 +1284,20 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                   <div className="flex gap-2 items-center text-[10px] font-mono text-zinc-500">
                                     <span>{court.bookingCount} reservas registradas</span>
                                     <span>•</span>
-                                    <span className="text-emerald-400 font-bold">
+                                    <span className="text-adhler-cyan font-bold">
                                       {adminRole === 'receptionist' ? '🔒 [Restringido]' : `$${court.earnings.toLocaleString("es-MX")} MXN`}
                                     </span>
                                   </div>
                                   <div className="w-2/3 bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-zinc-850 mt-1 max-w-xs">
                                     <div 
-                                      className="bg-emerald-505/60 rounded-full h-full"
+                                      className="bg-adhler-cyan/60 rounded-full h-full"
                                       style={{ width: `${percent}%` }}
                                     />
                                   </div>
                                 </div>
                                 <div className="bg-zinc-900 border border-zinc-850 px-3 py-2 rounded-xl text-right font-mono text-xs text-zinc-350 shrink-0 self-start md:self-auto">
                                   <span className="text-[9px] uppercase tracking-wider block text-zinc-500">Cobrado</span>
-                                  <strong className="text-emerald-450 font-extrabold text-sm">
+                                  <strong className="text-adhler-cyan font-extrabold text-sm">
                                     {adminRole === 'receptionist' ? '🔒 [Restringido]' : `$${court.earnings.toLocaleString("es-MX")}`}
                                   </strong>
                                 </div>
@@ -1308,21 +1315,21 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                       {/* Column 1: MoM dynamic comparison */}
                       <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-5 shadow-lg flex flex-col justify-between text-left space-y-4">
                         <div>
-                          <h4 className="text-xs font-extrabold uppercase text-emerald-400 tracking-wider flex items-center gap-1 border-b border-zinc-900 pb-2.5">
+                          <h4 className="text-xs font-extrabold uppercase text-adhler-cyan tracking-wider flex items-center gap-1 border-b border-zinc-900 pb-2.5">
                             📊 COMPARATIVA INTERMENSUAL (MoM)
                           </h4>
                           <p className="text-[10px] text-zinc-500 mt-1">Cotejo volumétrico de caja del periodo corriente.</p>
                         </div>
                         <div className="space-y-4 flex-1">
                           <div className="bg-zinc-900/40 p-3.5 border border-zinc-850 rounded-xl space-y-1">
-                            <span className="text-[9px] font-bold text-zinc-550 block">PERIODO ACTUAL (JUNIO 2026)</span>
+                            <span className="text-[9px] font-bold text-zinc-555 block">PERIODO ACTUAL (JUNIO 2026)</span>
                             <div className="text-lg font-black text-white font-mono">
                               {adminRole === 'receptionist' ? '🔒 [Restringido]' : `$${(stats.totalRevenue || 1675).toLocaleString("es-MX")}`}
                             </div>
-                            <span className="text-[9px] text-emerald-400 font-bold block">✓ Metas de taquilla superadas</span>
+                            <span className="text-[9px] text-adhler-cyan font-bold block">✓ Metas de taquilla superadas</span>
                           </div>
                           <div className="bg-zinc-900/20 p-3.5 border border-zinc-900 rounded-xl space-y-1">
-                            <span className="text-[9px] font-bold text-zinc-550 block">PERIODO ENERO - MAYO</span>
+                            <span className="text-[9px] font-bold text-zinc-555 block">PERIODO ENERO - MAYO</span>
                             <div className="text-sm font-black text-zinc-400 font-mono">
                               {adminRole === 'receptionist' ? '🔒 [Restringido]' : `$${((stats.totalRevenue || 1675) * 0.81).toLocaleString("es-MX")}`}
                             </div>
@@ -1330,7 +1337,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                           </div>
                         </div>
                         <div className="pt-2">
-                          <div className="flex items-center gap-2 text-xs font-bold text-emerald-450 bg-emerald-500/5 border border-emerald-500/10 p-2.5 rounded-xl justify-center text-center">
+                          <div className="flex items-center gap-2 text-xs font-bold text-adhler-cyan bg-adhler-cyan/5 border border-adhler-cyan/10 p-2.5 rounded-xl justify-center text-center">
                             <span>▲ +19% Rendimiento Positivo</span>
                           </div>
                         </div>
@@ -1339,7 +1346,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                       {/* Column 2: VIP rankings */}
                       <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-5 shadow-lg flex flex-col justify-between text-left space-y-4">
                         <div>
-                          <h4 className="text-xs font-extrabold uppercase text-emerald-400 tracking-wider flex items-center gap-1 border-b border-zinc-900 pb-2.5">
+                          <h4 className="text-xs font-extrabold uppercase text-adhler-cyan tracking-wider flex items-center gap-1 border-b border-zinc-900 pb-2.5">
                             👑 LEADERBOARD CAPITANES VIP (AFLUENCIA)
                           </h4>
                           <p className="text-[10px] text-zinc-500 mt-1">Capitanes con mayor tasa de reservación.</p>
@@ -1355,7 +1362,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                 <span className="text-[9px] text-zinc-500 font-mono">{cap.phone}</span>
                               </div>
                               <div className="text-right">
-                                <span className="text-xs font-black text-emerald-400 block font-mono">{cap.bookings} partidos</span>
+                                <span className="text-xs font-black text-adhler-cyan block font-mono">{cap.bookings} partidos</span>
                                 <span className="text-[9px] text-zinc-550 block font-mono">{cap.email}</span>
                               </div>
                             </div>
@@ -1371,7 +1378,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                       {/* Column 3: Low occupancy hours valle */}
                       <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-5 shadow-lg flex flex-col justify-between text-left space-y-4">
                         <div>
-                          <h4 className="text-xs font-extrabold uppercase text-emerald-400 tracking-wider flex items-center gap-1 border-b border-zinc-900 pb-2.5">
+                          <h4 className="text-xs font-extrabold uppercase text-adhler-cyan tracking-wider flex items-center gap-1 border-b border-zinc-900 pb-2.5">
                             📉 HORAS VALLE (ÁMBITOS BAJA FLUENCIA)
                           </h4>
                           <p className="text-[10px] text-zinc-500 mt-1">Sugerencia de horarios desocupados para campañas.</p>
@@ -1399,7 +1406,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               setActiveTab("admin-promotions");
                               addAuditLog('TRIGGER_VALLE_PROMO', 'Redirección prellenando campaña de descuento "VALLE25" para incentivar horas de baja afluencia.');
                             }}
-                            className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-450 text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition cursor-pointer text-center block"
+                            className="w-full py-2.5 bg-[#ED7038] hover:bg-[#ED7038]/90 text-white font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition cursor-pointer text-center block"
                           >
                             Lanzar Cupón "VALLE25" (25% Desc.)
                           </button>
@@ -1413,7 +1420,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                       <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
                         <div>
                           <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span className="h-2 w-2 rounded-full bg-adhler-cyan animate-ping"></span>
                             <span>Registro de Auditoría de Sistemas (Consola de Logs)</span>
                           </h3>
                           <p className="text-[10px] text-zinc-500 mt-0.5">Seguimiento en tiempo real de operaciones de caja y reservas hechas por administradores.</p>
@@ -1437,13 +1444,13 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                           Limpiar Consola
                         </button>
                       </div>
-                      <div className="bg-black/90 p-4 border border-zinc-900 rounded-2xl max-h-48 overflow-y-auto font-mono text-[11px] space-y-1.5 scrollbar-thin scrollbar-thumb-zinc-800">
+                      <div className="bg-black/90 p-4 border border-zinc-900 rounded-2xl max-h-48 overflow-y-auto font-mono text-[11px] space-y-1.5 scrollbar-thin scrollbar-thumb-zinc-800 font-medium">
                         {auditLogs.map((log) => (
                           <div key={log.id} className="flex flex-col sm:flex-row sm:items-start text-zinc-400 gap-1 sm:gap-2 leading-relaxed">
-                            <span className="text-[10px] text-zinc-600 shrink-0 font-bold">[{log.timestamp}]</span>
+                            <span className="text-[10px] text-zinc-650 shrink-0 font-bold">[{log.timestamp}]</span>
                             <span className={`text-[9px] px-1.5 py-0.2 rounded font-black shrink-0 uppercase tracking-wider ${
                               log.role === 'owner' 
-                                ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-450" 
+                                ? "bg-adhler-cyan/10 border border-adhler-cyan/20 text-adhler-cyan" 
                                 : log.role === 'receptionist'
                                   ? "bg-amber-500/10 border border-amber-500/20 text-amber-500"
                                   : "bg-purple-500/10 border border-purple-500/20 text-purple-405"
@@ -1475,7 +1482,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                         onClick={fetchAllAdminData}
                         className="rounded-xl px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-850 text-xs font-bold text-white flex items-center gap-1.5 cursor-pointer self-start sm:self-auto"
                       >
-                        <RefreshCw size={12} className="text-emerald-400" />
+                        <RefreshCw size={12} className="text-adhler-cyan" />
                         <span>Sincronizar Lista</span>
                       </button>
                     </div>
@@ -1493,7 +1500,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                           onClick={() => setReservationViewMode('table')}
                           className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                             reservationViewMode === 'table' 
-                              ? "bg-emerald-500 text-black font-black shadow-md" 
+                              ? "bg-[#ED7038] text-white font-black shadow-md" 
                               : "text-zinc-500 hover:text-zinc-300"
                           }`}
                         >
@@ -1508,7 +1515,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                           }}
                           className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                             reservationViewMode === 'calendar' 
-                              ? "bg-emerald-500 text-black font-black shadow-md" 
+                              ? "bg-[#ED7038] text-white font-black shadow-md" 
                               : "text-zinc-500 hover:text-zinc-300"
                           }`}
                         >
@@ -1532,7 +1539,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               placeholder="Buscar por capitán, celular, correo, folio ID..."
                               value={reservationSearch}
                               onChange={(e) => setReservationSearch(e.target.value)}
-                              className="w-full pl-9 pr-4 py-3 rounded-xl bg-zinc-950 border border-zinc-900 focus:outline-none focus:border-emerald-500 text-xs text-white"
+                              className="w-full pl-9 pr-4 py-3 rounded-xl bg-zinc-950 border border-zinc-900 focus:outline-none focus:border-adhler-cyan text-xs text-white"
                             />
                           </div>
                           <div className="flex gap-2 whitespace-nowrap overflow-x-auto pb-1 sm:pb-0">
@@ -1547,7 +1554,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                 onClick={() => setReservationFilterStatus(st.value as any)}
                                 className={`px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition ${
                                   reservationFilterStatus === st.value 
-                                    ? "bg-emerald-500 text-black border-emerald-405/20 font-bold shadow-md"
+                                    ? "bg-adhler-cyan text-zinc-950 border-adhler-cyan/20 font-bold shadow-md"
                                     : "bg-zinc-950 text-zinc-400 border-zinc-900 hover:text-white"
                                 }`}
                               >
@@ -1588,7 +1595,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                     <td className="px-5 py-4">
                                       <div className="flex flex-col gap-0.5">
                                         <span className="font-semibold text-zinc-200">{res.date}</span>
-                                        <span className="font-mono text-emerald-400 tracking-wide text-[10px]">{res.timeSlot}</span>
+                                        <span className="font-mono text-adhler-cyan tracking-wide text-[10px]">{res.timeSlot}</span>
                                       </div>
                                     </td>
                                     <td className="px-5 py-4">
@@ -1602,7 +1609,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                               email: res.userEmail
                                             });
                                           }}
-                                          className="font-bold text-white font-sans text-left hover:text-emerald-400 hover:underline transition focus:outline-none cursor-pointer"
+                                          className="font-bold text-white font-sans text-left hover:text-adhler-cyan hover:underline transition focus:outline-none cursor-pointer"
                                           title={`Ver perfil y comportamiento de ${res.userName}`}
                                         >
                                           {res.userName}
@@ -1620,7 +1627,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                         {/* Anticipo display */}
                                         <div className="flex items-center gap-1.5">
                                           <span className="text-[10px] text-zinc-400 font-mono">
-                                            Abonado: <strong className="text-emerald-400">${res.advancePaid || 0}</strong>
+                                            Abonado: <strong className="text-adhler-cyan">${res.advancePaid || 0}</strong>
                                           </span>
                                           <button
                                             type="button"
@@ -1628,7 +1635,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                               setPayingReservation(res);
                                               setAbonoAmountInput("200");
                                             }}
-                                            className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[9px] font-black text-emerald-450 hover:bg-emerald-500 hover:text-black transition cursor-pointer"
+                                            className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[9px] font-black text-adhler-cyan hover:bg-[#ED7038] hover:text-white transition cursor-pointer"
                                             title="Registrar abonado"
                                           >
                                             + Abono
@@ -1638,7 +1645,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                         {/* Arrival checkin */}
                                         <div className="text-[10px]">
                                           {res.checkedIn ? (
-                                            <span className="text-emerald-450 font-bold flex items-center gap-1">
+                                            <span className="text-adhler-cyan font-bold flex items-center gap-1">
                                               ✓ LLEGÓ ({res.checkedInAt || "En cancha"})
                                             </span>
                                           ) : (
@@ -1663,7 +1670,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                       <div className="flex flex-col gap-1.5 items-start">
                                         <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase border ${
                                           res.status === 'confirmed' 
-                                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-405" 
+                                            ? "bg-[#ED7038]/10 border-[#ED7038]/20 text-[#ED7038]" 
                                             : res.status === 'pending' 
                                               ? "bg-amber-500/10 border-amber-500/20 text-amber-500" 
                                               : "bg-rose-500/10 border-rose-500/20 text-rose-400"
@@ -1685,7 +1692,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                         <button
                                           type="button"
                                           onClick={() => setWhatsAppPreviewObj(res)}
-                                          className="px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-[10px] border border-zinc-800 text-emerald-450 font-bold flex items-center gap-1 cursor-pointer transition"
+                                          className="px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-[10px] border border-zinc-800 text-adhler-cyan font-bold flex items-center gap-1 cursor-pointer transition"
                                           title="Mensaje de WhatsApp"
                                         >
                                           <Send size={11} />
@@ -1695,7 +1702,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                         {res.status !== 'confirmed' && (
                                           <button 
                                             onClick={() => handleUpdateReservation(res.id, 'confirmed', 'paid')}
-                                            className="bg-emerald-600 hover:bg-emerald-555 text-black font-extrabold px-2.5 py-1.5 rounded-lg text-[10px] cursor-pointer transition uppercase flex items-center gap-1"
+                                            className="bg-adhler-cyan hover:bg-adhler-cyan/95 text-zinc-950 font-extrabold px-2.5 py-1.5 rounded-lg text-[10px] cursor-pointer transition uppercase flex items-center gap-1"
                                             title="Confirmar Partido y Pago"
                                           >
                                             <CheckCircle size={11} />
@@ -1728,7 +1735,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                         <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-5 text-left space-y-4">
                           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <div className="space-y-1">
-                              <span className="text-[9px] uppercase font-black text-emerald-400 tracking-widest block">Calendario Operativo</span>
+                              <span className="text-[9px] uppercase font-black text-adhler-cyan tracking-widest block">Calendario Operativo</span>
                               <h4 className="text-white font-bold text-sm">Selecciona Fecha de Trabajo</h4>
                             </div>
                             <div className="flex gap-2">
@@ -1736,7 +1743,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                 type="date"
                                 value={calendarTargetDate}
                                 onChange={(e) => setCalendarTargetDate(e.target.value)}
-                                className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-emerald-500 cursor-pointer"
+                                className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-adhler-cyan cursor-pointer"
                               />
                               <button
                                 type="button"
@@ -1749,7 +1756,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                           </div>
 
                           {movingReservationId && (
-                            <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-xl flex items-center justify-between animate-pulse">
+                            <div className="p-3 bg-adhler-cyan/10 border border-adhler-cyan/30 text-adhler-cyan text-xs rounded-xl flex items-center justify-between animate-pulse">
                               <span className="font-bold flex items-center gap-2">
                                 🔄 Moviendo reserva #{movingReservationId} — Elige un casillero vacío del calendario para soltar el partido.
                               </span>
@@ -1802,7 +1809,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                               ⚽ {booking.userName}
                                             </span>
                                             <span className={`px-1.5 py-0.2 rounded text-[8px] font-black uppercase ${
-                                              booking.paymentStatus === 'paid' ? "bg-emerald-500/10 text-emerald-450 border border-emerald-500/25" : "bg-zinc-900 text-zinc-500 border border-zinc-800"
+                                              booking.paymentStatus === 'paid' ? "bg-adhler-cyan/10 text-adhler-cyan border border-adhler-cyan/25" : "bg-zinc-900 text-zinc-500 border border-zinc-800"
                                             }`}>
                                               {booking.paymentStatus === 'paid' ? "Liquidado" : "Pendiente"}
                                             </span>
@@ -1813,7 +1820,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                               Ab.: ${booking.advancePaid || 0}
                                             </span>
                                             {booking.checkedIn && (
-                                              <span className="text-[8px] px-1 py-0.2 bg-emerald-500/10 text-emerald-400 font-bold rounded">
+                                              <span className="text-[8px] px-1 py-0.2 bg-[#ED7038]/10 text-[#ED7038] font-bold rounded">
                                                 En Cancha
                                               </span>
                                             )}
@@ -1839,7 +1846,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                               setPayingReservation(booking);
                                               setAbonoAmountInput("200");
                                             }}
-                                            className="px-1.5 py-0.5 rounded bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-[9px] text-emerald-450 font-bold cursor-pointer transition"
+                                            className="px-1.5 py-0.5 rounded bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-[9px] text-adhler-cyan font-bold cursor-pointer transition"
                                             title="Registrar abono de reserva"
                                           >
                                             Abono
@@ -1882,7 +1889,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                             addAuditLog('TRASLAJO_EXITOSO', `Se reajustó exitosamente la reserva #${movingId} a la cancha [${f.name}] en horario [${hour}] el día [${calendarTargetDate}].`);
                                             setMovingReservationId(null);
                                           }}
-                                          className="w-full py-5 rounded-2xl bg-emerald-500/10 border border-dashed border-emerald-500 text-[10px] text-emerald-400 font-extrabold hover:bg-emerald-500 hover:text-black transition cursor-pointer animate-pulse"
+                                          className="w-full py-5 rounded-2xl bg-adhler-cyan/10 border border-dashed border-adhler-cyan text-[10px] text-adhler-cyan font-extrabold hover:bg-adhler-cyan hover:text-zinc-950 transition cursor-pointer animate-pulse"
                                         >
                                           🟢 Soltar Aquí
                                         </button>
@@ -1920,7 +1927,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                         <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-6 shadow-2xl max-w-md w-full text-left space-y-4 animate-in zoom-in-95 duration-150">
                           <div className="border-b border-zinc-900 pb-3 flex items-center justify-between">
                             <div>
-                              <span className="text-[10px] uppercase font-black text-emerald-400 tracking-widest block">Reserva Express</span>
+                              <span className="text-[10px] uppercase font-black text-adhler-cyan tracking-widest block">Reserva Express</span>
                               <h4 className="text-white font-bold text-sm uppercase">Agendar Espacio Directo</h4>
                             </div>
                             <button
@@ -1951,7 +1958,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                 placeholder="Ej: Fernando Alonso"
                                 value={quickName}
                                 onChange={(e) => setQuickName(e.target.value)}
-                                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-emerald-500"
+                                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-adhler-cyan"
                                 required
                               />
                             </div>
@@ -1964,9 +1971,9 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                   placeholder="52155..."
                                   value={quickPhone}
                                   onChange={(e) => setQuickPhone(e.target.value)}
-                                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-emerald-505"
+                                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-adhler-cyan"
                                   required
-                                />
+                               />
                               </div>
                               <div className="space-y-1">
                                 <label className="text-zinc-400 font-medium block">Email (Opcional)</label>
@@ -1975,14 +1982,14 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                   placeholder="capitan@gmail.com"
                                   value={quickEmail}
                                   onChange={(e) => setQuickEmail(e.target.value)}
-                                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-emerald-505"
+                                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-adhler-cyan"
                                 />
                               </div>
                             </div>
 
                             <button
                               type="submit"
-                              className="w-full py-3 bg-emerald-500 hover:bg-emerald-450 text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl cursor-pointer transition block text-center"
+                              className="w-full py-3 bg-[#ED7038] hover:bg-[#ED7038]/90 text-white font-extrabold text-[11px] uppercase tracking-wider rounded-xl cursor-pointer transition block text-center"
                             >
                               Registrar Reservado ($400 MXN base)
                             </button>
@@ -1997,7 +2004,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                         <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-6 shadow-2xl max-w-sm w-full text-left space-y-4 animate-in zoom-in-95 duration-150">
                           <div className="border-b border-zinc-900 pb-3 flex items-center justify-between">
                             <div>
-                              <span className="text-[10px] uppercase font-black text-emerald-400 tracking-widest block">Pagos anticipados</span>
+                              <span className="text-[10px] uppercase font-black text-adhler-cyan tracking-widest block">Pagos anticipados</span>
                               <h4 className="text-white font-bold text-sm uppercase">Registrar Abono Parcial</h4>
                             </div>
                             <button
@@ -2020,7 +2027,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                             </div>
                             <div className="flex justify-between">
                               <span className="text-zinc-400 font-medium">Anticipo Anterior:</span>
-                              <strong className="text-emerald-400 font-mono">${payingReservation.advancePaid || 0} MXN</strong>
+                              <strong className="text-adhler-cyan font-mono">${payingReservation.advancePaid || 0} MXN</strong>
                             </div>
                           </div>
 
@@ -2030,9 +2037,9 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               type="number"
                               value={abonoAmountInput}
                               onChange={(e) => setAbonoAmountInput(e.target.value)}
-                              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white text-lg font-bold font-mono focus:outline-none focus:border-emerald-500"
+                              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white text-lg font-bold font-mono focus:outline-none focus:border-adhler-cyan"
                             />
-                            <p className="text-[10px] text-zinc-500 leading-tight">El anticipo se registrará en la ficha del folio y se restará del cobro final.</p>
+                            <p className="text-[10px] text-zinc-550 leading-tight">El anticipo se registrará en la ficha del folio y se restará del cobro final.</p>
                           </div>
 
                           <button
@@ -2050,7 +2057,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               addAuditLog('ABONO_REGISTRADO', `Se abonaron $${extraAbonoVal} MXN a reserva #${payingReservation.id} de ${payingReservation.userName}.`);
                               setPayingReservation(null);
                             }}
-                            className="w-full py-3 bg-emerald-500 hover:bg-emerald-450 text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl cursor-pointer text-center block transition"
+                            className="w-full py-3 bg-[#ED7038] hover:bg-[#ED7038]/90 text-white font-extrabold text-[11px] uppercase tracking-wider rounded-xl cursor-pointer text-center block transition"
                           >
                             Registrar Abono
                           </button>
@@ -2077,12 +2084,12 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
 
                           {/* Mock WhatsApp screen header */}
                           <div className="bg-zinc-900 p-4 rounded-t-2xl border-b border-zinc-850 flex items-center gap-2.5">
-                            <div className="h-8 w-8 rounded-full bg-emerald-500/25 border border-emerald-500/40 text-emerald-450 text-xs font-black flex items-center justify-center uppercase">
+                            <div className="h-8 w-8 rounded-full bg-adhler-cyan/25 border border-adhler-cyan/40 text-adhler-cyan text-xs font-black flex items-center justify-center uppercase">
                               {whatsAppPreviewObj.userName[0]}
                             </div>
                             <div className="text-xs leading-tight">
                               <h5 className="font-extrabold text-white">{whatsAppPreviewObj.userName}</h5>
-                              <span className="text-[9px] text-emerald-400 font-mono">En Línea (Tribol Canchas)</span>
+                              <span className="text-[9px] text-adhler-cyan font-mono">En Línea (Tribol Canchas)</span>
                             </div>
                           </div>
 
@@ -2093,16 +2100,16 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                             </div>
 
                             <div className="bg-[#005c4b] text-white p-3 rounded-2xl text-[11px] leading-relaxed relative max-w-[85%] self-end ml-auto space-y-1.5 shadow-md">
-                              <p className="font-black text-emerald-300">🏆 FÚTBOL RÁPIDO TRIBOL CANCHAS</p>
+                              <p className="font-black text-[#ED7038]">🏆 FÚTBOL RÁPIDO TRIBOL CANCHAS</p>
                               <p>¡Hola <strong>{whatsAppPreviewObj.userName}</strong>! Te confirmamos tu partido reservado en el complejo.</p>
                               <p>⚡ Cancha: <strong>{getFieldFriendlyName(whatsAppPreviewObj.fieldId)}</strong><br />
                               📅 Fecha: <strong>{whatsAppPreviewObj.date}</strong><br />
                               ⏰ Horario: <strong>{whatsAppPreviewObj.timeSlot}</strong><br />
                               💵 Costo Base Renta: <strong>$500 MXN</strong><br />
-                              💰 Anticipo registrado: <strong className="text-emerald-300">${whatsAppPreviewObj.advancePaid || 0} MXN</strong>
+                              💰 Anticipo registrado: <strong className="text-[#ED7038]">${whatsAppPreviewObj.advancePaid || 0} MXN</strong>
                               </p>
-                              <p className="text-[9px] text-emerald-305 italic">Para cambios de hora o check-in digital, dirígete con el recepcionista.</p>
-                              <span className="block text-[8px] text-right text-emerald-250 italic">10:42 PM ✓✓</span>
+                              <p className="text-[9px] text-zinc-300 italic">Para cambios de hora o check-in digital, dirígete con el recepcionista.</p>
+                              <span className="block text-[8px] text-right text-zinc-400 italic">10:42 PM ✓✓</span>
                             </div>
                           </div>
 
@@ -2117,7 +2124,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                 window.open(waUrl, '_blank');
                                 setWhatsAppPreviewObj(null);
                               }}
-                              className="w-full py-3 bg-emerald-500 hover:bg-emerald-450 text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl cursor-pointer text-center flex items-center justify-center gap-1.5 transition"
+                              className="w-full py-3 bg-[#ED7038] hover:bg-[#ED7038]/90 text-white font-extrabold text-[11px] uppercase tracking-wider rounded-xl cursor-pointer text-center flex items-center justify-center gap-1.5 transition"
                             >
                               <Send size={12} className="stroke-[2.5]" />
                               <span>Enviar por WhatsApp Web</span>
@@ -2154,7 +2161,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                       <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-6 shadow-xl space-y-4">
                         <div>
                           <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-1.5 border-b border-zinc-900 pb-3">
-                            <Upload size={16} className="text-emerald-400" />
+                            <Upload size={16} className="text-adhler-cyan" />
                             <span>Cargar Nueva Foto</span>
                           </h3>
                           <p className="text-[11px] text-zinc-500 mt-1">Sube instantáneas de las instalaciones y eventos de Tribol.</p>
@@ -2168,7 +2175,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               placeholder="Ej: Final del Torneo Nocturno"
                               value={photoTitle}
                               onChange={(e) => setPhotoTitle(e.target.value)}
-                              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white text-xs focus:outline-none focus:border-emerald-505"
+                              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white text-xs focus:outline-none focus:border-adhler-cyan"
                               required
                             />
                           </div>
@@ -2178,7 +2185,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                             <select 
                               value={photoCategory} 
                               onChange={(e) => setPhotoCategory(e.target.value as any)}
-                              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-emerald-500 text-zinc-300 font-sans"
+                              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-adhler-cyan text-zinc-300 font-sans"
                             >
                               <option value="facilities">🏟️ Instalaciones y Cafetería</option>
                               <option value="matches">⚽ Partidos y Ligas</option>
@@ -2199,9 +2206,9 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               }}
                               className={`relative rounded-2xl border-2 border-dashed p-6 text-center flex flex-col items-center justify-center gap-2 cursor-pointer transition ${
                                 photoIsDragging 
-                                  ? "border-emerald-550 bg-emerald-500/5" 
+                                  ? "border-adhler-cyan bg-adhler-cyan/5" 
                                   : photoBase64 
-                                    ? "border-emerald-500/30 bg-zinc-900/40" 
+                                    ? "border-adhler-cyan/30 bg-zinc-900/40" 
                                     : "border-zinc-805 hover:border-zinc-700 bg-zinc-900/20"
                               }`}
                             >
@@ -2214,7 +2221,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                 }}
                                 className="absolute inset-0 opacity-0 cursor-pointer"
                               />
-                              <Upload size={22} className={photoBase64 ? "text-emerald-400 animate-bounce" : "text-zinc-500"} />
+                              <Upload size={22} className={photoBase64 ? "text-adhler-cyan animate-bounce" : "text-zinc-500"} />
                               <p className="text-[11px] text-zinc-300">
                                 {photoFileName ? (
                                   <span className="font-bold text-white break-all font-mono">{photoFileName}</span>
@@ -2225,8 +2232,8 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                           </div>
 
                           {photoStatusMsg && (
-                            <div className="text-[10px] text-emerald-450 bg-emerald-500/5 p-2 rounded-xl flex items-center gap-1">
-                              <CheckCircle size={12} className="text-emerald-500" />
+                            <div className="text-[10px] text-adhler-cyan bg-adhler-cyan/5 p-2 rounded-xl flex items-center gap-1 border border-adhler-cyan/10">
+                              <CheckCircle size={12} className="text-adhler-cyan" />
                               <span>{photoStatusMsg}</span>
                             </div>
                           )}
@@ -2240,7 +2247,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
 
                           <button 
                             type="submit"
-                            className="w-full py-3 bg-emerald-500 hover:bg-emerald-450 text-black font-extrabold text-xs uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center justify-center gap-1"
+                            className="w-full py-3 bg-[#ED7038] hover:bg-[#ED7038]/90 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center justify-center gap-1"
                           >
                             Publicar Foto
                           </button>
@@ -2251,7 +2258,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                       <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-6 shadow-xl space-y-4">
                         <div>
                           <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-1.5 border-b border-zinc-900 pb-3">
-                            <Film size={16} className="text-emerald-400" />
+                            <Film size={16} className="text-adhler-cyan" />
                             <span>Publicar Video en Transmisión</span>
                           </h3>
                           <p className="text-[11px] text-zinc-500 mt-1">Transmite video directo (Highlights o en Vivo) en el portal cliente.</p>
@@ -2299,7 +2306,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                   type="checkbox" 
                                   checked={videoIsLive}
                                   onChange={(e) => setVideoIsLive(e.target.checked)}
-                                  className="rounded border-zinc-800 bg-zinc-900 text-emerald-500"
+                                  className="rounded border-zinc-800 bg-zinc-900 text-adhler-cyan"
                                 />
                                 <span>¿Está Transmitiendo?</span>
                               </label>
@@ -2307,7 +2314,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                           </div>
 
                           {videoStatusMsg && (
-                            <p className="text-[10px] text-emerald-450 font-medium font-mono">{videoStatusMsg}</p>
+                            <p className="text-[10px] text-adhler-cyan font-medium font-mono">{videoStatusMsg}</p>
                           )}
 
                           <button 
@@ -2358,7 +2365,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               <div className="flex-1 space-y-1 text-xs">
                                 <h4 className="font-extrabold text-white text-xs leading-snug line-clamp-1">{p.caption}</h4>
                                 <div className="flex items-center gap-1.5 text-[9px] font-mono tracking-wider text-zinc-405">
-                                  <span className="bg-zinc-900 border border-zinc-805 px-1.5 py-0.5 rounded leading-none text-emerald-400">
+                                  <span className="bg-zinc-900 border border-zinc-805 px-1.5 py-0.5 rounded leading-none text-adhler-cyan">
                                     {p.category}
                                   </span>
                                   <span>•</span>
@@ -2429,7 +2436,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                     <div className="lg:col-span-1 bg-zinc-950 border border-zinc-900 rounded-3xl p-6 shadow-xl h-fit space-y-4">
                       <div>
                         <h3 className="text-sm sm:text-base font-bold text-white uppercase tracking-wider flex items-center gap-1.5 border-b border-zinc-900 pb-3">
-                          <Sparkles size={16} className="text-emerald-400" />
+                          <Sparkles size={16} className="text-adhler-cyan" />
                           <span>Crear Promoción / Cupón</span>
                         </h3>
                         <p className="text-[11px] text-zinc-500 mt-1">Crea cupones de descuento válidos para la taquilla del club.</p>
@@ -2443,7 +2450,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                             placeholder="Ej: Lunes de Goleada Loca"
                             value={promoTitle}
                             onChange={(e) => setPromoTitle(e.target.value)}
-                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-emerald-505"
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-adhler-cyan"
                             required
                           />
                         </div>
@@ -2508,13 +2515,13 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                             placeholder="Ej: Descuento del 10% aplicable en reservas ordinarias..."
                             value={promoDesc}
                             onChange={(e) => setPromoDesc(e.target.value)}
-                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-emerald-500 font-sans leading-relaxed"
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-adhler-cyan font-sans leading-relaxed"
                             required
                           />
                         </div>
 
                         {promoStatusMsg && (
-                          <div className="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 p-2 rounded-xl flex items-center gap-1">
+                          <div className="text-[10px] text-adhler-cyan bg-adhler-cyan/10 border border-adhler-cyan/20 p-2 rounded-xl flex items-center gap-1">
                             <CheckCircle size={12} />
                             <span>{promoStatusMsg}</span>
                           </div>
@@ -2529,7 +2536,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
 
                         <button 
                           type="submit"
-                          className="w-full py-3 bg-emerald-500 hover:bg-emerald-450 text-black font-extrabold text-xs uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center justify-center gap-1"
+                          className="w-full py-3 bg-[#ED7038] hover:bg-[#ED7038]/90 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center justify-center gap-1"
                         >
                           Crear Promoción
                         </button>
@@ -2564,7 +2571,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                             <div key={promo.id} className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 flex flex-col justify-between gap-4 relative overflow-hidden text-left shadow-md">
                               <div className="space-y-2">
                                 <div className="flex justify-between items-start">
-                                  <span className="text-emerald-400 font-mono font-black border border-emerald-500/25 px-2.5 py-1 rounded bg-emerald-500/5 text-xs text-center">
+                                  <span className="text-adhler-cyan font-mono font-black border border-adhler-cyan/25 px-2.5 py-1 rounded bg-adhler-cyan/5 text-xs text-center">
                                     {promo.promoCode || "SIN CODIGO"}
                                   </span>
                                   <button 
@@ -2573,7 +2580,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                     title={promo.isActive ? "Desactivar" : "Activar"}
                                   >
                                     {promo.isActive ? (
-                                      <ToggleRight className="text-emerald-500" size={28} />
+                                      <ToggleRight className="text-adhler-cyan" size={28} />
                                     ) : (
                                       <ToggleLeft className="text-zinc-650" size={28} />
                                     )}
@@ -2614,7 +2621,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                     <div className="lg:col-span-1 bg-zinc-950 border border-zinc-900 rounded-3xl p-6 shadow-xl h-fit space-y-4">
                       <div>
                         <h3 className="text-sm sm:text-base font-bold text-white uppercase tracking-wider flex items-center gap-1.5 border-b border-zinc-900 pb-3">
-                          <DollarSign size={16} className="text-emerald-400" />
+                          <DollarSign size={16} className="text-adhler-cyan" />
                           <span>Tarifas Base de Canchas</span>
                         </h3>
                         <p className="text-[11px] text-zinc-500 mt-1">Configura el precio regular por hora para cada cancha.</p>
@@ -2636,7 +2643,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               />
                               <button 
                                 onClick={() => handleUpdateBasePrice(f)}
-                                className="bg-emerald-500 hover:bg-emerald-450 text-black text-[10px] uppercase tracking-wider font-extrabold px-3 py-1.5 rounded-xl transition cursor-pointer"
+                                className="bg-[#ED7038] hover:bg-[#ED7038]/90 text-white text-[10px] uppercase tracking-wider font-extrabold px-3 py-1.5 rounded-xl transition cursor-pointer"
                               >
                                 Guardar
                               </button>
@@ -2646,7 +2653,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                       </div>
 
                       {priceStatusMsg && (
-                        <div className="text-[10px] text-emerald-450 bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-xl leading-relaxed">
+                        <div className="text-[10px] text-adhler-cyan bg-adhler-cyan/10 border border-adhler-cyan/20 p-2.5 rounded-xl leading-relaxed">
                           {priceStatusMsg}
                         </div>
                       )}
@@ -2659,7 +2666,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                       {/* Configuration creation */}
                       <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-6 shadow-xl text-left space-y-4">
                         <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-1.5 border-b border-zinc-900 pb-3">
-                          <Clock size={16} className="text-emerald-450" />
+                          <Clock size={16} className="text-adhler-cyan" />
                           <span>Regla de Tarifa Dinámica para Horas Pico</span>
                         </h3>
                         
@@ -2730,7 +2737,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                           <div className="flex items-end">
                             <button 
                               type="submit"
-                              className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-450 text-black font-extrabold text-xs uppercase tracking-wider rounded-xl transition cursor-pointer"
+                              className="w-full py-2.5 bg-[#ED7038] hover:bg-[#ED7038]/90 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition cursor-pointer"
                             >
                               Agregar Regla
                             </button>
@@ -2760,7 +2767,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                  <span className="font-mono text-emerald-450 font-bold text-sm bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
+                                  <span className="font-mono text-adhler-cyan font-bold text-sm bg-adhler-cyan/10 border border-adhler-cyan/20 px-2 py-0.5 rounded">
                                     ${rule.rate} MXN/Hr
                                   </span>
                                   <button 
@@ -2822,7 +2829,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                 </div>
                                 <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase border ${
                                   rev.status === 'approved' 
-                                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" 
+                                    ? "bg-adhler-cyan/10 border-adhler-cyan/20 text-adhler-cyan" 
                                     : "bg-amber-500/10 border-amber-500/20 text-amber-400"
                                 }`}>
                                   {rev.status === 'approved' ? "Aprobado (Público)" : "Pendiente"}
@@ -2835,7 +2842,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
 
                               {rev.reply && (
                                 <div className="bg-zinc-900/40 border border-zinc-850 p-2.5 rounded-xl text-[11px] text-zinc-400">
-                                  <strong className="text-emerald-400 font-bold font-mono text-[9px] uppercase tracking-wider block">Respuesta Administrador:</strong>
+                                  <strong className="text-adhler-cyan font-bold font-mono text-[9px] uppercase tracking-wider block">Respuesta Administrador:</strong>
                                   <p className="italic mt-0.5 font-sans leading-normal">"{rev.reply}"</p>
                                 </div>
                               )}
@@ -2845,7 +2852,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               
                               <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono">
                                 <div className="flex items-center gap-2">
-                                  <div className="h-6 w-6 rounded-full bg-zinc-900 border border-zinc-800 font-bold font-sans text-emerald-400 flex items-center justify-center">
+                                  <div className="h-6 w-6 rounded-full bg-zinc-900 border border-zinc-800 font-bold font-sans text-adhler-cyan flex items-center justify-center">
                                     {rev.userName.charAt(0)}
                                   </div>
                                   <div className="flex flex-col text-left">
@@ -2859,7 +2866,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                     className={`px-2.5 py-1.5 rounded-lg text-[9px] uppercase font-bold cursor-pointer transition border ${
                                       rev.status === 'approved' 
                                         ? "bg-zinc-900 hover:bg-zinc-800 border-zinc-805 text-zinc-405" 
-                                        : "bg-emerald-600 hover:bg-emerald-500 text-black border-emerald-500"
+                                        : "bg-adhler-cyan hover:bg-adhler-cyan/90 text-zinc-950 border-adhler-cyan"
                                     }`}
                                   >
                                     {rev.status === 'approved' ? "Desaprobar" : "Aprobar"}
@@ -2882,7 +2889,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                     placeholder="Responde a esta recomendación..."
                                     value={replyText}
                                     onChange={(e) => setReplyText(e.target.value)}
-                                    className="w-full bg-zinc-900 border border-zinc-850 p-2 rounded-xl text-xs focus:outline-none focus:border-emerald-500 font-sans leading-snug"
+                                    className="w-full bg-zinc-900 border border-zinc-850 p-2 rounded-xl text-xs focus:outline-none focus:border-adhler-cyan font-sans leading-snug"
                                   />
                                   <div className="flex justify-end gap-1.5 text-[10px]">
                                     <button 
@@ -2893,7 +2900,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                     </button>
                                     <button 
                                       onClick={() => handlePostReviewReply(rev.id)}
-                                      className="px-3 py-1 bg-emerald-500 hover:bg-emerald-450 text-black font-extrabold rounded-lg uppercase tracking-wider font-mono text-[9px]"
+                                      className="px-3 py-1 bg-[#ED7038] hover:bg-[#ED7038]/90 text-white font-extrabold rounded-lg uppercase tracking-wider font-mono text-[9px]"
                                     >
                                       Responder Comentario
                                     </button>
@@ -2902,7 +2909,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               ) : (
                                 <button 
                                   onClick={() => { setReplyingReviewId(rev.id); setReplyText(rev.reply || ''); }}
-                                  className="text-left text-[10px] text-emerald-400 hover:text-white flex items-center gap-1 mt-0.5 leading-none bg-zinc-900/20 px-2 py-1 border border-zinc-900 hover:bg-zinc-900 transition rounded-lg h-fit w-fit"
+                                  className="text-left text-[10px] text-adhler-cyan hover:text-white flex items-center gap-1 mt-0.5 leading-none bg-zinc-900/20 px-2 py-1 border border-zinc-900 hover:bg-zinc-900 transition rounded-lg h-fit w-fit"
                                 >
                                   <MessageSquare size={10} />
                                   <span>{rev.reply ? "Editar Respuesta" : "Responder Opinión"}</span>
@@ -2938,7 +2945,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                             setTeamFormColor(''); 
                             setTeamFormGoals('0'); 
                           }}
-                          className="rounded-xl px-4 py-2 bg-emerald-500 hover:bg-emerald-450 text-black font-extrabold text-xs flex items-center gap-1.5"
+                          className="rounded-xl px-4 py-2 bg-[#ED7038] hover:bg-[#ED7038]/90 text-white font-extrabold text-xs flex items-center gap-1.5"
                         >
                           <Plus size={13} />
                           <span>Nuevo Equipo</span>
@@ -2962,7 +2969,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
 
                     {/* Conditional rendering for Team Creation Form */}
                     {showTeamForm && (
-                      <div className="bg-zinc-950 border border-emerald-500/15 rounded-3xl p-6 shadow-2xl space-y-4 max-w-xl">
+                      <div className="bg-zinc-950 border border-adhler-cyan/15 rounded-3xl p-6 shadow-2xl space-y-4 max-w-xl">
                         <h2 className="font-extrabold text-white text-sm uppercase tracking-wider">{editingTeamId ? '📝 Editar Equipo' : '⚽ Registrar de Nuevo Equipo'}</h2>
                         <form onSubmit={handleSaveTeamSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
                           <div className="space-y-1">
@@ -3017,7 +3024,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                             </button>
                             <button 
                               type="submit" 
-                              className="px-5 py-2 bg-emerald-500 text-black font-extrabold rounded-xl"
+                              className="px-5 py-2 bg-[#ED7038] text-white font-extrabold rounded-xl"
                             >
                               {editingTeamId ? 'Guardar Cambios' : 'Registrar'}
                             </button>
@@ -3028,7 +3035,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
 
                     {/* Conditional rendering for Player Creation Form */}
                     {showPlayerForm && (
-                      <div className="bg-zinc-950 border border-emerald-500/15 rounded-3xl p-6 shadow-2xl space-y-4 max-w-xl">
+                      <div className="bg-zinc-950 border border-adhler-cyan/15 rounded-3xl p-6 shadow-2xl space-y-4 max-w-xl">
                         <h2 className="font-extrabold text-white text-sm uppercase tracking-wider">👤 Ficha de Jugador</h2>
                         <form onSubmit={handleSavePlayerSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
                           <div className="space-y-1">
@@ -3100,7 +3107,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                             </button>
                             <button 
                               type="submit" 
-                              className="px-5 py-2 bg-emerald-500 text-black font-extrabold rounded-xl"
+                              className="px-5 py-2 bg-[#ED7038] text-white font-extrabold rounded-xl"
                             >
                               Inscribir Jugador
                             </button>
@@ -3117,7 +3124,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                         placeholder="Buscar clubes de la liga o capitanes..."
                         value={teamSearch}
                         onChange={(e) => setTeamSearch(e.target.value)}
-                        className="w-full max-w-md pl-9 pr-4 py-2.5 rounded-xl bg-zinc-950 border border-zinc-900 focus:outline-none focus:border-emerald-500 text-xs text-white"
+                        className="w-full max-w-md pl-9 pr-4 py-2.5 rounded-xl bg-zinc-950 border border-zinc-900 focus:outline-none focus:border-adhler-cyan text-xs text-white"
                       />
                     </div>
 
@@ -3168,7 +3175,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               {/* Goals / statistics */}
                               <div className="flex justify-between items-center text-xs">
                                 <span className="text-zinc-500">Puntos del campeonato / Goles a favor:</span>
-                                <strong className="font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded text-sm font-black">
+                                <strong className="font-mono text-adhler-cyan bg-adhler-cyan/10 border border-adhler-cyan/20 px-2 py-0.5 rounded text-sm font-black">
                                   {t.goalsFor} pts
                                 </strong>
                               </div>
@@ -3225,7 +3232,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-900 pb-5">
                       <div>
                         <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                          <CreditCard className="text-emerald-400" size={20} />
+                          <CreditCard className="text-adhler-cyan" size={20} />
                           <span>Auditoría de Pagos y Caja</span>
                         </h2>
                         <p className="text-xs text-zinc-500 mt-1">
@@ -3283,7 +3290,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                             });
                             exportPaymentsToCSV(filtered, reservations);
                           }}
-                          className="rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black px-4 py-2 text-xs font-black shadow-lg shadow-emerald-500/10 cursor-pointer flex items-center gap-1.5 transition"
+                          className="rounded-xl bg-[#ED7038] hover:bg-[#ED7038]/90 text-white px-4 py-2 text-xs font-black shadow-lg shadow-[#ED7038]/5 cursor-pointer flex items-center gap-1.5 transition"
                           title="Exportar transacciones filtradas"
                         >
                           <FileSpreadsheet size={13} />
@@ -3294,7 +3301,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
 
                     {/* Filter controls section */}
                     <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 space-y-4">
-                      <span className="text-[10px] text-emerald-400 uppercase font-black tracking-widest block font-sans">
+                      <span className="text-[10px] text-adhler-cyan uppercase font-black tracking-widest block font-sans">
                         🔍 FILTRADO Y CRONOLOGÍA DE TRANSACCIONES
                       </span>
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -3308,7 +3315,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               value={paymentSearch}
                               onChange={(e) => setPaymentSearch(e.target.value)}
                               placeholder="Buscar cliente, correo, folio..."
-                              className="w-full rounded-xl bg-zinc-900/50 border border-zinc-900 px-3 py-2 pl-8 text-xs text-white placeholder-zinc-650 focus:outline-none focus:border-emerald-500"
+                              className="w-full rounded-xl bg-zinc-900/50 border border-zinc-900 px-3 py-2 pl-8 text-xs text-white placeholder-zinc-650 focus:outline-none focus:border-adhler-cyan"
                             />
                           </div>
                         </div>
@@ -3319,7 +3326,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                             type="date"
                             value={paymentStartDate}
                             onChange={(e) => setPaymentStartDate(e.target.value)}
-                            className="w-full rounded-xl bg-zinc-900/50 border border-zinc-900 px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                            className="w-full rounded-xl bg-zinc-900/50 border border-zinc-900 px-3 py-2 text-xs text-white focus:outline-none focus:border-adhler-cyan"
                           />
                         </div>
 
@@ -3329,7 +3336,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                             type="date"
                             value={paymentEndDate}
                             onChange={(e) => setPaymentEndDate(e.target.value)}
-                            className="w-full rounded-xl bg-zinc-900/50 border border-zinc-900 px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                            className="w-full rounded-xl bg-zinc-900/50 border border-zinc-900 px-3 py-2 text-xs text-white focus:outline-none focus:border-adhler-cyan"
                           />
                         </div>
 
@@ -3338,7 +3345,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                           <select
                             value={paymentMethodFilter}
                             onChange={(e: any) => setPaymentMethodFilter(e.target.value)}
-                            className="w-full rounded-xl bg-zinc-900/50 border border-zinc-900 px-3 py-2 text-xs text-zinc-300 focus:outline-none focus:border-emerald-500 appearance-none cursor-pointer"
+                            className="w-full rounded-xl bg-zinc-900/50 border border-zinc-900 px-3 py-2 text-xs text-zinc-300 focus:outline-none focus:border-adhler-cyan appearance-none cursor-pointer"
                           >
                             <option value="todos">Todos los métodos</option>
                             <option value="stripe">Tarjetas (Stripe)</option>
@@ -3395,15 +3402,15 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                           {/* Bento Grid Analytics */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                             
-                            <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 hover:border-emerald-500/20 transition duration-150">
+                            <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 hover:border-adhler-cyan/20 transition duration-150">
                               <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block font-sans">Recaudación Filtrada</span>
-                              <strong className="text-2xl font-mono text-emerald-400 mt-1 block font-black">
+                              <strong className="text-2xl font-mono text-adhler-cyan mt-1 block font-black">
                                 ${totalAmount.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                               </strong>
                               <span className="text-[10px] text-zinc-600 mt-1 block font-mono">Período de caja actual</span>
                             </div>
 
-                            <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 hover:border-emerald-500/20 transition duration-150">
+                            <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 hover:border-adhler-cyan/20 transition duration-150">
                               <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block font-sans">Transacciones Totales</span>
                               <strong className="text-2xl font-mono text-white mt-1 block font-black">
                                 {list.length} <span className="text-xs text-zinc-500 font-sans font-normal">recibos</span>
@@ -3411,7 +3418,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                               <span className="text-[10px] text-zinc-650 mt-1 block font-mono">Promedio: ${list.length > 0 ? (totalAmount / list.length).toFixed(1) : 0} MXN</span>
                             </div>
 
-                            <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 hover:border-emerald-500/20 transition duration-150 sm:col-span-2">
+                            <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 hover:border-adhler-cyan/20 transition duration-150 sm:col-span-2">
                               <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-2 font-sans">Composición de Caja</span>
                               <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
                                 <div className="flex justify-between items-center bg-zinc-900/25 border border-zinc-900/50 rounded-lg p-1.5 px-2">
@@ -3481,7 +3488,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                           case 'paypal':
                                             return <span className="bg-sky-500/10 text-sky-400 border border-sky-500/20 px-2 py-0.5 rounded font-bold text-[10px]">PayPal</span>;
                                           case 'whatsapp_transfer':
-                                            return <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-bold text-[10px]">Transferencia WhatsApp</span>;
+                                            return <span className="bg-adhler-cyan/10 text-adhler-cyan border border-adhler-cyan/20 px-2 py-0.5 rounded font-bold text-[10px]">Transferencia WhatsApp</span>;
                                           case 'cash':
                                             return <span className="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-bold text-[10px]">Efectivo Caja</span>;
                                           default:
@@ -3520,7 +3527,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                                         email: res.userEmail
                                                       });
                                                     }}
-                                                    className="font-bold text-white font-sans text-left hover:text-emerald-400 hover:underline transition focus:outline-none cursor-pointer"
+                                                    className="font-bold text-white font-sans text-left hover:text-adhler-cyan hover:underline transition focus:outline-none cursor-pointer"
                                                     title={`Ver perfil y comportamiento de ${res.userName}`}
                                                   >
                                                     {res.userName}
@@ -3540,7 +3547,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
                                           </td>
 
                                           <td className="px-6 py-4.5 text-right whitespace-nowrap">
-                                            <strong className="font-mono text-emerald-400 text-sm font-black">
+                                            <strong className="font-mono text-adhler-cyan text-sm font-black">
                                               ${(pay.amount || 0).toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                                             </strong>
                                             <span className="text-[9px] text-zinc-500 block font-mono mt-0.5">MXN (Abonado)</span>
@@ -3557,7 +3564,7 @@ export default function AdminPanel({ token, onLogout }: AdminPanelProps) {
 
                                           <td className="px-6 py-4.5 text-center whitespace-nowrap">
                                             {pay.status === 'completed' ? (
-                                              <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider font-sans">
+                                              <span className="bg-adhler-cyan/10 text-adhler-cyan border border-adhler-cyan/30 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider font-sans">
                                                 Exitoso
                                               </span>
                                             ) : pay.status === 'pending' ? (
