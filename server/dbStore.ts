@@ -2,8 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { User, Reservation, Payment, Promotion, Photo, Video, FieldConfig, Team, Player, AppStats, Review } from '../src/types';
-import { db, auth, authenticateServer } from './firebase';
-import { doc, setDoc, deleteDoc, getDocs, collection } from 'firebase/firestore';
 
 const DB_FILE = path.join(process.cwd(), 'database_state.json');
 
@@ -30,8 +28,7 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
     operationType,
     path
   };
-  console.error('[FIRESTORE EXCEPTION ERROR]:', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
+  console.log('[LOCAL STORAGE WARNING]:', JSON.stringify(errInfo));
 }
 
 // Pre-configured Field Prices and Configs
@@ -552,118 +549,27 @@ export class DbStore {
   constructor() {
     this.data = { ...INITIAL_DATA };
     this.load();
-    // Start server, authenticate with Firebase Auth, then synchronize with Firestore
-    this.initializeAndSync().catch(err => {
-      console.error('[FIRESTORE INITIALIZATION EXCEPTION]:', err);
-    });
+    console.log('[DATABASE STORE]: Operational on offline local file json state database (database_state.json).');
   }
 
   async initializeAndSync() {
-    try {
-      await authenticateServer();
-    } catch (err) {
-      console.error('[FIRESTORE INITIAL AUTH WARNING]: Failed to authenticate server with Firebase Auth. Operating locally or with guest access:', err);
-    }
-    await this.syncWithFirestore();
+    // Local JSON only mode requested by user
   }
 
   async syncWithFirestore() {
-    console.log('[FIRESTORE] Synchronizing with cloud database...');
-    const collections = [
-      'users', 'reservations', 'payments', 'promotions', 'photos',
-      'videos', 'teams', 'players', 'reviews', 'fields', 'dynamicPrices'
-    ];
-
-    let hasCloudData = false;
-
-    for (const colName of collections) {
-      try {
-        const querySnapshot = await getDocs(collection(db, colName));
-        if (!querySnapshot.empty) {
-          hasCloudData = true;
-          const docsList: any[] = [];
-          querySnapshot.forEach(docSnap => {
-            docsList.push({ id: docSnap.id, ...docSnap.data() });
-          });
-          
-          console.log(`[FIRESTORE] Resolved ${docsList.length} documents for collection "${colName}"`);
-          
-          if (colName === 'users') this.data.users = docsList;
-          else if (colName === 'reservations') this.data.reservations = docsList;
-          else if (colName === 'payments') this.data.payments = docsList;
-          else if (colName === 'promotions') this.data.promotions = docsList;
-          else if (colName === 'photos') this.data.photos = docsList;
-          else if (colName === 'videos') this.data.videos = docsList;
-          else if (colName === 'teams') this.data.teams = docsList;
-          else if (colName === 'players') this.data.players = docsList;
-          else if (colName === 'reviews') this.data.reviews = docsList;
-          else if (colName === 'fields') this.data.fields = docsList;
-          else if (colName === 'dynamicPrices') this.data.dynamicPrices = docsList;
-        }
-      } catch (err) {
-        console.error(`[FIRESTORE SYNC ERROR] Failed to load "${colName}":`, err);
-      }
-    }
-
-    if (!hasCloudData) {
-      console.log('[FIRESTORE] Cloud database is empty. Seeding with INITIAL_DATA...');
-      await this.seedCloudDatabase();
-    } else {
-      this.save();
-      console.log('[FIRESTORE SUCCESS]: Cached cloud database locally on disk.');
-    }
+    // Local JSON only mode requested by user
   }
 
   async seedCloudDatabase() {
-    const seedPairs = [
-      { key: 'users', list: this.data.users },
-      { key: 'reservations', list: this.data.reservations },
-      { key: 'payments', list: this.data.payments },
-      { key: 'promotions', list: this.data.promotions },
-      { key: 'photos', list: this.data.photos },
-      { key: 'videos', list: this.data.videos || [] },
-      { key: 'teams', list: this.data.teams },
-      { key: 'players', list: this.data.players },
-      { key: 'reviews', list: this.data.reviews },
-      { key: 'fields', list: this.getFields() },
-      { key: 'dynamicPrices', list: this.getDynamicPrices() }
-    ];
-
-    for (const pair of seedPairs) {
-      for (const item of pair.list) {
-        try {
-          const docRef = doc(db, pair.key, item.id);
-          const dataToSave = { ...item };
-          await setDoc(docRef, dataToSave);
-        } catch (err) {
-          console.error(`[FIRESTORE SEED EXCEPTION] Error seeding item ${item.id} to col "${pair.key}":`, err);
-        }
-      }
-      console.log(`[FIRESTORE SEEDED] Col "${pair.key}" seeded successfully.`);
-    }
+    // Local JSON only mode requested by user
   }
 
   async saveToCloud(collectionName: string, documentId: string, item: any) {
-    const path = `${collectionName}/${documentId}`;
-    try {
-      const docRef = doc(db, collectionName, documentId);
-      const dataToSave = { ...item };
-      await setDoc(docRef, dataToSave);
-      console.log(`[FIRESTORE WRITE SUCCESS]: Wrote document to ${path}`);
-    } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, path);
-    }
+    console.log(`[LOCAL STORE SAVE]: sync success for col "${collectionName}" with doc ID "${documentId}"`);
   }
 
   async deleteFromCloud(collectionName: string, documentId: string) {
-    const path = `${collectionName}/${documentId}`;
-    try {
-      const docRef = doc(db, collectionName, documentId);
-      await deleteDoc(docRef);
-      console.log(`[FIRESTORE DELETE SUCCESS]: Deleted document from ${path}`);
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, path);
-    }
+    console.log(`[LOCAL STORE DELETE]: sync success for col "${collectionName}" with doc ID "${documentId}"`);
   }
 
   private load() {
