@@ -1,4 +1,20 @@
-import { initializeApp } from 'firebase/app';
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyB4_567dcodjHlx1T4zdOsIRYgLD45dLRU",
+  authDomain: "goaltrireserve-manage.firebaseapp.com",
+  projectId: "goaltrireserve-manage",
+  storageBucket: "goaltrireserve-manage.firebasestorage.app",
+  messagingSenderId: "813446515183",
+  appId: "1:813446515183:web:ec4f46d9b117bd9d678e1a"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import fs from 'fs';
